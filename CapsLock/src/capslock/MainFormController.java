@@ -73,6 +73,7 @@ public class MainFormController implements Initializable {
     private Iterator<Media> MovieIterator;
     private boolean IsGameMapped = false;
     private final List<GameCertification> GameList;
+  
     private WarningTimer warning=new WarningTimer();
     private static Process GameProcess;
 
@@ -277,7 +278,7 @@ public class MainFormController implements Initializable {
                 DisplayState = State.Both_Media;
                 MovieIterator = MovieList.iterator();
                 PlayMovie(MovieIterator.next());
-                SwapDisplayContentType();
+                SwapDisplayMovie();
             }
         }
         System.err.println("timer");
@@ -298,17 +299,33 @@ public class MainFormController implements Initializable {
         player.setCycleCount(1);
         StackedMediaView.setMediaPlayer(player);
         StackedMediaView.setFitWidth(ViewStackPane.getWidth());
+
+        SwapDisplayMovie();
     }
 
     private void DisplayImage(){
-        StackedImageView.setImage(ImageIterator.next());
+    	Image image = ImageIterator.next();
+        StackedImageView.setImage(image);
         StackedImageView.setFitWidth(ViewStackPane.getWidth());
+
+        SwapDisplayImage();
     }
 
     private void SwapDisplayContentType(){
         StackedImageView.setVisible(!StackedImageView.isVisible());
         StackedMediaView.setVisible(!StackedMediaView.isVisible());
     }
+
+    private void SwapDisplayMovie() {
+    	StackedMediaView.setVisible(true);
+        StackedImageView.setVisible(false);
+    }
+
+    private void SwapDisplayImage() {
+        StackedImageView.setVisible(true);
+        StackedMediaView.setVisible(false);
+    }
+
     public static boolean GameIsAlive() {
     	boolean res=false;
     	if(GameProcess!=null) {
