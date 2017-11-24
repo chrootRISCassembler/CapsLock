@@ -1,5 +1,6 @@
 package capslock;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -74,6 +75,8 @@ public class MainFormController implements Initializable {
     private Iterator<Media> MovieIterator;
     private boolean IsGameMapped = false;
     private final List<GameCertification> GameList;
+
+    MediaPlayer playstop;
 
     private WarningTimer warning=new WarningTimer();
     private static Process GameProcess;
@@ -270,6 +273,7 @@ public class MainFormController implements Initializable {
         final ProcessBuilder pb = new ProcessBuilder(game.getExecutablePath().toString());
         pb.redirectErrorStream(true);
         try {
+        	playstop.stop();
             warning.Start();
             GameProcess = pb.start();
         } catch (IOException ex) {
@@ -306,6 +310,7 @@ public class MainFormController implements Initializable {
 
     private void PlayMovie(Media movie){
         MediaPlayer player = new MediaPlayer(movie);
+        playstop = player;
         player.setOnEndOfMedia(onMovieEnd);
         player.setAutoPlay(true);
         player.setCycleCount(1);
