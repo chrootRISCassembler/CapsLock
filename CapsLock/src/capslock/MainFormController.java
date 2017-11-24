@@ -1,18 +1,18 @@
 package capslock;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,6 +55,8 @@ public class MainFormController implements Initializable {
     private static final String DB_FILE_NAME = "GamesInfo.json";
     private static final double PANEL_RATIO = 0.25;
     private static final double PANEL_GAP_RATIO = 0.03;
+    
+    private static final Path DB_PATH = Paths.get("./GamesInfo.json");
 
     private enum State{
         None,
@@ -95,23 +97,26 @@ public class MainFormController implements Initializable {
     public MainFormController() {
         List<GameCertification> ListBuilder = new ArrayList<>();
 
-        try(final BufferedReader reader = new BufferedReader(new FileReader(DB_FILE_NAME));){
+        try{
+            final String JSON_String = Files.newBufferedReader(DB_PATH).lines()
+                    .collect(Collectors.joining());
+            new JSONArray(JSON_String).forEach(record -> ListBuilder.add(new GameCertification((JSONObject) record)));
 
-            final String JsonString = reader.readLine();
-            new JSONArray(JsonString).forEach(record -> ListBuilder.add(new GameCertification((JSONObject) record)));
-
-        } catch (FileNotFoundException ex) {
-            LogHandler.inst.warning("Failed to open " + DB_FILE_NAME);
+        } catch (SecurityException ex) {//セキュリティソフト等に読み込みを阻害されたとき
+            LogHandler.inst.severe("File-loading is blocked by security manager");
+            LogHandler.inst.severe(ex);
         } catch (IOException ex) {
-            LogHandler.inst.warning("IOException : " + DB_FILE_NAME + " can be wrong.");
+            LogHandler.inst.severe("Failed to open " + DB_FILE_NAME);
+            LogHandler.inst.severe(ex);
         } catch(JSONException ex){
             ex.printStackTrace();
             LogHandler.inst.warning("JSONException : " + DB_FILE_NAME + " must be wrong.");
-            
+            LogHandler.inst.severe(ex.toString());
         } catch(Exception ex){
             GameList = null;
             return;
         }
+        
         for(int i=0;i<ListBuilder.size();i++) {
         	for(int j=0;j<ListBuilder.size()-1;j++) {
         		File hoo=ListBuilder.get(j).getPanelPath().toFile();
