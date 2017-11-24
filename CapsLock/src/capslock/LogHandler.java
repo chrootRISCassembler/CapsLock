@@ -31,13 +31,34 @@ enum LogHandler{
     }
     
     final void close(){handler.close();}
-    final void severe(String msg){logger.severe(msg);}
-    final void warning(String msg){logger.warning(msg);}
-    final void info(String msg){logger.info(msg);}
-    final void config(String msg){logger.config(msg);}
-    final void fine(String msg){logger.fine(msg);}
-    final void finer(String msg){logger.finer(msg);}
-    final void finest(String msg){logger.finest(msg);}
+    final void severe(String msg){
+        System.err.println(msg);
+        logger.severe(msg);
+    }
+    final void warning(String msg){
+        System.err.println(msg);
+        logger.warning(msg);
+    }
+    final void info(String msg){
+        System.err.println(msg);
+        logger.info(msg);
+    }
+    final void config(String msg){
+        System.err.println(msg);
+        logger.config(msg);
+    }
+    final void fine(String msg){
+        System.err.println(msg);
+        logger.fine(msg);
+    }
+    final void finer(String msg){
+        System.err.println(msg);
+        logger.finer(msg);
+    }
+    final void finest(String msg){
+        System.err.println(msg);
+        logger.finest(msg);
+    }
     
     final void severe(Object object){logger.severe(object.toString());}
     final void warning(Object object){logger.warning(object.toString());}
