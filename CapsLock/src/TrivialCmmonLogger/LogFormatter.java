@@ -1,4 +1,4 @@
-package capslock;
+package TrivialCmmonLogger;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

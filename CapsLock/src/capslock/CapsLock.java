@@ -1,5 +1,6 @@
 package capslock;
 
+import TrivialCmmonLogger.LogHandler;
 import java.io.IOException;
 import javafx.application.*;
 import javafx.fxml.FXMLLoader;

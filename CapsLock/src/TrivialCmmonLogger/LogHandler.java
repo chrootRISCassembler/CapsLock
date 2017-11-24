@@ -1,4 +1,4 @@
-package capslock;
+package TrivialCmmonLogger;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  * LastStackTrace.logには例外発生時のスタックトレースを書き込む.
  * log.txtには人間が読みやすい形のエラーを吐く.</p>
  */
-enum LogHandler{
+public enum LogHandler{
     inst;
     
     private FileHandler handler;
@@ -43,45 +43,45 @@ enum LogHandler{
         logger.addHandler(handler);
     }
     
-    final void close(){handler.close();}
-    final void severe(String msg){
+    public final void close(){handler.close();}
+    public final void severe(String msg){
         System.err.println(msg);
         logger.severe(msg);
     }
-    final void warning(String msg){
+    public final void warning(String msg){
         System.err.println(msg);
         logger.warning(msg);
     }
-    final void info(String msg){
+    public final void info(String msg){
         System.err.println(msg);
         logger.info(msg);
     }
-    final void config(String msg){
+    public final void config(String msg){
         System.err.println(msg);
         logger.config(msg);
     }
-    final void fine(String msg){
+    public final void fine(String msg){
         System.err.println(msg);
         logger.fine(msg);
     }
-    final void finer(String msg){
+    public final void finer(String msg){
         System.err.println(msg);
         logger.finer(msg);
     }
-    final void finest(String msg){
+    public final void finest(String msg){
         System.err.println(msg);
         logger.finest(msg);
     }
     
-    final void severe(Object object){logger.severe(object.toString());}
-    final void warning(Object object){logger.warning(object.toString());}
-    final void info(Object object){logger.info(object.toString());}
-    final void config(Object object){logger.config(object.toString());}
-    final void fine(Object object){logger.fine(object.toString());}
-    final void finer(Object object){logger.finer(object.toString());}
-    final void finest(Object object){logger.finest(object.toString());}
+    public final void severe(Object object){logger.severe(object.toString());}
+    public final void warning(Object object){logger.warning(object.toString());}
+    public final void info(Object object){logger.info(object.toString());}
+    public final void config(Object object){logger.config(object.toString());}
+    public final void fine(Object object){logger.fine(object.toString());}
+    public final void finer(Object object){logger.finer(object.toString());}
+    public final void finest(Object object){logger.finest(object.toString());}
     
-    final void DumpStackTrace(Exception ex){
+    public final void DumpStackTrace(Exception ex){
         ex.printStackTrace(StackOutStream);
     }
 }
