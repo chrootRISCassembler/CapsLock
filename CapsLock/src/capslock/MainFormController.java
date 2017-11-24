@@ -45,9 +45,7 @@ import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 /**
- * FXML Controller class
- *
- * @author RISCassembler
+ * メインフォームのFXMLコントローラークラス.
  */
 public class MainFormController implements Initializable {
 
@@ -110,13 +108,16 @@ public class MainFormController implements Initializable {
             LogHandler.inst.severe(ex);
         } catch(JSONException ex){
             ex.printStackTrace();
-            LogHandler.inst.warning("JSONException : " + DB_FILE_NAME + " must be wrong.");
-            LogHandler.inst.severe(ex.toString());
+            LogHandler.inst.severe("JSONException : " + DB_FILE_NAME + " must be wrong.");
+            LogHandler.inst.severe(ex);
         } catch(Exception ex){
             GameList = null;
             return;
         }
         
+        LogHandler.inst.fine(DB_FILE_NAME + "loading succeeded.");
+        
+        LogHandler.inst.finer("Panel sorting is started."); 
         for(int i=0;i<ListBuilder.size();i++) {
         	for(int j=0;j<ListBuilder.size()-1;j++) {
         		File hoo=ListBuilder.get(j).getPanelPath().toFile();
@@ -127,7 +128,8 @@ public class MainFormController implements Initializable {
         		}
         	}
         }
-
+        LogHandler.inst.finer("Panel sorting is complete.");
+        
         GameList = Collections.unmodifiableList(ListBuilder);
         LogHandler.inst.fine(GameList.size() + "件のゲームを検出");
     }
@@ -140,9 +142,12 @@ public class MainFormController implements Initializable {
         ImageTimeLine.setCycleCount(Animation.INDEFINITE);
     }
 
-	@FXML
-	protected void onButtonClick(ActionEvent evt) {
-		if(GameIsAlive())return;
+    @FXML
+    protected void onButtonClick(ActionEvent evt) {
+        if(GameIsAlive()){
+            LogHandler.inst.finest("PlayButton clicked, but another game is still alive.");
+            return;
+        }
 
         final ProcessBuilder pb = new ProcessBuilder(game.getExecutablePath().toString());
         File gameDir = new File(System.getProperty("user.dir")+"\\"+game.getExecutablePath().toString());
@@ -150,20 +155,24 @@ public class MainFormController implements Initializable {
         pb.redirectErrorStream(true);
         try {
             playstop.stop();
-        	warning.Start();
-
+            warning.Start();
 
             GameProcess = pb.start();
+        } catch (SecurityException ex){//セキュリティソフト等に読み込みを阻害されたとき
+            LogHandler.inst.severe("File-loading is blocked by security manager");
+            LogHandler.inst.severe(ex);
         } catch (IOException ex) {
-            System.out.println(ex);
+            LogHandler.inst.severe("Can't open exe of the game.");
+            LogHandler.inst.severe(ex);
         }
-	}
+    }
 
     public void onLoad(WindowEvent event){
         if(IsGameMapped)return;
 
         final double PanelImageSideLength;
 
+        LogHandler.inst.finest("Start calculation of dynamic UI.");
         {
             final Rectangle2D ScreenRect = Screen.getPrimary().getVisualBounds();
             final double FullScreenWidth = ScreenRect.getWidth();
@@ -186,6 +195,7 @@ public class MainFormController implements Initializable {
             NameLabel.setFont(Font.font(FullScreenHeight / 20));
             DescriptionLabel.setFont(Font.font(FullScreenHeight/40));
         }
+        LogHandler.inst.finest("Finished calculation of dynamic UI.");
 
         for(GameCertification game : GameList){
             final Image PanelImage;
@@ -211,6 +221,8 @@ public class MainFormController implements Initializable {
             view.setUserData(game);
             PanelTilePane.getChildren().add(view);
         }
+        
+        LogHandler.inst.finest("MainForm window is displayed.");
     }
 
     class onMovieEndClass implements Runnable{
@@ -241,14 +253,6 @@ public class MainFormController implements Initializable {
 
         game = (GameCertification)view.getUserData();
         String gameName = game.getName();
-
-//        try {
-//        	gameName = new String(g.getBytes("SJIS"), "UTF-8")
-//			System.out.println();
-//		} catch (UnsupportedEncodingException e) {
-//			// TODO 自動生成された catch ブロック
-//			e.printStackTrace();
-//		}
         NameLabel.setText("[P-"+String.valueOf(game.getGameID())+"]"+gameName);
         DescriptionLabel.setText(game.getDescription());
 
@@ -301,23 +305,29 @@ public class MainFormController implements Initializable {
     }
 
     void onPanelDoubleClicked(MouseEvent event){
-        if(!event.getButton().equals(MouseButton.PRIMARY))return;
-        if(event.getClickCount() != 2)return;
+        if(!event.getButton().equals(MouseButton.PRIMARY))return;//右クリックじゃない
+        if(event.getClickCount() != 2)return;//ダブルクリックじゃない
     	System.err.println("is clicked");
-        if(GameIsAlive())return;
-
+        if(GameIsAlive()){
+            LogHandler.inst.finest("PlayButton clicked, but another game is still alive.");
+            return;
+        }
+        
         final ProcessBuilder pb = new ProcessBuilder(game.getExecutablePath().toString());
         File gameDir = new File(System.getProperty("user.dir")+"\\"+game.getExecutablePath().toString());
         pb.directory(new File(gameDir.getParent()));
         pb.redirectErrorStream(true);
         try {
             playstop.stop();
-        	warning.Start();
-
+            warning.Start();
 
             GameProcess = pb.start();
+        } catch (SecurityException ex){//セキュリティソフト等に読み込みを阻害されたとき
+            LogHandler.inst.severe("File-loading is blocked by security manager");
+            LogHandler.inst.severe(ex);
         } catch (IOException ex) {
-            System.out.println(ex);
+            LogHandler.inst.severe("Can't open exe of the game.");
+            LogHandler.inst.severe(ex);
         }
     }
 

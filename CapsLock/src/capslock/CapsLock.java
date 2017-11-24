@@ -8,8 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- *
- * @author RISCassembler
+ * エントリポイント.
  */
 public final class CapsLock extends Application {
 
@@ -20,7 +19,7 @@ public final class CapsLock extends Application {
         final LogHandler logger = LogHandler.inst;
         logger.info("CapsLock started.");
         launch(args);
-        logger.info("CapsLock terminated normally.");
+        logger.info("CapsLock terminated.");
         logger.close();
     }
     
@@ -33,9 +32,10 @@ public final class CapsLock extends Application {
 
         try {
             root = loader.load();
-        } catch (IOException e) {
-            System.out.println(e);
-            e.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            LogHandler.inst.severe("Failed to load MainForm.fxml");
+            LogHandler.inst.severe(ex);
             return;
         }
         
@@ -45,6 +45,7 @@ public final class CapsLock extends Application {
         stage.setTitle("CapsLock");
         stage.setFullScreen(true);
         stage.setAlwaysOnTop(true);
+        LogHandler.inst.finest("try to display MainForm window.");
         stage.show();
     }
 }
