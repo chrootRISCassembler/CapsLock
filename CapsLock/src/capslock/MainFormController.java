@@ -76,7 +76,7 @@ public class MainFormController implements Initializable {
     private boolean IsGameMapped = false;
     private final List<GameCertification> GameList;
 
-    MediaPlayer playstop;
+    private MediaPlayer playstop;
 
     private WarningTimer warning=new WarningTimer();
     private static Process GameProcess;
@@ -274,6 +274,7 @@ public class MainFormController implements Initializable {
         pb.redirectErrorStream(true);
         try {
         	playstop.stop();
+        	playstop.dispose();
             warning.Start();
             GameProcess = pb.start();
         } catch (IOException ex) {
@@ -339,6 +340,7 @@ public class MainFormController implements Initializable {
     }
 
     private void SwapDisplayImage() {
+    	playstop.dispose();
         StackedImageView.setVisible(true);
         StackedMediaView.setVisible(false);
     }
