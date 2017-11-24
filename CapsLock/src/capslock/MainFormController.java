@@ -1,6 +1,5 @@
 package capslock;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,6 +26,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -76,7 +76,7 @@ public class MainFormController implements Initializable {
     private boolean IsGameMapped = false;
     private final List<GameCertification> GameList;
 
-    MediaPlayer playstop;
+    private MediaPlayer playstop;
 
     private WarningTimer warning=new WarningTimer();
     private static Process GameProcess;
@@ -90,6 +90,7 @@ public class MainFormController implements Initializable {
             @FXML private MediaView StackedMediaView;
     @FXML private Label NameLabel;
     @FXML private Label DescriptionLabel;
+    @FXML private Button playButton;
 
     public MainFormController() {
         List<GameCertification> ListBuilder = new ArrayList<>();
@@ -104,17 +105,17 @@ public class MainFormController implements Initializable {
         } catch (IOException ex) {
             LogHandler.instance.warning("IOException : " + DB_FILE_NAME + " can be wrong.");
         } catch(JSONException ex){
+        	ex.printStackTrace();
             LogHandler.instance.warning("JSONException : " + DB_FILE_NAME + " must be wrong.");
         } catch(Exception ex){
             GameList = null;
             return;
         }
-        for(int i=0;i<ListBuilder.size()-1;i++) {
+        for(int i=0;i<ListBuilder.size();i++) {
         	for(int j=0;j<ListBuilder.size()-1;j++) {
         		File hoo=ListBuilder.get(j).getPanelPath().toFile();
         		if(!hoo.exists()) {
         			int next=j++;
-        			System.err.println("loop");
         			GameCertification x=ListBuilder.set(j,ListBuilder.get(next));
         			ListBuilder.set(next,x);
         		}
@@ -132,6 +133,25 @@ public class MainFormController implements Initializable {
         ae -> UpdateImage(ae)));
         ImageTimeLine.setCycleCount(Animation.INDEFINITE);
     }
+
+	@FXML
+	protected void onButtonClick(ActionEvent evt) {
+		if(GameIsAlive())return;
+
+        final ProcessBuilder pb = new ProcessBuilder(game.getExecutablePath().toString());
+        File gameDir = new File(System.getProperty("user.dir")+"\\"+game.getExecutablePath().toString());
+        pb.directory(new File(gameDir.getParent()));
+        pb.redirectErrorStream(true);
+        try {
+            playstop.stop();
+        	warning.Start();
+
+
+            GameProcess = pb.start();
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
+	}
 
     public void onLoad(WindowEvent event){
         if(IsGameMapped)return;
@@ -158,6 +178,7 @@ public class MainFormController implements Initializable {
             RightVBox.setPadding(new Insets(RightContentPadding));
 
             NameLabel.setFont(Font.font(FullScreenHeight / 20));
+            DescriptionLabel.setFont(Font.font(FullScreenHeight/40));
         }
 
         for(GameCertification game : GameList){
@@ -213,7 +234,16 @@ public class MainFormController implements Initializable {
         if(game != null)ReleasePreviousGameContents();
 
         game = (GameCertification)view.getUserData();
-        NameLabel.setText("[P-"+String.valueOf(game.getGameID())+"]"+game.getName());
+        String gameName = game.getName();
+
+//        try {
+//        	gameName = new String(g.getBytes("SJIS"), "UTF-8")
+//			System.out.println();
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO 自動生成された catch ブロック
+//			e.printStackTrace();
+//		}
+        NameLabel.setText("[P-"+String.valueOf(game.getGameID())+"]"+gameName);
         DescriptionLabel.setText(game.getDescription());
 
         byte Flags = 0;
@@ -271,10 +301,14 @@ public class MainFormController implements Initializable {
         if(GameIsAlive())return;
 
         final ProcessBuilder pb = new ProcessBuilder(game.getExecutablePath().toString());
+        File gameDir = new File(System.getProperty("user.dir")+"\\"+game.getExecutablePath().toString());
+        pb.directory(new File(gameDir.getParent()));
         pb.redirectErrorStream(true);
         try {
-        	playstop.stop();
-            warning.Start();
+            playstop.stop();
+        	warning.Start();
+
+
             GameProcess = pb.start();
         } catch (IOException ex) {
             System.out.println(ex);

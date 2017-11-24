@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.media.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.image.*?>
@@ -16,15 +17,42 @@
             <TilePane id="LeftTilePane" fx:id="PanelTilePane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefColumns="20" prefRows="3" />
          </content>
       </ScrollPane>
-      <VBox id="RightVBox" fx:id="RightVBox" HBox.hgrow="SOMETIMES">
+      <VBox id="RightVBox" fx:id="RightVBox" alignment="CENTER_LEFT" depthTest="DISABLE" HBox.hgrow="SOMETIMES">
          <children>
             <StackPane fx:id="ViewStackPane" prefHeight="150.0" prefWidth="200.0" VBox.vgrow="SOMETIMES">
                <children>
                   <ImageView fx:id="StackedImageView" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER" />
                   <MediaView fx:id="StackedMediaView" StackPane.alignment="CENTER" />
                </children></StackPane>
-            <Label id="NameLabel" fx:id="NameLabel" text="Label" />
-            <Label id="DescriptionLabel" fx:id="DescriptionLabel" text="Label" wrapText="true" />
+            <VBox fx:id="BottomVBox">
+               <children>
+                  <Label id="NameLabel" fx:id="NameLabel" text="Label">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <Label id="DescriptionLabel" fx:id="DescriptionLabel" text="Label" wrapText="true">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <HBox alignment="BOTTOM_RIGHT">
+                     <children>
+                        <Button fx:id="playButton" onAction="#onButtonClick" alignment="BOTTOM_RIGHT" mnemonicParsing="false" text="ゲームを遊ぶ">
+                           <opaqueInsets>
+                              <Insets top="20.0" />
+                           </opaqueInsets>
+                        </Button>
+                     </children>
+                     <opaqueInsets>
+                        <Insets top="20.0" />
+                     </opaqueInsets>
+                  </HBox>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </VBox>
          </children>
       </VBox>
    </children>
