@@ -17,7 +17,7 @@ public final class CapsLock extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        final LogHandler logger = LogHandler.instance;
+        final LogHandler logger = LogHandler.inst;
         logger.info("CapsLock started.");
         launch(args);
         logger.info("CapsLock terminated normally.");

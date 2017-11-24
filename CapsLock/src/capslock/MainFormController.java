@@ -101,12 +101,13 @@ public class MainFormController implements Initializable {
             new JSONArray(JsonString).forEach(record -> ListBuilder.add(new GameCertification((JSONObject) record)));
 
         } catch (FileNotFoundException ex) {
-            LogHandler.instance.warning("Failed to open " + DB_FILE_NAME);
+            LogHandler.inst.warning("Failed to open " + DB_FILE_NAME);
         } catch (IOException ex) {
-            LogHandler.instance.warning("IOException : " + DB_FILE_NAME + " can be wrong.");
+            LogHandler.inst.warning("IOException : " + DB_FILE_NAME + " can be wrong.");
         } catch(JSONException ex){
-        	ex.printStackTrace();
-            LogHandler.instance.warning("JSONException : " + DB_FILE_NAME + " must be wrong.");
+            ex.printStackTrace();
+            LogHandler.inst.warning("JSONException : " + DB_FILE_NAME + " must be wrong.");
+            
         } catch(Exception ex){
             GameList = null;
             return;
@@ -123,7 +124,7 @@ public class MainFormController implements Initializable {
         }
 
         GameList = Collections.unmodifiableList(ListBuilder);
-        LogHandler.instance.fine(GameList.size() + "件のゲームを検出");
+        LogHandler.inst.fine(GameList.size() + "件のゲームを検出");
     }
 
     @Override
@@ -188,7 +189,7 @@ public class MainFormController implements Initializable {
                 PanelImage = new Image(game.getPanelPath().toUri().toString());
             }else{
                 PanelImage = CharPanelGenerator.generate(game.getName().charAt(0));
-                LogHandler.instance.warning("game's UUID : " + game.getUUID().toString() + " doesn't have panel image.");
+                LogHandler.inst.warning("game's UUID : " + game.getUUID().toString() + " doesn't have panel image.");
             }
 
             final ImageView view = new ImageView(PanelImage);
@@ -273,7 +274,7 @@ public class MainFormController implements Initializable {
                 ImageSet();
                 break;
             default:
-                LogHandler.instance.severe("Unexpected flag! Call the developer!");
+                LogHandler.inst.severe("Unexpected flag! Call the developer!");
         }
 
         DescriptionLabel.setPadding(Insets.EMPTY);
