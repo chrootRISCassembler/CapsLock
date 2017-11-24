@@ -26,7 +26,7 @@ final class CharPanelGenerator{
      * You MUST NOT create the instance of this class.
      */
     private CharPanelGenerator(){
-        LogHandler.instance.severe("Utility class' instance \"CharPanelGenerator\" is created! Call the developer!");
+        LogHandler.inst.severe("Utility class' instance \"CharPanelGenerator\" is created! Call the developer!");
     }
     
     /**

@@ -6,11 +6,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
- * @author RISCassembler
+ * ロガー.
+ * <p>ファイルに書き込みたいログはここに投げる</p>
  */
 enum LogHandler{
-    instance;
+    inst;
     
     private FileHandler handler;
     private final Logger logger;
@@ -38,4 +38,12 @@ enum LogHandler{
     final void fine(String msg){logger.fine(msg);}
     final void finer(String msg){logger.finer(msg);}
     final void finest(String msg){logger.finest(msg);}
+    
+    final void severe(Object object){logger.severe(object.toString());}
+    final void warning(Object object){logger.warning(object.toString());}
+    final void info(Object object){logger.info(object.toString());}
+    final void config(Object object){logger.config(object.toString());}
+    final void fine(Object object){logger.fine(object.toString());}
+    final void finer(Object object){logger.finer(object.toString());}
+    final void finest(Object object){logger.finest(object.toString());}
 }
