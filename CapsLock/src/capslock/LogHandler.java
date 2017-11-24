@@ -1,23 +1,36 @@
 package capslock;
 
 import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * ロガー.
- * <p>ファイルに書き込みたいログはここに投げる</p>
+ * <p>ファイルに書き込みたいログはここに投げる.
+ * LastStackTrace.logには例外発生時のスタックトレースを書き込む.
+ * log.txtには人間が読みやすい形のエラーを吐く.</p>
  */
 enum LogHandler{
     inst;
     
     private FileHandler handler;
+    
     private final Logger logger;
+    private PrintStream StackOutStream;
     
     private LogHandler() {
         logger = Logger.getLogger("DefaultLogger");
 
+        try {
+            StackOutStream = new PrintStream(Files.newOutputStream(Paths.get("./LastStackTrace.log")));
+        } catch (IOException | SecurityException ex) {
+            System.err.println(ex);
+        }
+        
         try {
             handler = new FileHandler("log.txt", true);
         } catch (IOException | SecurityException ex) {
@@ -67,4 +80,8 @@ enum LogHandler{
     final void fine(Object object){logger.fine(object.toString());}
     final void finer(Object object){logger.finer(object.toString());}
     final void finest(Object object){logger.finest(object.toString());}
+    
+    final void DumpStackTrace(Exception ex){
+        ex.printStackTrace(StackOutStream);
+    }
 }

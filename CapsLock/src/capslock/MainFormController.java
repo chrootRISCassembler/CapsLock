@@ -102,14 +102,14 @@ public class MainFormController implements Initializable {
 
         } catch (SecurityException ex) {//セキュリティソフト等に読み込みを阻害されたとき
             LogHandler.inst.severe("File-loading is blocked by security manager");
-            LogHandler.inst.severe(ex);
+            LogHandler.inst.DumpStackTrace(ex);
         } catch (IOException ex) {
             LogHandler.inst.severe("Failed to open " + DB_FILE_NAME);
-            LogHandler.inst.severe(ex);
+            LogHandler.inst.DumpStackTrace(ex);
         } catch(JSONException ex){
             ex.printStackTrace();
             LogHandler.inst.severe("JSONException : " + DB_FILE_NAME + " must be wrong.");
-            LogHandler.inst.severe(ex);
+            LogHandler.inst.DumpStackTrace(ex);
         } catch(Exception ex){
             GameList = null;
             return;
@@ -160,10 +160,10 @@ public class MainFormController implements Initializable {
             GameProcess = pb.start();
         } catch (SecurityException ex){//セキュリティソフト等に読み込みを阻害されたとき
             LogHandler.inst.severe("File-loading is blocked by security manager");
-            LogHandler.inst.severe(ex);
+            LogHandler.inst.DumpStackTrace(ex);
         } catch (IOException ex) {
             LogHandler.inst.severe("Can't open exe of the game.");
-            LogHandler.inst.severe(ex);
+            LogHandler.inst.DumpStackTrace(ex);
         }
     }
 
@@ -327,10 +327,10 @@ public class MainFormController implements Initializable {
             GameProcess = pb.start();
         } catch (SecurityException ex){//セキュリティソフト等に読み込みを阻害されたとき
             LogHandler.inst.severe("File-loading is blocked by security manager");
-            LogHandler.inst.severe(ex);
+            LogHandler.inst.DumpStackTrace(ex);
         } catch (IOException ex) {
             LogHandler.inst.severe("Can't open exe of the game.");
-            LogHandler.inst.severe(ex);
+            LogHandler.inst.DumpStackTrace(ex);
         }
     }
 

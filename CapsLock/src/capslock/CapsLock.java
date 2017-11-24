@@ -18,24 +18,35 @@ public final class CapsLock extends Application {
     public static void main(String[] args) {
         final LogHandler logger = LogHandler.inst;
         logger.info("CapsLock started.");
-        launch(args);
+        try{
+            launch(args);
+        }catch(Exception ex){
+            logger.DumpStackTrace(ex);
+        }
         logger.info("CapsLock terminated.");
         logger.close();
     }
     
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage){
+        LogHandler.inst.finer("Application#start called.");
 
-        final FXMLLoader loader = new FXMLLoader(getClass().getResource("MainForm.fxml"));
+        final FXMLLoader loader;
+        try{
+            loader = new FXMLLoader(getClass().getResource("MainForm.fxml"));
+        }catch(Exception ex){
+            LogHandler.inst.severe("Failed to get resource.");
+            LogHandler.inst.DumpStackTrace(ex);
+            return;
+        }
         
         final Parent root;
 
         try {
             root = loader.load();
         } catch (IOException ex) {
-            ex.printStackTrace();
             LogHandler.inst.severe("Failed to load MainForm.fxml");
-            LogHandler.inst.severe(ex);
+            LogHandler.inst.DumpStackTrace(ex);
             return;
         }
         
