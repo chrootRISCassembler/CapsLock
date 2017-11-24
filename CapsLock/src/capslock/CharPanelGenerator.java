@@ -35,10 +35,11 @@ final class CharPanelGenerator{
      * <p>Then, this generates javafx's image from ch.And return it.</p>
      * You can fix the resolution of image through {@link capslock.CharPanelGenerator#PANEL_IMAGE_SIZE}
      * and {@link capslock.CharPanelGenerator#FONT_SIZE}.
-     * @param ch char to logo.
-     * @return Ganerated image.
+     * @param ch パネルの生成に使う1文字.
+     * @param color 背景色.
+     * @return 生成されたパネル.
      */
-    static final Image generate(final char ch){
+    static final Image generate(char ch, Color color){
         final Label label = new Label(Character.toString(Character.toUpperCase(ch)));
         label.setMinSize(PANEL_IMAGE_SIZE, PANEL_IMAGE_SIZE);
         label.setMaxSize(PANEL_IMAGE_SIZE, PANEL_IMAGE_SIZE);
@@ -46,7 +47,7 @@ final class CharPanelGenerator{
         label.setFont(Font.font(FONT_SIZE));
         label.setAlignment(Pos.CENTER);
         label.setTextFill(Color.WHITE);
-        label.setBackground(new Background(new BackgroundFill(ColorSequencer.get(), CornerRadii.EMPTY, Insets.EMPTY)));
+        label.setBackground(new Background(new BackgroundFill(color, CornerRadii.EMPTY, Insets.EMPTY)));
         final Scene scene = new Scene(new Group(label));
         final WritableImage img = new WritableImage(PANEL_IMAGE_SIZE, PANEL_IMAGE_SIZE);
         scene.snapshot(img);

@@ -196,14 +196,16 @@ public class MainFormController implements Initializable {
             DescriptionLabel.setFont(Font.font(FullScreenHeight/40));
         }
         LogHandler.inst.finest("Finished calculation of dynamic UI.");
-
-        for(GameCertification game : GameList){
+        
+        
+        final ColorSequencer sequencer = new ColorSequencer();
+        for(final GameCertification game : GameList){
             final Image PanelImage;
 
             if(Files.isRegularFile(game.getPanelPath())){
                 PanelImage = new Image(game.getPanelPath().toUri().toString());
-            }else{
-                PanelImage = CharPanelGenerator.generate(game.getName().charAt(0));
+            }else{//パネル画像が設定されていないとき
+                PanelImage = CharPanelGenerator.generate(game.getName().charAt(0), sequencer.get());
                 LogHandler.inst.warning("game's UUID : " + game.getUUID().toString() + " doesn't have panel image.");
             }
 
@@ -223,6 +225,7 @@ public class MainFormController implements Initializable {
         }
         
         LogHandler.inst.finest("MainForm window is displayed.");
+        System.gc();
     }
 
     class onMovieEndClass implements Runnable{
