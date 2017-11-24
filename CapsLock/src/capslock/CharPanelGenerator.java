@@ -1,6 +1,6 @@
 package capslock;
 
-import TrivialCmmonLogger.LogHandler;
+import trivial_common_logger.LogHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;

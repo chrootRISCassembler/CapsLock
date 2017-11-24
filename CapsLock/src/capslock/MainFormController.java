@@ -1,6 +1,6 @@
 package capslock;
 
-import TrivialCmmonLogger.LogHandler;
+import trivial_common_logger.LogHandler;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;

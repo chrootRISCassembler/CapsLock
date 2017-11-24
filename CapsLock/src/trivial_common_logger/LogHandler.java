@@ -1,4 +1,4 @@
-package TrivialCmmonLogger;
+package trivial_common_logger;
 
 import java.io.IOException;
 import java.io.PrintStream;

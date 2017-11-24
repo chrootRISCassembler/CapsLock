@@ -1,4 +1,4 @@
-package TrivialCmmonLogger;
+package trivial_common_logger;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
