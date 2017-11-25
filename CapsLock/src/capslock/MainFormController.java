@@ -138,8 +138,6 @@ public class MainFormController implements Initializable {
         }
 
         LogHandler.inst.finer("Panel sorting is complete.");
-
-
         GameList = Collections.unmodifiableList(ListBuilder);
         LogHandler.inst.fine(GameList.size() + "件のゲームを検出");
     }
@@ -149,7 +147,7 @@ public class MainFormController implements Initializable {
         ImageTimeLine = new Timeline(new KeyFrame(
         Duration.millis(2500),
         ae -> UpdateImage(ae)));
-        ImageTimeLine.setCycleCount(Animation.INDEFINITE);
+        ImageTimeLine.setCycleCount(Animation.INDEFINITE);//タイマーを無限ループさせる.
     }
 
     @FXML
@@ -223,11 +221,6 @@ public class MainFormController implements Initializable {
             view.setPreserveRatio(false);
             view.setFitWidth(PanelImageSideLength);
             view.setFitHeight(PanelImageSideLength);
-//            view.setOnMouseEntered((eve) -> {
-//                final ImageView TriggerView = (ImageView)eve.getSource();
-//                onImageFocused(TriggerView);
-//            });
-
             view.setOnMouseClicked(eve -> onPanelClicked(eve));
             Tooltip.install(view, tooltip);
             view.setUserData(game);
@@ -243,27 +236,21 @@ public class MainFormController implements Initializable {
         public void run(){
             try{
                 PlayMovie(MovieIterator.next());
-            }catch(NoSuchElementException e){
-                if(DisplayState == State.MediaOnly){
+            }catch(NoSuchElementException e){//次の動画がリストにない
+                if(DisplayState == State.MediaOnly){//
                     MovieIterator = MovieList.iterator();
                     PlayMovie(MovieIterator.next());
                 }else{
                     DisplayState = State.Both_Image;
-
                     ImageIterator = ImageList.iterator();
                     StackedImageView.setImage(ImageIterator.next());
                     ImageTimeLine.play();
-                    SwapDisplayContentType();
+                    SwapDisplayImage();
                 }
             }
         }
     }
-
-    Runnable onMovieEnd = new onMovieEndClass();
-
-    public void onImageFocused(ImageView view){
-
-    }
+    final Runnable onMovieEnd = new onMovieEndClass();
 
     private void ReleasePreviousGameContents(){
         ImageTimeLine.stop();
@@ -282,69 +269,58 @@ public class MainFormController implements Initializable {
         if(!event.getButton().equals(MouseButton.PRIMARY))return;//右クリックじゃない
     	System.err.println("is clicked");
 
-        final ImageView view = (ImageView)event.getSource();
+        final ImageView view = (ImageView)event.getSource();//クリックされたパネルの取得
+        final GameCertification NextGame = (GameCertification)view.getUserData();//パネルが示すゲーム
+                
+        if(game != NextGame){//前と別のゲームがクリックされた
 
-        PanelTilePane.getChildren().stream()
-                .peek(panel -> panel.setScaleX(1))
-                .peek(panel -> panel.setScaleY(1))
-                .forEach(panel -> panel.setEffect(null));
+            PanelTilePane.getChildren().stream()
+                    .peek(panel -> panel.setScaleX(1))
+                    .peek(panel -> panel.setScaleY(1))
+                    .forEach(panel -> panel.setEffect(null));
 
-        {//選択されたパネルにエフェクトを適応
-            view.setScaleX(1.2);
-            view.setScaleY(1.2);
+            {//選択されたパネルにエフェクトを適応
+                view.setScaleX(1.2);
+                view.setScaleY(1.2);
 
-            final DropShadow effect = new DropShadow(20, Color.BLUE);//影つけて
-            effect.setInput(new Glow(0.5));//光らせる
-            view.setEffect(effect);
+                final DropShadow effect = new DropShadow(20, Color.BLUE);//影つけて
+                effect.setInput(new Glow(0.5));//光らせる
+                view.setEffect(effect);
+            }
+
+            if(game != null){
+                ReleasePreviousGameContents();
+            }
+
+            game = NextGame;
+
+            String gameName = NextGame.getName();
+            NameLabel.setText("[P-"+String.valueOf(NextGame.getGameID())+"]"+gameName);
+            DescriptionLabel.setText(NextGame.getDescription());
+
+            NextGame.getImagesPathList().forEach(path -> ImageList.add(new Image(path.toUri().toString())));
+            NextGame.getMoviePathList().forEach(path -> MovieList.add(new Media(path.toUri().toString())));
+
+            DisplayState = getFirstState();
+            
+            System.err.println(DisplayState);
+            
+            switch(DisplayState){
+                case ImageOnly:
+                    ImageSet();
+                case Both_Media:
+                    ImageIterator = ImageList.iterator();
+                case MediaOnly:
+                    MovieIterator = MovieList.iterator();
+                    PlayMovie(MovieIterator.next());
+                    StackedImageView.setVisible(false);
+                    break;
+            }
+            
+            DescriptionLabel.setPadding(Insets.EMPTY);
+            DescriptionLabel.autosize();
         }
-
-        final GameCertification NextGame = (GameCertification)view.getUserData();
-
-        if(game != null){
-            ReleasePreviousGameContents();
-        }
-
-        game = (GameCertification)view.getUserData();
-
-        String gameName = game.getName();
-        NameLabel.setText("[P-"+String.valueOf(game.getGameID())+"]"+gameName);
-        DescriptionLabel.setText(game.getDescription());
-
-        byte Flags = 0;
-
-        game.getImagesPathList().forEach(path -> ImageList.add(new Image(path.toUri().toString())));
-        game.getMoviePathList().forEach(path -> MovieList.add(new Media(path.toUri().toString())));
-
-        if(!ImageList.isEmpty())Flags = 0b1;
-        if(!MovieList.isEmpty())Flags += 0b10;
-
-        switch(Flags){
-            case 0:
-                DisplayState = State.None;
-                break;
-            case 0b1:
-                DisplayState = State.ImageOnly;
-                ImageSet();
-                break;
-            case 0b10:
-                DisplayState = State.MediaOnly;
-                MovieIterator = MovieList.iterator();
-                PlayMovie(MovieIterator.next());
-                StackedImageView.setVisible(false);
-                break;
-            case 0b11:
-                DisplayState = State.Both_Image;
-                ImageSet();
-                break;
-            default:
-                LogHandler.inst.severe("Unexpected flag! Call the developer!");
-        }
-
-        DescriptionLabel.setPadding(Insets.EMPTY);
-        DescriptionLabel.autosize();
-        double textwidth = DescriptionLabel.getWidth();
-
-
+        
         if(event.getClickCount() != 2)return;//ダブルクリックじゃない
 
         if(GameIsAlive()){
@@ -358,9 +334,7 @@ public class MainFormController implements Initializable {
         pb.redirectErrorStream(true);
         try {
             playstop.stop();
-          	playstop.dispose();
-
-
+            playstop.dispose();
             GameProcess = pb.start();
         } catch (SecurityException ex){//セキュリティソフト等に読み込みを阻害されたとき
             LogHandler.inst.severe("File-loading is blocked by security manager");
@@ -374,11 +348,10 @@ public class MainFormController implements Initializable {
     private void UpdateImage(ActionEvent event){
         try{
             DisplayImage();
-
         }catch(NoSuchElementException ex){
             if(DisplayState == State.ImageOnly){
                 ImageIterator = ImageList.iterator();
-        DisplayImage();
+                DisplayImage();
             }else{
                 ImageTimeLine.stop();
                 DisplayState = State.Both_Media;
@@ -387,15 +360,13 @@ public class MainFormController implements Initializable {
                 SwapDisplayMovie();
             }
         }
-        System.err.println("timer");
-        System.err.println(DescriptionLabel.getLayoutX());
     }
 
     private void ImageSet(){
         ImageIterator = ImageList.iterator();
         DisplayImage();
         ImageTimeLine.play();
-        StackedMediaView.setVisible(false);
+        SwapDisplayImage();
     }
 
     private void PlayMovie(Media movie){
@@ -419,11 +390,6 @@ public class MainFormController implements Initializable {
         SwapDisplayImage();
     }
 
-    private void SwapDisplayContentType(){
-        StackedImageView.setVisible(!StackedImageView.isVisible());
-        StackedMediaView.setVisible(!StackedMediaView.isVisible());
-    }
-
     private void SwapDisplayMovie() {
     	StackedMediaView.setVisible(true);
         StackedImageView.setVisible(false);
@@ -438,8 +404,15 @@ public class MainFormController implements Initializable {
     public static boolean GameIsAlive() {
     	boolean res=false;
     	if(GameProcess!=null) {
-        	if(GameProcess.isAlive())res=true;
+            if(GameProcess.isAlive())res=true;
         }
     	return res;
+    }
+    
+    private final State getFirstState(){
+        if(MovieList.isEmpty() && ImageList.isEmpty())return State.None;
+        if(MovieList.isEmpty())return State.ImageOnly;
+        if(ImageList.isEmpty())return State.MediaOnly;
+        return State.Both_Media;
     }
 }
