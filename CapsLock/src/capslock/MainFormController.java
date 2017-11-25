@@ -30,6 +30,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -202,6 +203,7 @@ public class MainFormController implements Initializable {
         
         
         final ColorSequencer sequencer = new ColorSequencer();
+        final Tooltip tooltip = new Tooltip("ダブルクリックでゲーム起動");
         for(final GameCertification game : GameList){
             final Image PanelImage;
 
@@ -222,7 +224,7 @@ public class MainFormController implements Initializable {
 //            });
 
             view.setOnMouseClicked(eve -> onPanelClicked(eve));
-
+            Tooltip.install(view, tooltip);
             view.setUserData(game);
             PanelTilePane.getChildren().add(view);
         }
