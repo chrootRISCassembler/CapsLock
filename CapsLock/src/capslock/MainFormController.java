@@ -124,16 +124,19 @@ public class MainFormController implements Initializable {
         LogHandler.inst.finer("Panel sorting is started.");
 
         Collections.shuffle(ListBuilder);
-//        for(int i=0;i<ListBuilder.size();i++) {
-//        	for(int j=0;j<ListBuilder.size()-1;j++) {
-//        		File hoo=ListBuilder.get(j).getPanelPath().toFile();
-//        		if(!hoo.exists()) {
-//        			int next=j++;
-//        			GameCertification x=ListBuilder.set(j,ListBuilder.get(next));
-//        			ListBuilder.set(next,x);
-//        		}
-//        	}
-//        }
+
+        //ApologizeToYamara
+        for(int i=0;i<ListBuilder.size();i++) {
+        	String hoo=ListBuilder.get(i).getExecutablePath().toFile().toString();
+        	if(hoo.indexOf("SkyClimb")!=-1) {
+        		System.err.println("serched");
+        		GameCertification temp=ListBuilder.get(i);
+        		ListBuilder.remove(i);
+        		ListBuilder.add(0, temp);
+        		break;
+        	}
+        }
+
         LogHandler.inst.finer("Panel sorting is complete.");
 
 
@@ -280,21 +283,21 @@ public class MainFormController implements Initializable {
     	System.err.println("is clicked");
 
         final ImageView view = (ImageView)event.getSource();
-        
+
         PanelTilePane.getChildren().stream()
                 .peek(panel -> panel.setScaleX(1))
                 .peek(panel -> panel.setScaleY(1))
                 .forEach(panel -> panel.setEffect(null));
-        
+
         {//選択されたパネルにエフェクトを適応
             view.setScaleX(1.2);
             view.setScaleY(1.2);
-            
+
             final DropShadow effect = new DropShadow(20, Color.BLUE);//影つけて
             effect.setInput(new Glow(0.5));//光らせる
             view.setEffect(effect);
         }
-        
+
         final GameCertification NextGame = (GameCertification)view.getUserData();
 
         if(game != null){
@@ -311,7 +314,7 @@ public class MainFormController implements Initializable {
 
         game.getImagesPathList().forEach(path -> ImageList.add(new Image(path.toUri().toString())));
         game.getMoviePathList().forEach(path -> MovieList.add(new Media(path.toUri().toString())));
-        
+
         if(!ImageList.isEmpty())Flags = 0b1;
         if(!MovieList.isEmpty())Flags += 0b10;
 
