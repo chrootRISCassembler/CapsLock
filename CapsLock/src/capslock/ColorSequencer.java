@@ -3,12 +3,11 @@ package capslock;
 import javafx.scene.paint.Color;
 
 /**
- *
- * @author RISCassembler
+ * 暗めの定義済み色を返す.
+ * <p>パネル画像を文字から生成するとき,背景色の指定に使う.</p>
  */
-enum ColorSequencer{
-    instance;
-    static private final Color[] ColorArray = {
+final class ColorSequencer{
+    static private final Color[] DARK_COLORS = {
         Color.DARKBLUE,
         Color.DARKCYAN,
         Color.DARKGOLDENROD,
@@ -28,10 +27,15 @@ enum ColorSequencer{
         Color.DARKTURQUOISE,
         Color.DARKVIOLET
     };
-    static private int ColorIndex = 0;
-    static private final int size = ColorArray.length;
-    static Color get(){
-        if(ColorIndex == size)ColorIndex = 0;
-        return ColorArray[ColorIndex++];
+    
+    static private final int COLOR_MAX_INDEX = DARK_COLORS.length;
+    private int ColorIndex = 0;
+    
+    /**
+     * 呼び出すたびに異なる暗めの色を返す.
+     */
+    final Color get(){
+        if(ColorIndex == COLOR_MAX_INDEX)ColorIndex = 0;
+        return DARK_COLORS[ColorIndex++];
     }
 }

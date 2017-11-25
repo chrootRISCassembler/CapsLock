@@ -11,8 +11,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- *
- * @author RISCassembler
+ * ゲーム1件の情報を格納するクラス.
+ * <p>このクラスはイミュータブル.</p>
  */
 
 final class GameCertification {

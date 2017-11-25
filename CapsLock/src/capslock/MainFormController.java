@@ -29,6 +29,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -43,11 +44,10 @@ import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+import trivial_common_logger.LogHandler;
 
 /**
- * FXML Controller class
- *
- * @author RISCassembler
+ * メインフォームのFXMLコントローラークラス.
  */
 public class MainFormController implements Initializable {
 
@@ -80,7 +80,6 @@ public class MainFormController implements Initializable {
 
     private MediaPlayer playstop;
 
-    private WarningTimer warning=new WarningTimer();
     private static Process GameProcess;
 
     /** FXML binding */
@@ -104,29 +103,36 @@ public class MainFormController implements Initializable {
 
         } catch (SecurityException ex) {//セキュリティソフト等に読み込みを阻害されたとき
             LogHandler.inst.severe("File-loading is blocked by security manager");
-            LogHandler.inst.severe(ex);
+            LogHandler.inst.DumpStackTrace(ex);
         } catch (IOException ex) {
             LogHandler.inst.severe("Failed to open " + DB_FILE_NAME);
-            LogHandler.inst.severe(ex);
+            LogHandler.inst.DumpStackTrace(ex);
         } catch(JSONException ex){
             ex.printStackTrace();
-            LogHandler.inst.warning("JSONException : " + DB_FILE_NAME + " must be wrong.");
-            LogHandler.inst.severe(ex.toString());
+            LogHandler.inst.severe("JSONException : " + DB_FILE_NAME + " must be wrong.");
+            LogHandler.inst.DumpStackTrace(ex);
         } catch(Exception ex){
             GameList = null;
             return;
         }
 
-        for(int i=0;i<ListBuilder.size();i++) {
-        	for(int j=0;j<ListBuilder.size()-1;j++) {
-        		File hoo=ListBuilder.get(j).getPanelPath().toFile();
-        		if(!hoo.exists()) {
-        			int next=j++;
-        			GameCertification x=ListBuilder.set(j,ListBuilder.get(next));
-        			ListBuilder.set(next,x);
-        		}
-        	}
-        }
+        LogHandler.inst.fine(DB_FILE_NAME + "loading succeeded.");
+
+        LogHandler.inst.finer("Panel sorting is started.");
+
+        Collections.shuffle(ListBuilder);
+//        for(int i=0;i<ListBuilder.size();i++) {
+//        	for(int j=0;j<ListBuilder.size()-1;j++) {
+//        		File hoo=ListBuilder.get(j).getPanelPath().toFile();
+//        		if(!hoo.exists()) {
+//        			int next=j++;
+//        			GameCertification x=ListBuilder.set(j,ListBuilder.get(next));
+//        			ListBuilder.set(next,x);
+//        		}
+//        	}
+//        }
+        LogHandler.inst.finer("Panel sorting is complete.");
+
 
         GameList = Collections.unmodifiableList(ListBuilder);
         LogHandler.inst.fine(GameList.size() + "件のゲームを検出");
@@ -140,9 +146,12 @@ public class MainFormController implements Initializable {
         ImageTimeLine.setCycleCount(Animation.INDEFINITE);
     }
 
-	@FXML
-	protected void onButtonClick(ActionEvent evt) {
-		if(GameIsAlive())return;
+    @FXML
+    protected void onButtonClick(ActionEvent evt) {
+        if(GameIsAlive()){
+            LogHandler.inst.finest("PlayButton clicked, but another game is still alive.");
+            return;
+        }
 
         final ProcessBuilder pb = new ProcessBuilder(game.getExecutablePath().toString());
         File gameDir = new File(System.getProperty("user.dir")+"\\"+game.getExecutablePath().toString());
@@ -150,20 +159,23 @@ public class MainFormController implements Initializable {
         pb.redirectErrorStream(true);
         try {
             playstop.stop();
-        	warning.Start();
-
 
             GameProcess = pb.start();
+        } catch (SecurityException ex){//セキュリティソフト等に読み込みを阻害されたとき
+            LogHandler.inst.severe("File-loading is blocked by security manager");
+            LogHandler.inst.DumpStackTrace(ex);
         } catch (IOException ex) {
-            System.out.println(ex);
+            LogHandler.inst.severe("Can't open exe of the game.");
+            LogHandler.inst.DumpStackTrace(ex);
         }
-	}
+    }
 
     public void onLoad(WindowEvent event){
         if(IsGameMapped)return;
 
         final double PanelImageSideLength;
 
+        LogHandler.inst.finest("Start calculation of dynamic UI.");
         {
             final Rectangle2D ScreenRect = Screen.getPrimary().getVisualBounds();
             final double FullScreenWidth = ScreenRect.getWidth();
@@ -186,14 +198,18 @@ public class MainFormController implements Initializable {
             NameLabel.setFont(Font.font(FullScreenHeight / 20));
             DescriptionLabel.setFont(Font.font(FullScreenHeight/40));
         }
+        LogHandler.inst.finest("Finished calculation of dynamic UI.");
 
-        for(GameCertification game : GameList){
+
+        final ColorSequencer sequencer = new ColorSequencer();
+        final Tooltip tooltip = new Tooltip("ダブルクリックでゲーム起動");
+        for(final GameCertification game : GameList){
             final Image PanelImage;
 
             if(Files.isRegularFile(game.getPanelPath())){
                 PanelImage = new Image(game.getPanelPath().toUri().toString());
-            }else{
-                PanelImage = CharPanelGenerator.generate(game.getName().charAt(0));
+            }else{//パネル画像が設定されていないとき
+                PanelImage = CharPanelGenerator.generate(game.getName().charAt(0), sequencer.get());
                 LogHandler.inst.warning("game's UUID : " + game.getUUID().toString() + " doesn't have panel image.");
             }
 
@@ -201,16 +217,19 @@ public class MainFormController implements Initializable {
             view.setPreserveRatio(false);
             view.setFitWidth(PanelImageSideLength);
             view.setFitHeight(PanelImageSideLength);
-            view.setOnMouseEntered((eve) -> {
-                final ImageView TriggerView = (ImageView)eve.getSource();
-                onImageFocused(TriggerView);
-            });
+//            view.setOnMouseEntered((eve) -> {
+//                final ImageView TriggerView = (ImageView)eve.getSource();
+//                onImageFocused(TriggerView);
+//            });
 
-            view.setOnMouseClicked(eve -> onPanelDoubleClicked(eve));
-
+            view.setOnMouseClicked(eve -> onPanelClicked(eve));
+            Tooltip.install(view, tooltip);
             view.setUserData(game);
             PanelTilePane.getChildren().add(view);
         }
+
+        LogHandler.inst.finest("MainForm window is displayed.");
+        System.gc();
     }
 
     class onMovieEndClass implements Runnable{
@@ -237,18 +256,36 @@ public class MainFormController implements Initializable {
     Runnable onMovieEnd = new onMovieEndClass();
 
     public void onImageFocused(ImageView view){
-        if(game != null)ReleasePreviousGameContents();
+
+    }
+
+    private void ReleasePreviousGameContents(){
+        ImageTimeLine.stop();
+        ImageList.clear();
+        try{
+            StackedMediaView.getMediaPlayer().stop();
+        }catch(NullPointerException e){
+        }
+        MovieList.clear();
+        StackedImageView.setImage(null);
+        StackedMediaView.setMediaPlayer(null);
+        game = null;
+    }
+
+    void onPanelClicked(MouseEvent event){
+        if(!event.getButton().equals(MouseButton.PRIMARY))return;//右クリックじゃない
+    	System.err.println("is clicked");
+
+        final ImageView view = (ImageView)event.getSource();
+        final GameCertification NextGame = (GameCertification)view.getUserData();
+
+        if(game != null){
+            ReleasePreviousGameContents();
+        }
 
         game = (GameCertification)view.getUserData();
-        String gameName = game.getName();
 
-//        try {
-//        	gameName = new String(g.getBytes("SJIS"), "UTF-8")
-//			System.out.println();
-//		} catch (UnsupportedEncodingException e) {
-//			// TODO 自動生成された catch ブロック
-//			e.printStackTrace();
-//		}
+        String gameName = game.getName();
         NameLabel.setText("[P-"+String.valueOf(game.getGameID())+"]"+gameName);
         DescriptionLabel.setText(game.getDescription());
 
@@ -285,41 +322,31 @@ public class MainFormController implements Initializable {
         DescriptionLabel.setPadding(Insets.EMPTY);
         DescriptionLabel.autosize();
         double textwidth = DescriptionLabel.getWidth();
-    }
 
-    private void ReleasePreviousGameContents(){
-        ImageTimeLine.stop();
-        ImageList.clear();
-        try{
-            StackedMediaView.getMediaPlayer().stop();
-        }catch(NullPointerException e){
+
+        if(event.getClickCount() != 2)return;//ダブルクリックじゃない
+
+        if(GameIsAlive()){
+            LogHandler.inst.finest("PlayButton clicked, but another game is still alive.");
+            return;
         }
-        MovieList.clear();
-        StackedImageView.setImage(null);
-        StackedMediaView.setMediaPlayer(null);
-        game = null;
-    }
-
-    void onPanelDoubleClicked(MouseEvent event){
-        if(!event.getButton().equals(MouseButton.PRIMARY))return;
-        if(event.getClickCount() != 2)return;
-    	System.err.println("is clicked");
-        if(GameIsAlive())return;
 
         final ProcessBuilder pb = new ProcessBuilder(game.getExecutablePath().toString());
         File gameDir = new File(System.getProperty("user.dir")+"\\"+game.getExecutablePath().toString());
         pb.directory(new File(gameDir.getParent()));
         pb.redirectErrorStream(true);
         try {
-
-        	playstop.stop();
-        	playstop.dispose();
-            warning.Start();
+            playstop.stop();
+          	playstop.dispose();
 
 
             GameProcess = pb.start();
+        } catch (SecurityException ex){//セキュリティソフト等に読み込みを阻害されたとき
+            LogHandler.inst.severe("File-loading is blocked by security manager");
+            LogHandler.inst.DumpStackTrace(ex);
         } catch (IOException ex) {
-            System.out.println(ex);
+            LogHandler.inst.severe("Can't open exe of the game.");
+            LogHandler.inst.DumpStackTrace(ex);
         }
     }
 
@@ -356,6 +383,7 @@ public class MainFormController implements Initializable {
         player.setOnEndOfMedia(onMovieEnd);
         player.setAutoPlay(true);
         player.setCycleCount(1);
+        player.setMute(true);
         StackedMediaView.setMediaPlayer(player);
         StackedMediaView.setFitWidth(ViewStackPane.getWidth());
 
