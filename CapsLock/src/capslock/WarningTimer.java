@@ -10,8 +10,11 @@ class WarningTimer {
     private final int POPUP_SECONDS=300;
     private final OverLayWindow window=new OverLayWindow();
     private Timeline timer=new Timeline();
+    private boolean isdoing;
 
     void Start() {
+    	if(isdoing)return;
+    	isdoing=true;
     	counter=0;
     	timer.stop();
         timer = new Timeline(new KeyFrame(Duration.seconds(POPUP_SECONDS), (ActionEvent event) -> {
@@ -27,6 +30,7 @@ class WarningTimer {
     }
     void Stop() {
     	counter=0;
+    	isdoing=false;
     	timer.stop();
     	window.Exe(-1);
     }
