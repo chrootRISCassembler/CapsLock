@@ -1,12 +1,17 @@
 package capslock;
 
-import trivial_common_logger.LogHandler;
 import java.io.IOException;
-import javafx.application.*;
+
+import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import trivial_common_logger.LogHandler;
 
 /**
  * エントリポイント.
@@ -16,6 +21,8 @@ public final class CapsLock extends Application {
     /**
      * @param args the command line arguments
      */
+	private WarningTimer warning=new WarningTimer();
+
     public static void main(String[] args) {
         final LogHandler logger = LogHandler.inst;
         logger.info("CapsLock started.");
@@ -27,7 +34,7 @@ public final class CapsLock extends Application {
         logger.info("CapsLock terminated.");
         logger.close();
     }
-    
+
     @Override
     public void start(Stage stage){
         LogHandler.inst.finer("Application#start called.");
@@ -40,7 +47,7 @@ public final class CapsLock extends Application {
             LogHandler.inst.DumpStackTrace(ex);
             return;
         }
-        
+
         final Parent root;
 
         try {
@@ -50,14 +57,31 @@ public final class CapsLock extends Application {
             LogHandler.inst.DumpStackTrace(ex);
             return;
         }
-        
+
         final MainFormController controller = (MainFormController)loader.getController();
-        stage.setScene(new Scene(root));
+        /*final Canvas canvas=new Canvas();
+        canvas.setOnMouseClicked(event -> System.err.print("mouse_clicked"));*/
+        final Scene scene=new Scene(root);
+        scene.setOnKeyPressed(event ->PushKey(event));
+        EventHandler<MouseEvent>    sceneClickFilter= ( event ) -> warning.Start();
+        scene.addEventFilter( MouseEvent.MOUSE_PRESSED , sceneClickFilter );
+        stage.setScene(scene);
         stage.setOnShown(event -> controller.onLoad(event));
         stage.setTitle("CapsLock");
         stage.setFullScreen(true);
         stage.setAlwaysOnTop(true);
         LogHandler.inst.finest("try to display MainForm window.");
         stage.show();
+    }
+    private void  PushKey(KeyEvent event) {
+    	KeyCode code = event.getCode();
+		switch(code){
+		case F1:
+			System.err.println("F1_Key_Pushed");
+			warning.Stop();
+			break;
+		default:
+			break;
+		}
     }
 }
