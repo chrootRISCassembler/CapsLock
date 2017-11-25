@@ -31,6 +31,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -41,6 +43,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.WindowEvent;
@@ -278,6 +281,21 @@ public class MainFormController implements Initializable {
     	System.err.println("is clicked");
 
         final ImageView view = (ImageView)event.getSource();
+        
+        PanelTilePane.getChildren().stream()
+                .peek(panel -> panel.setScaleX(1))
+                .peek(panel -> panel.setScaleY(1))
+                .forEach(panel -> panel.setEffect(null));
+        
+        {//選択されたパネルにエフェクトを適応
+            view.setScaleX(1.2);
+            view.setScaleY(1.2);
+            
+            final DropShadow effect = new DropShadow(20, Color.BLUE);//影つけて
+            effect.setInput(new Glow(0.5));//光らせる
+            view.setEffect(effect);
+        }
+        
         final GameCertification NextGame = (GameCertification)view.getUserData();
         
         if(game != null){
@@ -294,7 +312,7 @@ public class MainFormController implements Initializable {
 
         game.getImagesPathList().forEach(path -> ImageList.add(new Image(path.toUri().toString())));
         game.getMoviePathList().forEach(path -> MovieList.add(new Media(path.toUri().toString())));
-
+        
         if(!ImageList.isEmpty())Flags = 0b1;
         if(!MovieList.isEmpty())Flags += 0b10;
 
