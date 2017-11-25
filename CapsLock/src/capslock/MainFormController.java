@@ -275,9 +275,13 @@ public class MainFormController implements Initializable {
         if(!event.getButton().equals(MouseButton.PRIMARY))return;//右クリックじゃない
     	System.err.println("is clicked");
 
-
         final ImageView view = (ImageView)event.getSource();
-        if(game != null)ReleasePreviousGameContents();
+        final GameCertification NextGame = (GameCertification)view.getUserData();
+        
+        if(game != null){
+            ReleasePreviousGameContents();
+        }
+        
         game = (GameCertification)view.getUserData();
 
         String gameName = game.getName();
@@ -317,6 +321,31 @@ public class MainFormController implements Initializable {
         DescriptionLabel.setPadding(Insets.EMPTY);
         DescriptionLabel.autosize();
         double textwidth = DescriptionLabel.getWidth();
+        
+        
+        if(event.getClickCount() != 2)return;//ダブルクリックじゃない
+        
+        if(GameIsAlive()){
+            LogHandler.inst.finest("PlayButton clicked, but another game is still alive.");
+            return;
+        }
+        
+        final ProcessBuilder pb = new ProcessBuilder(game.getExecutablePath().toString());
+        File gameDir = new File(System.getProperty("user.dir")+"\\"+game.getExecutablePath().toString());
+        pb.directory(new File(gameDir.getParent()));
+        pb.redirectErrorStream(true);
+        try {
+            playstop.stop();
+            warning.Start();
+
+            GameProcess = pb.start();
+        } catch (SecurityException ex){//セキュリティソフト等に読み込みを阻害されたとき
+            LogHandler.inst.severe("File-loading is blocked by security manager");
+            LogHandler.inst.DumpStackTrace(ex);
+        } catch (IOException ex) {
+            LogHandler.inst.severe("Can't open exe of the game.");
+            LogHandler.inst.DumpStackTrace(ex);
+        }
     }
 
     private void UpdateImage(ActionEvent event){
@@ -352,6 +381,7 @@ public class MainFormController implements Initializable {
         player.setOnEndOfMedia(onMovieEnd);
         player.setAutoPlay(true);
         player.setCycleCount(1);
+        player.setMute(true);
         StackedMediaView.setMediaPlayer(player);
         StackedMediaView.setFitWidth(ViewStackPane.getWidth());
 
