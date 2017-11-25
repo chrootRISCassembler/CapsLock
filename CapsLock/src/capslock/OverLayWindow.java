@@ -17,22 +17,29 @@ import javafx.util.Duration;
 public class OverLayWindow {
     private static final int CLOSE_SECONDS=15;
     private String warnmesse;
+    private double fontsize=25;
 
 
     void Exe(int i) {
         if(i==1) {
-            warnmesse="プレイ開始から5分\n経過しました";
+            warnmesse="プレイ開始から5分経過しました\n混雑している場合は次の人に\n交代してください";
+            fontsize=25;
         }else if(i==2) {
-            warnmesse="プレイ開始から10分\n経過しました";
+            warnmesse="プレイ開始から10分経過しました\n混雑している場合は次の人に\n交代してください";
+            fontsize=25;
+        }else if(i==-1) {
+        	warnmesse="user timer is reset";
+        	fontsize=35;
         }
+
         final Stage primaryStage = new Stage(StageStyle.TRANSPARENT);
         final StackPane root = new StackPane();
 
-        final Scene scene = new Scene(root, 300, 120);
+        final Scene scene = new Scene(root, 350, 140);
         scene.setFill(null);
 
         final Label label = new Label(warnmesse);
-        label.setFont(new Font("Arial", 30));
+        label.setFont(new Font("Arial", fontsize));
         BorderPane borderPane = new BorderPane();
         borderPane.setCenter(label);
         borderPane.setStyle("-fx-background-radius: 10;-fx-background-color: rgba(0,0,0,0.3);");
@@ -42,7 +49,7 @@ public class OverLayWindow {
         final Rectangle2D d = Screen.getPrimary().getVisualBounds();
         primaryStage.setScene(scene);
         primaryStage.setAlwaysOnTop(true);
-        primaryStage.setX(d.getWidth()-300);
+        primaryStage.setX(d.getWidth()-350);
         primaryStage.setY(d.getHeight()-300);
 
         primaryStage.show();

@@ -1,6 +1,5 @@
 package capslock;
 
-import trivial_common_logger.LogHandler;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -48,6 +47,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+import trivial_common_logger.LogHandler;
 
 /**
  * メインフォームのFXMLコントローラークラス.
@@ -58,7 +58,7 @@ public class MainFormController implements Initializable {
     private static final String DB_FILE_NAME = "GamesInfo.json";
     private static final double PANEL_RATIO = 0.25;
     private static final double PANEL_GAP_RATIO = 0.03;
-    
+
     private static final Path DB_PATH = Paths.get("./GamesInfo.json");
 
     private enum State{
@@ -83,7 +83,6 @@ public class MainFormController implements Initializable {
 
     private MediaPlayer playstop;
 
-    private WarningTimer warning=new WarningTimer();
     private static Process GameProcess;
 
     /** FXML binding */
@@ -119,11 +118,11 @@ public class MainFormController implements Initializable {
             GameList = null;
             return;
         }
-        
+
         LogHandler.inst.fine(DB_FILE_NAME + "loading succeeded.");
-        
+
         LogHandler.inst.finer("Panel sorting is started.");
-        
+
         Collections.shuffle(ListBuilder);
 //        for(int i=0;i<ListBuilder.size();i++) {
 //        	for(int j=0;j<ListBuilder.size()-1;j++) {
@@ -136,7 +135,8 @@ public class MainFormController implements Initializable {
 //        	}
 //        }
         LogHandler.inst.finer("Panel sorting is complete.");
-        
+
+
         GameList = Collections.unmodifiableList(ListBuilder);
         LogHandler.inst.fine(GameList.size() + "件のゲームを検出");
     }
@@ -158,11 +158,10 @@ public class MainFormController implements Initializable {
 
         final ProcessBuilder pb = new ProcessBuilder(game.getExecutablePath().toString());
         File gameDir = new File(System.getProperty("user.dir")+"\\"+game.getExecutablePath().toString());
-        pb.directory(new File(gameDir.getParent()));
+        pb.directory(new File(gameDir.getParent	()));
         pb.redirectErrorStream(true);
         try {
             playstop.stop();
-            warning.Start();
 
             GameProcess = pb.start();
         } catch (SecurityException ex){//セキュリティソフト等に読み込みを阻害されたとき
@@ -203,8 +202,8 @@ public class MainFormController implements Initializable {
             DescriptionLabel.setFont(Font.font(FullScreenHeight/40));
         }
         LogHandler.inst.finest("Finished calculation of dynamic UI.");
-        
-        
+
+
         final ColorSequencer sequencer = new ColorSequencer();
         final Tooltip tooltip = new Tooltip("ダブルクリックでゲーム起動");
         for(final GameCertification game : GameList){
@@ -231,7 +230,7 @@ public class MainFormController implements Initializable {
             view.setUserData(game);
             PanelTilePane.getChildren().add(view);
         }
-        
+
         LogHandler.inst.finest("MainForm window is displayed.");
         System.gc();
     }
@@ -297,11 +296,11 @@ public class MainFormController implements Initializable {
         }
         
         final GameCertification NextGame = (GameCertification)view.getUserData();
-        
+
         if(game != null){
             ReleasePreviousGameContents();
         }
-        
+
         game = (GameCertification)view.getUserData();
 
         String gameName = game.getName();
@@ -341,22 +340,23 @@ public class MainFormController implements Initializable {
         DescriptionLabel.setPadding(Insets.EMPTY);
         DescriptionLabel.autosize();
         double textwidth = DescriptionLabel.getWidth();
-        
-        
+
+
         if(event.getClickCount() != 2)return;//ダブルクリックじゃない
-        
+
         if(GameIsAlive()){
             LogHandler.inst.finest("PlayButton clicked, but another game is still alive.");
             return;
         }
-        
+
         final ProcessBuilder pb = new ProcessBuilder(game.getExecutablePath().toString());
         File gameDir = new File(System.getProperty("user.dir")+"\\"+game.getExecutablePath().toString());
         pb.directory(new File(gameDir.getParent()));
         pb.redirectErrorStream(true);
         try {
             playstop.stop();
-            warning.Start();
+          	playstop.dispose();
+
 
             GameProcess = pb.start();
         } catch (SecurityException ex){//セキュリティソフト等に読み込みを阻害されたとき
@@ -427,6 +427,7 @@ public class MainFormController implements Initializable {
     }
 
     private void SwapDisplayImage() {
+    	playstop.dispose();
         StackedImageView.setVisible(true);
         StackedMediaView.setVisible(false);
     }
