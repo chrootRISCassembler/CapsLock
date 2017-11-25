@@ -133,6 +133,7 @@ public class MainFormController implements Initializable {
 //        }
         LogHandler.inst.finer("Panel sorting is complete.");
 
+
         GameList = Collections.unmodifiableList(ListBuilder);
         LogHandler.inst.fine(GameList.size() + "件のゲームを検出");
     }
@@ -154,7 +155,7 @@ public class MainFormController implements Initializable {
 
         final ProcessBuilder pb = new ProcessBuilder(game.getExecutablePath().toString());
         File gameDir = new File(System.getProperty("user.dir")+"\\"+game.getExecutablePath().toString());
-        pb.directory(new File(gameDir.getParent()));
+        pb.directory(new File(gameDir.getParent	()));
         pb.redirectErrorStream(true);
         try {
             playstop.stop();
@@ -336,6 +337,9 @@ public class MainFormController implements Initializable {
         pb.redirectErrorStream(true);
         try {
             playstop.stop();
+          	playstop.dispose();
+
+
             GameProcess = pb.start();
         } catch (SecurityException ex){//セキュリティソフト等に読み込みを阻害されたとき
             LogHandler.inst.severe("File-loading is blocked by security manager");
@@ -405,6 +409,7 @@ public class MainFormController implements Initializable {
     }
 
     private void SwapDisplayImage() {
+    	playstop.dispose();
         StackedImageView.setVisible(true);
         StackedMediaView.setVisible(false);
     }
