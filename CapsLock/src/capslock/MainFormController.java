@@ -169,7 +169,11 @@ public class MainFormController implements Initializable {
         try {
             playstop.stop();
             playstop.dispose();
+            GameProcess = null;
             GameProcess = pb.start();
+            if(GameProcess != null){
+                playstop.pause();
+            }
         } catch (SecurityException ex){//セキュリティソフト等に読み込みを阻害されたとき
             LogHandler.inst.severe("File-loading is blocked by security manager");
             LogHandler.inst.DumpStackTrace(ex);
@@ -345,7 +349,11 @@ public class MainFormController implements Initializable {
         try {
             playstop.stop();
             playstop.dispose();
+            GameProcess = null;
             GameProcess = pb.start();
+            if(GameProcess != null){
+                playstop.pause();
+            }
         } catch (SecurityException ex){//セキュリティソフト等に読み込みを阻害されたとき
             LogHandler.inst.severe("File-loading is blocked by security manager");
             LogHandler.inst.DumpStackTrace(ex);
