@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -33,6 +34,7 @@ public class OverLayWindow {
         }
 
         final Stage primaryStage = new Stage(StageStyle.TRANSPARENT);
+        primaryStage.initModality(Modality.NONE);
         final StackPane root = new StackPane();
 
         final Scene scene = new Scene(root, 350, 140);
