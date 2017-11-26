@@ -153,17 +153,21 @@ public class MainFormController implements Initializable {
     @FXML
     protected void onButtonClick(ActionEvent evt) {
         if(GameIsAlive()){
-            LogHandler.inst.finest("PlayButton clicked, but another game is still alive.");
+            LogHandler.inst.finest("PlayButton is clicked, but another game is still alive.");
             return;
         }
 
-        final ProcessBuilder pb = new ProcessBuilder(game.getExecutablePath().toString());
-        File gameDir = new File(System.getProperty("user.dir")+"\\"+game.getExecutablePath().toString());
+        final String ExePathString = game.getExecutablePath().toString();
+        final ProcessBuilder pb = new ProcessBuilder(ExePathString);
+        File gameDir = new File(System.getProperty("user.dir")+"\\"+ExePathString);
         pb.directory(new File(gameDir.getParent	()));
         pb.redirectErrorStream(true);
+        
+        LogHandler.inst.fine("Try to launch " + ExePathString);
+        
         try {
             playstop.stop();
-
+            playstop.dispose();
             GameProcess = pb.start();
         } catch (SecurityException ex){//セキュリティソフト等に読み込みを阻害されたとき
             LogHandler.inst.severe("File-loading is blocked by security manager");
@@ -324,14 +328,18 @@ public class MainFormController implements Initializable {
         if(event.getClickCount() != 2)return;//ダブルクリックじゃない
 
         if(GameIsAlive()){
-            LogHandler.inst.finest("PlayButton clicked, but another game is still alive.");
+            LogHandler.inst.finest("Panel is double clicked, but another game is still alive.");
             return;
         }
 
-        final ProcessBuilder pb = new ProcessBuilder(game.getExecutablePath().toString());
-        File gameDir = new File(System.getProperty("user.dir")+"\\"+game.getExecutablePath().toString());
+        final String ExePathString = game.getExecutablePath().toString();
+        final ProcessBuilder pb = new ProcessBuilder(ExePathString);
+        File gameDir = new File(System.getProperty("user.dir")+"\\"+ExePathString);
         pb.directory(new File(gameDir.getParent()));
         pb.redirectErrorStream(true);
+                   
+        LogHandler.inst.fine("Try to launch " + ExePathString);
+        
         try {
             playstop.stop();
             playstop.dispose();
