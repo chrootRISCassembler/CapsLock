@@ -203,6 +203,7 @@ public class MainFormController implements Initializable {
 
             final double RightContentPadding = (FullScreenWidth - LeftSize) / 20;
             RightVBox.setPadding(new Insets(RightContentPadding));
+            RightVBox.setMaxWidth(FullScreenWidth - LeftSize);
 
             NameLabel.setFont(Font.font(FullScreenHeight / 20));
             DescriptionLabel.setFont(Font.font(FullScreenHeight/40));
