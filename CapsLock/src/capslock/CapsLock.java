@@ -62,7 +62,7 @@ public final class CapsLock extends Application {
         /*final Canvas canvas=new Canvas();
         canvas.setOnMouseClicked(event -> System.err.print("mouse_clicked"));*/
         final Scene scene=new Scene(root);
-        scene.setOnKeyPressed(event ->PushKey(event));
+        scene.setOnKeyPressed(event -> PushKey(event, controller));
         EventHandler<MouseEvent>    sceneClickFilter= ( event ) -> warning.Start();
         scene.addEventFilter( MouseEvent.MOUSE_PRESSED , sceneClickFilter );
         stage.setScene(scene);
@@ -73,15 +73,16 @@ public final class CapsLock extends Application {
         LogHandler.inst.finest("try to display MainForm window.");
         stage.show();
     }
-    private void  PushKey(KeyEvent event) {
-    	KeyCode code = event.getCode();
-		switch(code){
-		case F1:
-			System.err.println("F1_Key_Pushed");
-			warning.Stop();
-			break;
-		default:
-			break;
-		}
+    private void  PushKey(KeyEvent event, MainFormController controller) {
+    	final KeyCode code = event.getCode();
+        switch(code){
+            case F1:
+                System.err.println("F1_Key_Pushed");
+                controller.ShufflePanels();
+                warning.Stop();
+                break;
+            default:
+                break;
+	}
     }
 }

@@ -26,6 +26,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -138,7 +139,7 @@ public class MainFormController implements Initializable {
         }
 
         LogHandler.inst.finer("Panel sorting is complete.");
-        GameList = Collections.unmodifiableList(ListBuilder);
+        GameList = ListBuilder;
         LogHandler.inst.fine(GameList.size() + "件のゲームを検出");
     }
 
@@ -284,8 +285,8 @@ public class MainFormController implements Initializable {
                     .forEach(panel -> panel.setEffect(null));
 
             {//選択されたパネルにエフェクトを適応
-                view.setScaleX(1.2);
-                view.setScaleY(1.2);
+                view.setScaleX(1.15);
+                view.setScaleY(1.15);
 
                 final DropShadow effect = new DropShadow(20, Color.BLUE);//影つけて
                 effect.setInput(new Glow(0.5));//光らせる
@@ -422,5 +423,22 @@ public class MainFormController implements Initializable {
         if(MovieList.isEmpty())return State.ImageOnly;
         if(ImageList.isEmpty())return State.MediaOnly;
         return State.Both_Media;
+    }
+    
+    final void ShufflePanels(){
+        System.out.println("Shuffle called");
+        
+        final int last = PanelTilePane.getChildren().size();   
+        final Node FirstView = PanelTilePane.getChildren().get(0);
+        final List<Node> views = PanelTilePane.getChildren().subList(1, last).stream()
+                .map(node -> (ImageView)node)
+                .collect(Collectors.toList());
+        
+        PanelTilePane.getChildren().clear();
+        Collections.shuffle(views);
+        PanelTilePane.getChildren().add(FirstView);   
+        PanelTilePane.getChildren().addAll(views);
+        
+        System.out.println("shuffle end");
     }
 }
