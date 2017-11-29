@@ -121,24 +121,8 @@ public class MainFormController implements Initializable {
         }
 
         LogHandler.inst.fine(DB_FILE_NAME + "loading succeeded.");
-
-        LogHandler.inst.finer("Panel sorting is started.");
-
-        Collections.shuffle(ListBuilder);
-
-        //ApologizeToYamara
-        for(int i=0;i<ListBuilder.size();i++) {
-        	String hoo=ListBuilder.get(i).getExecutablePath().toFile().toString();
-        	if(hoo.indexOf("SkyClimb")!=-1) {
-        		System.err.println("serched");
-        		GameCertification temp=ListBuilder.get(i);
-        		ListBuilder.remove(i);
-        		ListBuilder.add(0, temp);
-        		break;
-        	}
-        }
-
-        LogHandler.inst.finer("Panel sorting is complete.");
+        
+        Collections.shuffle(ListBuilder);    
         GameList = ListBuilder;
         LogHandler.inst.fine(GameList.size() + "件のゲームを検出");
     }
