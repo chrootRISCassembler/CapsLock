@@ -1,0 +1,43 @@
+group 'CapsLock'
+version '1.0'
+
+apply plugin: 'java'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+
+mainClassName = 'capslock.CapsLock'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.json', name: 'json', version:  '+'
+}
+
+tasks.withType(JavaCompile){
+    options.encoding = 'UTF-8'
+}
+
+sourceSets{
+    main {
+        java{
+            srcDirs = ["src"]
+        }
+    }
+}
+
+task cpFXMLandCSS(type : Copy){
+    from 'src/MainForm.css'
+    from 'src/MainForm.fxml'
+    into 'build/classes/java/main/capslock/'
+}
+
+run {
+    println("Current directory is " + workingDir)
+    tasks.cpFXMLandCSS.execute()
+    workingDir = '../TestEnv'
+    println("cd to the testing environment : " + workingDir)
+}
+
