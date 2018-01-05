@@ -29,8 +29,8 @@ sourceSets{
 }
 
 task cpFXMLandCSS(type : Copy){
-    from 'src/MainForm.css'
-    from 'src/MainForm.fxml'
+    from 'src/capslock/MainForm.css'
+    from 'src/capslock/MainForm.fxml'
     into 'build/classes/java/main/capslock/'
 }
 
