@@ -66,14 +66,18 @@ public final class JSONDBReader {
     public final boolean isLoadedFine(){return isLoadedFine;}
     public final String getRawString() {return rawString;}
     public final List<GameRecord> toGameRecordList() {
-        return null;
+        return Collections.emptyList();
     }
 
     public final List<GameEntry> toGameEntryList(){
-        return games.stream()
-                .filter(builder -> builder.canBuild())
-                .map(builder -> builder.buildGameEntry())
-                .collect(Collectors.toList());
+        if(isLoadedFine){
+            return games.stream()
+                    .filter(builder -> builder.canBuild())
+                    .map(builder -> builder.buildGameEntry())
+                    .collect(Collectors.toList());
+        }else {
+            return Collections.emptyList();
+        }
     }
 
 }
