@@ -14,20 +14,20 @@ public class TestValidJSON {
     private List<GameEntry> entryList;
     private GameEntry entry;
 
-    @Test(groups = {"nomal"})
+    @Test(groups = {"normal"})
     public void loadJSONDB(){
         Assert.assertTrue(reader.isLoadedFine());
         System.out.println(reader.getDocCount());
     }
 
-    @Test(groups = {"nomal"}, dependsOnMethods = { "loadJSONDB" })
+    @Test(groups = {"normal"}, dependsOnMethods = { "loadJSONDB" })
     public void getEntryList(){
         entryList = reader.toGameEntryList();
         Assert.assertNotNull(entryList);
         Assert.assertEquals(entryList.size(), 1);
     }
 
-    @Test(groups = {"nomal"}, dependsOnMethods = { "getEntryList" })
+    @Test(groups = {"normal"}, dependsOnMethods = { "getEntryList" })
     public void getAnEntry(){
         entry = entryList.get(0);
         Assert.assertNotNull(entry);
@@ -35,7 +35,7 @@ public class TestValidJSON {
     }
 
 
-    @Test(groups = {"nomal"}, dependsOnMethods = { "getAnEntry" })
+    @Test(groups = {"normal"}, dependsOnMethods = { "getAnEntry" })
     public void dumpAllField(){
         System.out.println(entry.getUUID());
         Assert.assertNotNull(entry.getUUID());
