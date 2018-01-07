@@ -14,6 +14,7 @@ repositories {
 
 dependencies {
     compile group: 'org.json', name: 'json', version:  '+'
+    testCompile 'org.testng:testng:6.+'
 }
 
 tasks.withType(JavaCompile){
@@ -23,9 +24,16 @@ tasks.withType(JavaCompile){
 sourceSets{
     main {
         java{
-            srcDirs = ["src"]
+            srcDirs 'src'
         }
     }
+
+    test {
+        java{
+            srcDir 'test'
+        }
+    }
+
 }
 
 task cpFXMLandCSS(type : Copy){
@@ -39,5 +47,12 @@ run {
     tasks.cpFXMLandCSS.execute()
     workingDir = '../TestEnv'
     println("cd to the testing environment : " + workingDir)
+}
+
+test{
+    workingDir = '../TestEnv'
+    useTestNG() {
+        suites 'test/TestNGSuite.XML'
+    }
 }
 

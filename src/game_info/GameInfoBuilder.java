@@ -18,10 +18,12 @@
 
 package game_info;
 
+import org.json.JSONObject;
+
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public final class GameInfoBuilder {
     private UUID uuid;
@@ -30,9 +32,49 @@ public final class GameInfoBuilder {
     private Instant lastMod;
     private String desc;
     private Path panel;
-    private List<Path> imageList;
-    private List<Path> movieList;
+    private List<Path> imageList = new ArrayList<>();
+    private List<Path> movieList = new ArrayList<>();
     private int gameID;
+
+    private Map<String, Boolean> validityFlagMap = new HashMap<>(9);
+
+    {
+        validityFlagMap.put("uuid", false);
+        validityFlagMap.put("exe", false);
+        validityFlagMap.put("name", false);
+        validityFlagMap.put("lastMod", false);
+        validityFlagMap.put("desc", false);
+        validityFlagMap.put("panel", false);
+        validityFlagMap.put("imageList", false);
+        validityFlagMap.put("movieList", false);
+        validityFlagMap.put("gameID", false);
+    }
+
+    public GameInfoBuilder() {
+    }
+
+    public GameInfoBuilder(JSONObject record) {
+        uuid = UUID.fromString(record.getString("UUID"));
+        validityFlagMap.replace("uuid", true);
+        exe = Paths.get(record.getString("exe"));
+        validityFlagMap.replace("exe", true);
+        name = record.getString("name");
+        lastMod = Instant.parse(record.getString("lastMod"));
+        desc = record.getString("desc");
+        panel = Paths.get(record.getString("panel"));
+
+        for (Object unchecked : record.getJSONArray("imageList")){
+            System.out.println(unchecked.getClass());
+            System.out.println(unchecked);
+        }
+
+        for (Object unchecked : record.getJSONArray("movieList")){
+            System.out.println(unchecked.getClass());
+            System.out.println(unchecked);
+        }
+
+        gameID = record.getInt("gameID");
+    }
 
     UUID getUUID() {
         return uuid;
@@ -108,6 +150,14 @@ public final class GameInfoBuilder {
     public final GameInfoBuilder setMovieList(List<Path> movieList) {
         this.movieList = movieList;
         return this;
+    }
+
+    public final boolean isFilled(){
+        return  !validityFlagMap.containsValue(false);
+    }
+
+    public final boolean canBuild(){
+        return validityFlagMap.get("uuid") & validityFlagMap.get("exe");
     }
 
     public final GameInfoBuilder setGameID(int gameID) {

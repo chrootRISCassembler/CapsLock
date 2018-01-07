@@ -1,0 +1,14 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="game_infoPackageTest">
+    <test name="CompleteJSONTest">
+        <groups>
+            <run>
+                <include name="nomal"></include>
+            </run>
+        </groups>
+        <classes>
+            <class name="TestValidJSON"></class>
+        </classes>
+    </test>
+</suite>

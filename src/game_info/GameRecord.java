@@ -20,6 +20,7 @@ package game_info;
 
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
+import org.json.JSONObject;
 
 import java.nio.file.Path;
 import java.time.Instant;
@@ -28,7 +29,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public final class GameRecord implements IGame{
+public final class GameRecord implements IGame {
     private final UUID uuid;
     private final Path exe;
     private final Instant lastMod;
@@ -47,7 +48,7 @@ public final class GameRecord implements IGame{
     private final ReadOnlyStringProperty movieCountProperty;
     private final ReadOnlyStringProperty gameIDProperty;
 
-    GameRecord(GameInfoBuilder builder){
+    GameRecord(GameInfoBuilder builder) {
         uuid = builder.getUUID();
         exe = builder.getExe();
         lastMod = builder.getLastMod();
@@ -67,40 +68,97 @@ public final class GameRecord implements IGame{
         gameIDProperty = new SimpleStringProperty(Integer.toString(gameID));
     }
 
-    public final ReadOnlyStringProperty uuidProperty(){return uuidProperty;}
-    public final ReadOnlyStringProperty exeProperty(){return exeProperty;}
-    public final ReadOnlyStringProperty nameProperty(){return nameProperty;}
-    public final ReadOnlyStringProperty descProperty(){return descProperty;}
-    public final ReadOnlyStringProperty lastModProperty(){return lastModProperty;}
-    public final ReadOnlyStringProperty panelProperty(){return panelProperty;}
-    public final ReadOnlyStringProperty imageCountProperty(){return imageCountProperty;}
-    public final ReadOnlyStringProperty movieCountProperty(){return movieCountProperty;}
-    public final ReadOnlyStringProperty gameIDProperty(){return gameIDProperty;}
+    public final ReadOnlyStringProperty uuidProperty() {
+        return uuidProperty;
+    }
+
+    public final ReadOnlyStringProperty exeProperty() {
+        return exeProperty;
+    }
+
+    public final ReadOnlyStringProperty nameProperty() {
+        return nameProperty;
+    }
+
+    public final ReadOnlyStringProperty descProperty() {
+        return descProperty;
+    }
+
+    public final ReadOnlyStringProperty lastModProperty() {
+        return lastModProperty;
+    }
+
+    public final ReadOnlyStringProperty panelProperty() {
+        return panelProperty;
+    }
+
+    public final ReadOnlyStringProperty imageCountProperty() {
+        return imageCountProperty;
+    }
+
+    public final ReadOnlyStringProperty movieCountProperty() {
+        return movieCountProperty;
+    }
+
+    public final ReadOnlyStringProperty gameIDProperty() {
+        return gameIDProperty;
+    }
 
     @Override
-    public final UUID getUUID(){return  uuid;}
+    public final UUID getUUID() {
+        return uuid;
+    }
 
     @Override
-    public final Path getExe(){return  exe;}
+    public final Path getExe() {
+        return exe;
+    }
 
     @Override
-    public final String getName(){return nameProperty.get();}
+    public final String getName() {
+        return nameProperty.get();
+    }
 
     @Override
-    public final Instant getLastMod(){return  lastMod;}
+    public final Instant getLastMod() {
+        return lastMod;
+    }
 
     @Override
-    public final String getDesc(){return descProperty.get();}
+    public final String getDesc() {
+        return descProperty.get();
+    }
 
     @Override
-    public final Path getPanel(){return panel;}
+    public final Path getPanel() {
+        return panel;
+    }
 
     @Override
-    public final List<Path> getImageList(){return imageList;}
+    public final List<Path> getImageList() {
+        return imageList;
+    }
 
     @Override
-    public final List<Path> getMovieList(){return movieList;}
+    public final List<Path> getMovieList() {
+        return movieList;
+    }
 
     @Override
-    public final int getGameID(){return gameID;}
+    public final int getGameID() {
+        return gameID;
+    }
+
+    public final JSONObject getJSON() {
+        return new JSONObject()
+                .put("UUID", uuid)
+                .put("exe", exe)
+                .put("name", nameProperty.get())
+                .put("lastMod", lastMod.toString())
+                .put("desc", descProperty.get())
+                .put("panel", panel == null ? "" : panel)
+                .put("imageList", imageList)
+                .put("movieList", movieList)
+                .put("gameID", gameID);
+    }
 }
