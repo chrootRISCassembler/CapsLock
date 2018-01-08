@@ -2,6 +2,7 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="game_infoPackageTest">
     <test name="CompleteJSONTest">
+        <parameter name="JSONFilePathString" value="./valid.json"></parameter>
         <groups>
             <run>
                 <include name="normal"></include>
