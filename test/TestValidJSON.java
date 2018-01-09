@@ -16,7 +16,7 @@ public class TestValidJSON {
     private List<GameEntry> entryList;
     private GameEntry entry;
 
-    @BeforeGroups(groups = {"normal"})
+    @BeforeGroups(groups = {"normal", "MinimalFieldGame"})
     @Parameters("JSONFilePathString")
     public void preparePath(String JSONFilePathString){
         JSONPath = Paths.get(JSONFilePathString);
@@ -46,21 +46,21 @@ public class TestValidJSON {
     }
 
 
-    @Test(groups = {"normal"})
+    @Test(groups = {"normal", "MinimalFieldGame"})
     public void loadJSONDB(){
         reader = new JSONDBReader(JSONPath);
         Assert.assertTrue(reader.isLoadedFine());
         System.out.println(reader.getDocCount());
     }
 
-    @Test(groups = {"normal"}, dependsOnMethods = { "loadJSONDB" })
+    @Test(groups = {"normal", "MinimalFieldGame"}, dependsOnMethods = { "loadJSONDB" })
     public void getEntryList(){
         entryList = reader.toGameEntryList();
         Assert.assertNotNull(entryList);
         Assert.assertEquals(entryList.size(), 1);
     }
 
-    @Test(groups = {"normal"}, dependsOnMethods = { "getEntryList" })
+    @Test(groups = {"normal", "MinimalFieldGame"}, dependsOnMethods = { "getEntryList" })
     public void getAnEntry(){
         entry = entryList.get(0);
         Assert.assertNotNull(entry);
@@ -68,7 +68,7 @@ public class TestValidJSON {
     }
 
 
-    @Test(groups = {"normal"}, dependsOnMethods = { "getAnEntry" })
+    @Test(groups = {"normal", "MinimalFieldGame"}, dependsOnMethods = { "getAnEntry" })
     public void dumpAllField(){
         System.out.println(entry.getUUID());
         Assert.assertNotNull(entry.getUUID());
@@ -93,5 +93,14 @@ public class TestValidJSON {
 
         System.out.println(entry.getGameID());
         Assert.assertNotNull(entry.getGameID());
+    }
+
+    @Test(groups = {"MinimalFieldGame"}, dependsOnMethods = {"getAnEntry"})
+    public void checkAllField(){
+        System.out.println(entry.getUUID());
+        Assert.assertNotNull(entry.getUUID());
+
+        System.out.println(entry.getExe());
+        Assert.assertNotNull(entry.getExe());
     }
 }

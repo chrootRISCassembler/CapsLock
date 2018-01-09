@@ -1,6 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="game_infoPackageTest">
+
     <test name="CompleteJSONTest">
         <parameter name="JSONFilePathString" value="./valid.json"></parameter>
         <groups>
@@ -12,4 +13,17 @@
             <class name="TestValidJSON"></class>
         </classes>
     </test>
+
+    <test name="MinimalFieldGame">
+        <parameter name="JSONFilePathString" value="./MinimalFieldGame.json"></parameter>
+        <groups>
+            <run>
+                <include name="MinimalFieldGame"></include>
+            </run>
+        </groups>
+        <classes>
+            <class name="TestValidJSON"></class>
+        </classes>
+    </test>
+
 </suite>
