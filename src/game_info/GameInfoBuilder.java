@@ -18,6 +18,7 @@
 
 package game_info;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.file.Path;
@@ -34,7 +35,7 @@ public final class GameInfoBuilder {
     private Path panel;
     private List<Path> imageList = new ArrayList<>();
     private List<Path> movieList = new ArrayList<>();
-    private int gameID;
+    private Integer gameID;
 
     private Map<String, Boolean> validityFlagMap = new HashMap<>(9);
 
@@ -56,24 +57,82 @@ public final class GameInfoBuilder {
     public GameInfoBuilder(JSONObject record) {
         uuid = UUID.fromString(record.getString("UUID"));
         validityFlagMap.replace("uuid", true);
+
         exe = Paths.get(record.getString("exe"));
         validityFlagMap.replace("exe", true);
-        name = record.getString("name");
-        lastMod = Instant.parse(record.getString("lastMod"));
-        desc = record.getString("desc");
-        panel = Paths.get(record.getString("panel"));
 
-        for (Object unchecked : record.getJSONArray("imageList")){
-            System.out.println(unchecked.getClass());
-            System.out.println(unchecked);
+        try {
+            name = record.getString("name");
+        }catch (JSONException ex){
+            if(record.has("name")) {
+                System.err.println("There is \"name\" key, but wrong value. Fix the JSON file.");
+                ex.printStackTrace();
+            }
         }
 
-        for (Object unchecked : record.getJSONArray("movieList")){
-            System.out.println(unchecked.getClass());
-            System.out.println(unchecked);
+        try {
+            lastMod = Instant.parse(record.getString("lastMod"));
+        }catch (JSONException ex){
+            if(record.has("lastMod")) {
+                System.err.println("There is \"lastMod\" key, but wrong value. Fix the JSON file.");
+                ex.printStackTrace();
+            }
         }
 
-        gameID = record.getInt("gameID");
+        try {
+            desc = record.getString("desc");
+        }catch (JSONException ex){
+            if(record.has("desc")) {
+                System.err.println("There is \"desc\" key, but wrong value. Fix the JSON file.");
+                ex.printStackTrace();
+            }
+        }
+
+        try {
+            panel = Paths.get(record.getString("panel"));
+        }catch (JSONException ex){
+            if(record.has("panel")) {
+                System.err.println("There is \"panel\" key, but wrong value. Fix the JSON file.");
+                ex.printStackTrace();
+            }
+        }
+
+        try {
+            for (Object unchecked : record.getJSONArray("imageList")){
+                System.out.println(unchecked.getClass());
+                System.out.println(unchecked);
+            }
+        }catch (JSONException ex){
+            if(record.has("imageList")) {
+                System.err.println("There is \"imageList\" key, but wrong value. Fix the JSON file.");
+                ex.printStackTrace();
+            }
+        }
+
+
+
+        try {
+            for (Object unchecked : record.getJSONArray("movieList")){
+                System.out.println(unchecked.getClass());
+                System.out.println(unchecked);
+            }
+        }catch (JSONException ex){
+            if(record.has("movieList")) {
+                System.err.println("There is \"movieList\" key, but wrong value. Fix the JSON file.");
+                ex.printStackTrace();
+            }
+        }
+
+
+
+        try {
+            gameID = record.getInt("gameID");
+        }catch (JSONException ex){
+            if(record.has("gameID")) {
+                System.err.println("There is \"gameID\" key, but wrong value. Fix the JSON file.");
+                ex.printStackTrace();
+            }
+        }
     }
 
     UUID getUUID() {
@@ -84,20 +143,18 @@ public final class GameInfoBuilder {
         return exe;
     }
 
-    String getName() {
-        return name;
+    Optional<String> getName() {
+        return Optional.ofNullable(name);
     }
 
-    Instant getLastMod() {
-        return lastMod;
+    Optional<Instant> getLastMod() { return Optional.ofNullable(lastMod); }
+
+    Optional<String> getDesc() {
+        return Optional.ofNullable(desc);
     }
 
-    String getDesc() {
-        return desc;
-    }
-
-    Path getPanel() {
-        return panel;
+    Optional<Path> getPanel() {
+        return Optional.ofNullable(panel);
     }
 
     List<Path> getImageList() {
@@ -108,8 +165,8 @@ public final class GameInfoBuilder {
         return movieList;
     }
 
-    int getGameID() {
-        return gameID;
+    Optional<Integer> getGameID() {
+        return Optional.ofNullable(gameID);
     }
 
     public final GameInfoBuilder setUUID(UUID uuid) {
@@ -160,7 +217,7 @@ public final class GameInfoBuilder {
         return validityFlagMap.get("uuid") & validityFlagMap.get("exe");
     }
 
-    public final GameInfoBuilder setGameID(int gameID) {
+    public final GameInfoBuilder setGameID(Integer gameID) {
         this.gameID = gameID;
         return this;
     }

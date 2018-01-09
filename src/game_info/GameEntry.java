@@ -35,18 +35,18 @@ public final class GameEntry implements IGame{
     private final Path panel;
     private final List<Path> imageList;
     private final List<Path> movieList;
-    private final int gameID;
+    private final Integer gameID;
 
     GameEntry(GameInfoBuilder builder) {
         uuid = builder.getUUID();
         exe = builder.getExe();
-        name = builder.getName();
-        lastMod = builder.getLastMod();
-        desc = builder.getDesc();
-        panel = builder.getPanel();
+        name = builder.getName().orElse(null);
+        lastMod = builder.getLastMod().orElse(null);
+        desc = builder.getDesc().orElse(null);
+        panel = builder.getPanel().orElse(null);
         imageList = builder.getImageList();
         movieList = builder.getImageList();
-        gameID = builder.getGameID();
+        gameID = builder.getGameID().orElse(null);
     }
 
     @Override
@@ -56,16 +56,16 @@ public final class GameEntry implements IGame{
     public final Path getExe(){return  exe;}
 
     @Override
-    public final String getName(){return name;}
+    public final Optional<String> getName(){return Optional.ofNullable(name);}
 
     @Override
-    public final Instant getLastMod(){return  lastMod;}
+    public final Optional<Instant> getLastMod(){return  Optional.ofNullable(lastMod);}
 
     @Override
-    public final String getDesc(){return desc;}
+    public final Optional<String> getDesc(){return Optional.ofNullable(desc);}
 
     @Override
-    public final Path getPanel(){return panel;}
+    public final Optional<Path> getPanel(){return Optional.ofNullable(panel);}
 
     @Override
     public final List<Path> getImageList(){return imageList;}
@@ -74,7 +74,7 @@ public final class GameEntry implements IGame{
     public final List<Path> getMovieList(){return movieList;}
 
     @Override
-    public final int getGameID(){return gameID;}
+    public final Optional<Integer> getGameID(){return Optional.ofNullable(gameID);}
 
     public final Optional<Image> mapPanelImage(){
         if(panel == null)return Optional.empty();

@@ -27,6 +27,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public final class GameRecord implements IGame {
@@ -36,7 +37,7 @@ public final class GameRecord implements IGame {
     private final Path panel;
     private final List<Path> imageList;
     private final List<Path> movieList;
-    private final int gameID;
+    private final Integer gameID;
 
     private final ReadOnlyStringProperty uuidProperty;
     private final ReadOnlyStringProperty exeProperty;
@@ -51,17 +52,17 @@ public final class GameRecord implements IGame {
     GameRecord(GameInfoBuilder builder) {
         uuid = builder.getUUID();
         exe = builder.getExe();
-        lastMod = builder.getLastMod();
-        panel = builder.getPanel();
+        lastMod = builder.getLastMod().get();
+        panel = builder.getPanel().get();
         imageList = builder.getImageList();
         movieList = builder.getImageList();
-        gameID = builder.getGameID();
+        gameID = builder.getGameID().get();
 
         uuidProperty = new SimpleStringProperty(uuid.toString());
         exeProperty = new SimpleStringProperty(exe.getFileName().toString());
-        nameProperty = new SimpleStringProperty(builder.getName());
+        nameProperty = new SimpleStringProperty(builder.getName().get());
         lastModProperty = new SimpleStringProperty(ZonedDateTime.ofInstant(lastMod, ZoneId.systemDefault()).toString());
-        descProperty = new SimpleStringProperty(builder.getDesc());
+        descProperty = new SimpleStringProperty(builder.getDesc().get());
         panelProperty = new SimpleStringProperty(panel == null ? "" : "exist");
         imageCountProperty = new SimpleStringProperty(Integer.toString(imageList.size()));
         movieCountProperty = new SimpleStringProperty(Integer.toString(movieList.size()));
@@ -115,39 +116,25 @@ public final class GameRecord implements IGame {
     }
 
     @Override
-    public final String getName() {
-        return nameProperty.get();
-    }
+    public final Optional<String> getName() { return Optional.ofNullable(nameProperty.get()); }
 
     @Override
-    public final Instant getLastMod() {
-        return lastMod;
-    }
+    public final Optional<Instant> getLastMod() { return Optional.ofNullable(lastMod); }
 
     @Override
-    public final String getDesc() {
-        return descProperty.get();
-    }
+    public final Optional<String> getDesc() { return Optional.ofNullable(descProperty.get()); }
 
     @Override
-    public final Path getPanel() {
-        return panel;
-    }
+    public final Optional<Path> getPanel() { return Optional.ofNullable(panel); }
 
     @Override
-    public final List<Path> getImageList() {
-        return imageList;
-    }
+    public final List<Path> getImageList() { return imageList; }
 
     @Override
-    public final List<Path> getMovieList() {
-        return movieList;
-    }
+    public final List<Path> getMovieList() { return movieList; }
 
     @Override
-    public final int getGameID() {
-        return gameID;
-    }
+    public final Optional<Integer> getGameID() { return Optional.ofNullable(gameID); }
 
     public final JSONObject getJSON() {
         return new JSONObject()

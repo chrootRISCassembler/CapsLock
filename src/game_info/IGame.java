@@ -21,16 +21,17 @@ package game_info;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface IGame {
     UUID getUUID();
     Path getExe();
-    String getName();
-    Instant getLastMod();
-    String getDesc();
-    Path getPanel();
+    Optional<String> getName();
+    Optional<Instant> getLastMod();
+    Optional<String> getDesc();
+    Optional<Path> getPanel();
     List<Path> getImageList();
     List<Path> getMovieList();
-    int getGameID();
+    Optional<Integer> getGameID();
 }
