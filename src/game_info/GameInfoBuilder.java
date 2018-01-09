@@ -26,7 +26,7 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.*;
 
-public final class GameInfoBuilder {
+public final class GameInfoBuilder implements IGame {
     private UUID uuid;
     private Path exe;
     private String name;
@@ -135,39 +135,32 @@ public final class GameInfoBuilder {
         }
     }
 
-    UUID getUUID() {
-        return uuid;
-    }
+    @Override
+    public final UUID getUUID() { return uuid; }
 
-    Path getExe() {
-        return exe;
-    }
+    @Override
+    public final Path getExe() { return exe; }
 
-    Optional<String> getName() {
-        return Optional.ofNullable(name);
-    }
+    @Override
+    public final Optional<String> getName() { return Optional.ofNullable(name); }
 
-    Optional<Instant> getLastMod() { return Optional.ofNullable(lastMod); }
+    @Override
+    public final Optional<Instant> getLastMod() { return Optional.ofNullable(lastMod); }
 
-    Optional<String> getDesc() {
-        return Optional.ofNullable(desc);
-    }
+    @Override
+    public final Optional<String> getDesc() { return Optional.ofNullable(desc); }
 
-    Optional<Path> getPanel() {
-        return Optional.ofNullable(panel);
-    }
+    @Override
+    public final Optional<Path> getPanel() { return Optional.ofNullable(panel); }
 
-    List<Path> getImageList() {
-        return imageList;
-    }
+    @Override
+    public final List<Path> getImageList() { return imageList; }
 
-    List<Path> getMovieList() {
-        return movieList;
-    }
+    @Override
+    public final List<Path> getMovieList() { return movieList; }
 
-    Optional<Integer> getGameID() {
-        return Optional.ofNullable(gameID);
-    }
+    @Override
+    public final Optional<Integer> getGameID() { return Optional.ofNullable(gameID); }
 
     public final GameInfoBuilder setUUID(UUID uuid) {
         this.uuid = uuid;
