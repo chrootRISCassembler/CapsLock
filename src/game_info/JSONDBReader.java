@@ -16,9 +16,8 @@ public final class JSONDBReader {
     private final int docCount;
     private List<GameInfoBuilder> games;
 
-    private boolean isLoadedFine = true;
-
-    public JSONDBReader(Path filePath){
+    public JSONDBReader(Path filePath) throws IllegalArgumentException {
+        boolean failedToLoad = false;
 
         String JSON_String = "";
 
@@ -29,16 +28,18 @@ public final class JSONDBReader {
         } catch (SecurityException ex) {//セキュリティソフト等に読み込みを阻害されたとき
             System.err.println("File-loading is blocked by security manager");
             ex.printStackTrace();
-            isLoadedFine = false;
+            failedToLoad = true;
         } catch (IOException ex) {
             System.err.println("Failed to open " + filePath.toString());
             ex.printStackTrace();
-            isLoadedFine = false;
+            failedToLoad = true;
         } catch(Exception ex) {
             System.err.println("Unexpected Exception!");
             ex.printStackTrace();
-            isLoadedFine = false;
+            failedToLoad = true;
         }
+
+        if(failedToLoad)throw new IllegalArgumentException();
 
         rawString = JSON_String;
         List<GameInfoBuilder> builderList = new ArrayList<>();
@@ -63,21 +64,16 @@ public final class JSONDBReader {
 
     public final int getDocCount(){return docCount;}
 
-    public final boolean isLoadedFine(){return isLoadedFine;}
     public final String getRawString() {return rawString;}
     public final List<GameRecord> toGameRecordList() {
         return Collections.emptyList();
     }
 
     public final List<GameEntry> toGameEntryList(){
-        if(isLoadedFine){
-            return games.stream()
-                    .filter(builder -> builder.canBuild())
-                    .map(builder -> builder.buildGameEntry())
-                    .collect(Collectors.toList());
-        }else {
-            return Collections.emptyList();
-        }
+        return games.stream()
+                .filter(builder -> builder.canBuild())
+                .map(builder -> builder.buildGameEntry())
+                .collect(Collectors.toList());
     }
 
 }

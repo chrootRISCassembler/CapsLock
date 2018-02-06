@@ -49,7 +49,6 @@ public class TestValidJSON {
     @Test(groups = {"normal", "MinimalFieldGame"})
     public void loadJSONDB(){
         reader = new JSONDBReader(JSONPath);
-        Assert.assertTrue(reader.isLoadedFine());
         System.out.println(reader.getDocCount());
     }
 
