@@ -153,6 +153,28 @@ public final class GameInfoBuilder implements IGame {
             for (Object unchecked : record.getJSONArray("imageList")){
                 System.out.println(unchecked.getClass());
                 System.out.println(unchecked);
+
+                final Path path = Paths.get((String) unchecked);
+
+                if(Files.isReadable(path)){
+                    imageList.add(path);
+                }else{
+                    System.err.println("Cannot read " + path);
+
+                    if(!Files.isRegularFile(path)){
+                        System.out.println(path + " is not a regular file.");
+                    }
+
+                    if(Files.isDirectory(path)){
+                        System.out.println(path + " is a directory.");
+                        System.out.println("You specified the wrong path.");
+                    }
+
+                    if(!Files.exists(path)){
+                        System.out.println("There is no such file : " + path);
+                        System.out.println("You specified the wrong path.");
+                    }
+                }
             }
         }catch (JSONException ex){
             if(record.has("imageList")) {
@@ -167,6 +189,28 @@ public final class GameInfoBuilder implements IGame {
             for (Object unchecked : record.getJSONArray("movieList")){
                 System.out.println(unchecked.getClass());
                 System.out.println(unchecked);
+
+                final Path path = Paths.get((String) unchecked);
+
+                if(Files.isReadable(path)){
+                    imageList.add(path);
+                }else{
+                    System.err.println("Cannot read " + path);
+
+                    if(!Files.isRegularFile(path)){
+                        System.out.println(path + " is not a regular file.");
+                    }
+
+                    if(Files.isDirectory(path)){
+                        System.out.println(path + " is a directory.");
+                        System.out.println("You specified the wrong path.");
+                    }
+
+                    if(!Files.exists(path)){
+                        System.out.println("There is no such file : " + path);
+                        System.out.println("You specified the wrong path.");
+                    }
+                }
             }
         }catch (JSONException ex){
             if(record.has("movieList")) {
