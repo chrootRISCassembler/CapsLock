@@ -21,6 +21,8 @@ package game_info;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -55,11 +57,61 @@ public final class GameInfoBuilder implements IGame {
     }
 
     public GameInfoBuilder(JSONObject record) {
-        uuid = UUID.fromString(record.getString("UUID"));
-        validityFlagMap.replace("uuid", true);
+        try {
+            uuid = UUID.fromString(record.getString("UUID"));
+            validityFlagMap.replace("uuid", true);
+        }catch (JSONException ex){
+            if(record.has("UUID")) {
+                System.err.println("There is \"UUID\" key, but wrong value. Fix the JSON file.");
+            }else {
+                System.err.println("There is no \"UUID\" field. This field is necessary. Fix the JSON file.");
+            }
+            ex.printStackTrace();
+        }catch (IllegalArgumentException ex){
+            System.err.println("There is \"UUID\" key, but wrong value. This is not a UUID.");
+            ex.printStackTrace();
+        }
 
-        exe = Paths.get(record.getString("exe"));
-        validityFlagMap.replace("exe", true);
+        ExeField: try {
+            final String UncheckedVal = record.getString("exe");
+            if(UncheckedVal.isEmpty()){
+                System.err.println("\"exe\" field is empty String. Fix the JSON file.");
+                break ExeField;
+            }
+
+            exe = Paths.get(UncheckedVal);
+
+            if (Files.isExecutable(exe)) {
+                validityFlagMap.replace("exe", true);
+                break ExeField;
+            }
+
+            if(Files.isRegularFile(exe)){
+                System.out.println(exe + " is a regular file. But cannot read.");
+                System.out.println("Check the permission or the owner of the file.");
+            }
+
+            if(Files.isDirectory(exe)){
+                System.out.println(exe + " is a directory.");
+                System.out.println("You specified the wrong path.");
+            }
+
+            if(!Files.exists(exe)){
+                System.out.println("There is no such file : " + exe);
+                System.out.println("You specified the wrong path.");
+            }
+
+        }catch (JSONException ex){
+            if(record.has("exe")) {
+                System.err.println("There is \"exe\" key, but wrong value. Fix the JSON file.");
+            }else {
+                System.err.println("There is no \"exe\" key. \"exe\" field is necessary. Fix the JSON file.");
+            }
+            ex.printStackTrace();
+        }catch (InvalidPathException ex){
+            System.err.println("There is \"exe\" key, but wrong value. Failed to convert String into Path.");
+            ex.printStackTrace();
+        }
 
         try {
             name = record.getString("name");
@@ -127,6 +179,11 @@ public final class GameInfoBuilder implements IGame {
 
         try {
             gameID = record.getInt("gameID");
+            if(Integer.signum(gameID) != 1){
+                System.err.println("\"gameID\" field must be natural number and unique. But the value is " + gameID + '.');
+            }else {
+                validityFlagMap.replace("gameID", true);
+            }
         }catch (JSONException ex){
             if(record.has("gameID")) {
                 System.err.println("There is \"gameID\" key, but wrong value. Fix the JSON file.");
