@@ -5,11 +5,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class FileChecker {
+    private String uncheckedPath;
     private Path path = null;
-    private Predicate<String> onConvertFailed;
+    private Consumer<String> onConvertFailed;
     private Predicate<Path> onInvalidPath;
     private Predicate<Path> onNotExists;
     //private Predicate<Path> onDirectory;
@@ -19,7 +21,6 @@ public class FileChecker {
     {
         onConvertFailed = str -> {
             System.err.println("Failed to convert " + str + " to Path type.");
-            return false;
         };
 
         onInvalidPath = path -> {
@@ -52,18 +53,14 @@ public class FileChecker {
     }
 
     public FileChecker(String path){
-        try {
-            this.path = Paths.get(path);
-        }catch (IllegalArgumentException | FileSystemNotFoundException | SecurityException ex){
-            onConvertFailed.test(path);
-        }
+        uncheckedPath = path;
     }
 
     public FileChecker(Path path){
         this.path = path;
     }
 
-    public FileChecker OnConvertFailed(Predicate<String> lambda){
+    public FileChecker OnConvertFailed(Consumer<String> lambda){
         onConvertFailed = lambda;
         return this;
     }
@@ -94,7 +91,15 @@ public class FileChecker {
     }
 
     public Optional<Path> check(){
-        if (path == null)return Optional.empty();
+
+        if (path == null){
+            try {
+                path = Paths.get(uncheckedPath);
+            }catch (IllegalArgumentException | FileSystemNotFoundException | SecurityException ex){
+                onConvertFailed.accept(uncheckedPath);
+                return Optional.empty();
+            }
+        }
 
         if (Files.isDirectory(path)) {
             //if(!onDirectory.test(path))return Optional.empty();

@@ -6,16 +6,18 @@ public class FileCheckerClassTest {
     private final String dir;
     private final String readableFile;
     private final String notFoundFile;
+    private final String notPathStr;
 
-    @Parameters({"dir", "read", "notFound"})
-    public FileCheckerClassTest(String dir, String read, String notFound){
+    @Parameters({"dir", "read", "notFound", "notPath"})
+    public FileCheckerClassTest(String dir, String read, String notFound, String notPath){
         this.dir = dir;
         readableFile = read;
         notFoundFile = notFound;
+        notPathStr = notPath;
     }
 
     @Test
-    public void ReadableFileTest(){
+    public void readableFileTest(){
         final boolean isWorking = new FileChecker(readableFile)
                 .OnCannotWrite(dummy -> true)
                 .check()
@@ -25,7 +27,7 @@ public class FileCheckerClassTest {
     }
 
     @Test
-    public void NotFoundTest(){
+    public void notFoundTest(){
         final boolean isWorking = ! new FileChecker(notFoundFile)
                 .check()
                 .isPresent();
@@ -34,8 +36,17 @@ public class FileCheckerClassTest {
     }
 
     @Test
-    public void DirTest(){
+    public void dirTest(){
         final boolean isWorking = ! new FileChecker(dir)
+                .check()
+                .isPresent();
+
+        assert isWorking;
+    }
+
+    @Test
+    public void notPathTest(){
+        final boolean isWorking = ! new FileChecker(notPathStr)
                 .check()
                 .isPresent();
 
