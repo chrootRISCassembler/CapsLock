@@ -61,7 +61,7 @@ test{
 //    final writeOnly = Paths.get("file_checker/WriteOnlyFile");
 
     useTestNG() {
-        suites 'test/TestNGSuite.XML', 'test/file_checkerTest.xml'
+        suites 'test/game_infoTest.xml', 'test/file_checkerTest.xml'
     }
 }
 
