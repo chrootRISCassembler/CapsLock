@@ -19,7 +19,7 @@ public class FileCheckerClassTest {
     @Test
     public void readableFileTest(){
         final boolean isWorking = new FileChecker(readableFile)
-                .OnCannotWrite(dummy -> true)
+                .onCannotWrite(dummy -> true)
                 .check()
                 .isPresent();
 

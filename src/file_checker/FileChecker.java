@@ -60,17 +60,17 @@ public class FileChecker {
         this.path = path;
     }
 
-    public FileChecker OnConvertFailed(Consumer<String> lambda){
+    public FileChecker onConvertFailed(Consumer<String> lambda){
         onConvertFailed = lambda;
         return this;
     }
 
-    public FileChecker OnInvalidPath(Predicate<Path> lambda){
+    public FileChecker onInvalidPath(Predicate<Path> lambda){
         onInvalidPath = lambda;
         return this;
     }
 
-    public FileChecker OnNotExists(Predicate<Path> lambda){
+    public FileChecker onNotExists(Predicate<Path> lambda){
         onNotExists = lambda;
         return this;
     }
@@ -80,12 +80,12 @@ public class FileChecker {
 //        return this;
 //    }
 
-    public FileChecker OnCannotRead(Predicate<Path> lambda){
+    public FileChecker onCannotRead(Predicate<Path> lambda){
         onCannotRead = lambda;
         return this;
     }
 
-    public FileChecker OnCannotWrite(Predicate<Path> lambda){
+    public FileChecker onCannotWrite(Predicate<Path> lambda){
         onCannotWrite = lambda;
         return this;
     }
