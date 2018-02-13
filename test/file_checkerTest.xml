@@ -1,0 +1,12 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="file_checkerTest">
+    <test name="FileChecker">
+        <parameter name="dir" value="file_checker/dir/"></parameter>
+        <parameter name="read" value="file_checker/readable"></parameter>
+        <parameter name="notFound" value="file_checker/foo"></parameter>
+        <classes>
+            <class name="FileCheckerClassTest"></class>
+        </classes>
+    </test>
+</suite>

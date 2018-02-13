@@ -1,3 +1,6 @@
+import java.nio.file.Path
+import java.nio.file.Paths
+
 group 'CapsLock'
 version '1.0'
 
@@ -51,8 +54,14 @@ run {
 
 test{
     workingDir = '../TestEnv'
+
+//    final file_checkerRootDir = Paths.get("file_checker/");
+//    final dir = Paths.get("file_checker/dir");
+//    final readOnly = Paths.get("file_checker/ReadOnlyFile");
+//    final writeOnly = Paths.get("file_checker/WriteOnlyFile");
+
     useTestNG() {
-        suites 'test/TestNGSuite.XML'
+        suites 'test/TestNGSuite.XML', 'test/file_checkerTest.xml'
     }
 }
 
