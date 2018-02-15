@@ -2,23 +2,12 @@ import file_checker.FileChecker;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
-public class FileCheckerClassTest {
-    private final String dir;
-    private final String readableFile;
-    private final String notFoundFile;
-    private final String notPathStr;
-
-    @Parameters({"dir", "read", "notFound", "notPath"})
-    public FileCheckerClassTest(String dir, String read, String notFound, String notPath){
-        this.dir = dir;
-        readableFile = read;
-        notFoundFile = notFound;
-        notPathStr = notPath;
-    }
+class FileCheckerClassTest {
 
     @Test
-    public void readableFileTest(){
-        final boolean isWorking = new FileChecker(readableFile)
+    @Parameters("read")
+    private static void readableFileTest(String read){
+        final boolean isWorking = new FileChecker(read)
                 .onCannotWrite(dummy -> true)
                 .check()
                 .isPresent();
@@ -27,8 +16,9 @@ public class FileCheckerClassTest {
     }
 
     @Test
-    public void notFoundTest(){
-        final boolean isWorking = ! new FileChecker(notFoundFile)
+    @Parameters("notFound")
+    private static void notFoundTest(String notFound){
+        final boolean isWorking = ! new FileChecker(notFound)
                 .check()
                 .isPresent();
 
@@ -36,7 +26,8 @@ public class FileCheckerClassTest {
     }
 
     @Test
-    public void dirTest(){
+    @Parameters("dir")
+    private static void dirTest(String dir){
         final boolean isWorking = ! new FileChecker(dir)
                 .check()
                 .isPresent();
@@ -45,8 +36,9 @@ public class FileCheckerClassTest {
     }
 
     @Test
-    public void notPathTest(){
-        final boolean isWorking = ! new FileChecker(notPathStr)
+    @Parameters("notPath")
+    private static void notPathTest(String notPath){
+        final boolean isWorking = ! new FileChecker(notPath)
                 .check()
                 .isPresent();
 
@@ -55,7 +47,7 @@ public class FileCheckerClassTest {
 
     @Test
     @Parameters("notFoundIgnore")
-    public void notFoundIgnoreTest(String notFoundIgnore){
+    private static void notFoundIgnoreTest(String notFoundIgnore){
         final boolean isWorking = new FileChecker(notFoundIgnore)
                 .onNotExists(dummy -> true)
                 .check()
