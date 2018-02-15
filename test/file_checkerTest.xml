@@ -6,6 +6,7 @@
         <parameter name="read" value="file_checker/readable" />
         <parameter name="notFound" value="file_checker/foo" />
         <parameter name="notPath" value="???" />
+        <parameter name="notFoundIgnore" value="foo" />
         <classes>
             <class name="FileCheckerClassTest" />
         </classes>

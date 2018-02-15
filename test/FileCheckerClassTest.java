@@ -52,4 +52,16 @@ public class FileCheckerClassTest {
 
         assert isWorking;
     }
+
+    @Test
+    @Parameters("notFoundIgnore")
+    public void notFoundIgnoreTest(String notFoundIgnore){
+        final boolean isWorking = new FileChecker(notFoundIgnore)
+                .onNotExists(dummy -> true)
+                .check()
+                .isPresent();
+
+        assert isWorking;
+    }
+
 }
