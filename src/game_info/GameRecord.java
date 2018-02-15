@@ -52,21 +52,23 @@ public final class GameRecord implements IGame {
     GameRecord(GameInfoBuilder builder) {
         uuid = builder.getUUID();
         exe = builder.getExe();
-        lastMod = builder.getLastMod().get();
-        panel = builder.getPanel().get();
+        lastMod = builder.getLastMod().orElse(null);
+        panel = builder.getPanel().orElse(null);
         imageList = builder.getImageList();
         movieList = builder.getImageList();
-        gameID = builder.getGameID().get();
+        gameID = builder.getGameID().orElse(null);
 
         uuidProperty = new SimpleStringProperty(uuid.toString());
         exeProperty = new SimpleStringProperty(exe.getFileName().toString());
-        nameProperty = new SimpleStringProperty(builder.getName().get());
-        lastModProperty = new SimpleStringProperty(ZonedDateTime.ofInstant(lastMod, ZoneId.systemDefault()).toString());
-        descProperty = new SimpleStringProperty(builder.getDesc().get());
+        nameProperty = new SimpleStringProperty(builder.getName().orElse(""));
+        lastModProperty = new SimpleStringProperty(
+                lastMod == null ? "" : ZonedDateTime.ofInstant(lastMod, ZoneId.systemDefault()).toString()
+        );
+        descProperty = new SimpleStringProperty(builder.getDesc().orElse(""));
         panelProperty = new SimpleStringProperty(panel == null ? "" : "exist");
         imageCountProperty = new SimpleStringProperty(Integer.toString(imageList.size()));
         movieCountProperty = new SimpleStringProperty(Integer.toString(movieList.size()));
-        gameIDProperty = new SimpleStringProperty(Integer.toString(gameID));
+        gameIDProperty = new SimpleStringProperty(gameID == null ? "" : Integer.toString(gameID));
     }
 
     public final ReadOnlyStringProperty uuidProperty() {
@@ -137,15 +139,24 @@ public final class GameRecord implements IGame {
     public final Optional<Integer> getGameID() { return Optional.ofNullable(gameID); }
 
     public final JSONObject getJSON() {
-        return new JSONObject()
+        final JSONObject json = new JSONObject()
                 .put("UUID", uuid)
-                .put("exe", exe)
-                .put("name", nameProperty.get())
-                .put("lastMod", lastMod.toString())
-                .put("desc", descProperty.get())
-                .put("panel", panel == null ? "" : panel)
-                .put("imageList", imageList)
-                .put("movieList", movieList)
-                .put("gameID", gameID);
+                .put("exe", exe);
+
+        if(!nameProperty.get().isEmpty())json.put("name", nameProperty.get());
+
+        if(lastMod != null)json.put("lastMod", lastMod.toString());
+
+        if(!descProperty.get().isEmpty())json.put("desc", descProperty.get());
+
+        if(panel != null)json.put("panel", panel);
+
+        if(imageList.size() > 0)json.put("imageList", imageList);
+
+        if(movieList.size() > 0)json.put("movieList", movieList);
+
+        if(gameID != null)json.put("gameID", gameID);
+
+        return json;
     }
 }

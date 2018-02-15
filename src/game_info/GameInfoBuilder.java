@@ -54,6 +54,13 @@ public final class GameInfoBuilder implements IGame {
     }
 
     public GameInfoBuilder() {
+        uuid = UUID.randomUUID();
+        exe = null;
+        name = null;
+        lastMod = null;
+        desc = null;
+        panel = null;
+        gameID = null;
     }
 
     public GameInfoBuilder(JSONObject record) {
@@ -264,6 +271,7 @@ public final class GameInfoBuilder implements IGame {
     public final Optional<Integer> getGameID() { return Optional.ofNullable(gameID); }
 
     public final GameInfoBuilder setUUID(UUID uuid) {
+        if(uuid == null)throw new IllegalArgumentException("DO NOT pass null as a argument.");
         this.uuid = uuid;
         return this;
     }
@@ -321,6 +329,7 @@ public final class GameInfoBuilder implements IGame {
     }
 
     public final GameRecord buildGameRecord() {
+        if(exe == null)throw new IllegalStateException("exe is null. Call setExe(Path exe) method before you call this method.");
         return new GameRecord(this);
     }
 }
