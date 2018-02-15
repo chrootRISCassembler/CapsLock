@@ -26,4 +26,11 @@
         </classes>
     </test>
 
+    <test name="JSONDBWriterTest">
+        <parameter name="file" value="tmp.json" />
+        <classes>
+            <class name="JSONWriteTest" />
+        </classes>
+    </test>
+
 </suite>
