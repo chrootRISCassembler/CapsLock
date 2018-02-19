@@ -200,7 +200,7 @@ public final class GameInfoBuilder implements IGame {
                 final Path path = Paths.get((String) unchecked);
 
                 if(Files.isReadable(path)){
-                    imageList.add(path);
+                    movieList.add(path);
                 }else{
                     System.err.println("Cannot read " + path);
 

@@ -45,7 +45,7 @@ public final class GameEntry implements IGame{
         desc = builder.getDesc().orElse(null);
         panel = builder.getPanel().orElse(null);
         imageList = builder.getImageList();
-        movieList = builder.getImageList();
+        movieList = builder.getMovieList();
         gameID = builder.getGameID().orElse(null);
     }
 
