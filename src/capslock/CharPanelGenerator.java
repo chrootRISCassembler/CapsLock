@@ -18,7 +18,6 @@
 
 package capslock;
 
-import trivial_common_logger.LogHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -31,6 +30,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import trivial_logger.Logger;
 
 /**
  * Generates a square panel image from char.
@@ -45,7 +45,7 @@ final class CharPanelGenerator{
      * You MUST NOT create the instance of this class.
      */
     private CharPanelGenerator(){
-        LogHandler.inst.severe("Utility class' instance \"CharPanelGenerator\" is created! Call the developer!");
+        Logger.INST.critical("Utility class' instance \"CharPanelGenerator\" is created! Call the developer!");
     }
     
     /**
