@@ -50,31 +50,52 @@ public enum Logger {
         }
     }
 
+    public Logger critical(String msg){
+        output(LogLevel.CRITICAL, null, msg);
+        return INST;
+    }
+
     public Logger critical(Supplier<String> supplier){
-        output(LogLevel.CRITICAL, supplier);
+        output(LogLevel.CRITICAL, supplier, null);
+        return INST;
+    }
+
+    public Logger warn(String msg){
+        output(LogLevel.WARN, null, msg);
         return INST;
     }
 
     public Logger warn(Supplier<String> supplier){
-        output(LogLevel.WARN, supplier);
+        output(LogLevel.WARN, supplier, null);
+        return INST;
+    }
+
+    public Logger info(String msg){
+        output(LogLevel.INFO, null, msg);
         return INST;
     }
 
     public Logger info(Supplier<String> supplier){
-        output(LogLevel.INFO, supplier);
+        output(LogLevel.INFO, supplier, null);
+        return INST;
+    }
+
+    public Logger debug(String msg){
+        output(LogLevel.DEBUG, null, msg);
         return INST;
     }
 
     public Logger debug(Supplier<String> supplier){
-        output(LogLevel.DEBUG, supplier);
+        output(LogLevel.DEBUG, supplier, null);
         return INST;
     }
 
-    private void output(LogLevel level, Supplier<String> supplier){
+    private void output(LogLevel level, Supplier<String> supplier, String msg){
         if(level.getInt() > currentLogLevel.getInt())return;
 
         final Instant occurred = Instant.now();
-        final String lineMessage = occurred + " [" + level.name() + "] " + supplier.get();
+        final String lineMessage = occurred + " [" + level.name() + "] "
+                + (msg == null ? supplier.get() : msg);
 
         System.err.println(lineMessage);
 
@@ -92,6 +113,9 @@ public enum Logger {
 
     public void logException(Exception ex){
         ex.printStackTrace();
+
+        if (writer == null)return;
+
         try {
             writer.write("---------- StackTrace begin ----------");
             writer.newLine();
