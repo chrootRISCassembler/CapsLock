@@ -14,6 +14,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 final class ContentsAreaController {
+    private static final int IMAGE_DISPLAY_INTERVAL_MS = 5000;
+
     private final Region parentRegion;
     private final MediaView mediaView;
     private final ImageView imageView;
@@ -122,7 +124,7 @@ final class ContentsAreaController {
             public void run() {
                 onImageEnd();
             }
-        }, 1000);
+        }, IMAGE_DISPLAY_INTERVAL_MS);
     }
 
     private void clear(){
