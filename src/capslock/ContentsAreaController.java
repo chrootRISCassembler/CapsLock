@@ -72,7 +72,7 @@ final class ContentsAreaController {
         }
     }
 
-    final void onMovieEnd(){
+    private void onMovieEnd(){
         mediaView.setMediaPlayer(null);
         player.dispose();
 
@@ -90,7 +90,7 @@ final class ContentsAreaController {
         }
     }
 
-    final void onImageEnd(){
+    private void onImageEnd(){
         timer.cancel();
 
         if(imageIterator.hasNext()){
@@ -110,7 +110,7 @@ final class ContentsAreaController {
         }
     }
 
-    final void onMovieExhaust(){
+    private void onMovieExhaust(){
         if(imageIterator.hasNext()) {
             player = null;
             movieIterator = game.getMovieList().iterator();
@@ -143,7 +143,7 @@ final class ContentsAreaController {
         }
     }
 
-    final void onImageExhaust(){
+    private void onImageExhaust(){
         imageIterator = game.getImageList().iterator();
 
         if(movieIterator.hasNext()){
