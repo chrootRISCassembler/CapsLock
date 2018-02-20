@@ -19,11 +19,9 @@
 package capslock;
 
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import game_info.GameEntry;
@@ -40,7 +38,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -64,16 +61,16 @@ public final class MainFormController implements Initializable {
     private static final double PANEL_GAP_RATIO = 0.03;
 
     private MainHandler handler;
-    private GameEntry game;
-    private Future<?> contentsFuture;
+    private ContentsAreaController contentsAreaController;
+    private volatile GameEntry game;
 
     /** FXML binding */
     @FXML private ScrollPane LeftScrollPane;
         @FXML private TilePane PanelTilePane;
     @FXML private VBox RightVBox;
         @FXML private StackPane ViewStackPane;
-            @FXML private ImageView StackedImageView;
-            @FXML private MediaView StackedMediaView;
+            @FXML private volatile ImageView StackedImageView;
+            @FXML private volatile MediaView StackedMediaView;
     @FXML private Label NameLabel;
     @FXML private Label DescriptionLabel;
     @FXML private Button playButton;
@@ -131,6 +128,8 @@ public final class MainFormController implements Initializable {
             PanelTilePane.getChildren().add(view);
         }
 
+        contentsAreaController = new ContentsAreaController(ViewStackPane, StackedMediaView, StackedImageView);
+
         Logger.INST.debug("MainForm window is displayed.");
         System.gc();
     }
@@ -176,13 +175,10 @@ public final class MainFormController implements Initializable {
             view.setEffect(effect);
         }
 
-        if(contentsFuture != null){
-            contentsFuture.cancel(true);
-            StackedImageView.setImage(null);
-            StackedMediaView.setMediaPlayer(null);
-        }
-
         game = NextGame;
+
+        Logger.INST.debug("ContentsAreaController#setGame() call");
+        contentsAreaController.setGame(game);
 
         {
             final String name = NextGame.getName().orElse("");
@@ -196,46 +192,6 @@ public final class MainFormController implements Initializable {
         DescriptionLabel.setText(NextGame.getDesc().orElse(""));
         DescriptionLabel.setPadding(Insets.EMPTY);
         DescriptionLabel.autosize();
-
-        if(!game.getMovieList().isEmpty() || !game.getImageList().isEmpty()) {
-
-            contentsFuture = CapsLock.getExecutor().submit(() -> {
-                while (true) {
-                    Logger.INST.debug("thread ok");
-                    if (!game.getMovieList().isEmpty()) {
-                        Logger.INST.debug("media found");
-                        StackedMediaView.setVisible(true);
-                        StackedImageView.setVisible(false);
-                        for (final Path moviePath : game.getMovieList()) {
-                            Logger.INST.debug(() -> moviePath + " got as movie");
-                            final SyncMediaPlayer player = new SyncMediaPlayer(moviePath);
-                            StackedMediaView.setMediaPlayer(player.getPlayer());
-                            StackedMediaView.setFitWidth(ViewStackPane.getWidth());
-                            player.waitFor();
-                            player.release();
-                        }
-                    }
-
-                    if (!game.getImageList().isEmpty()) {
-                        Logger.INST.debug("image found");
-                        StackedMediaView.setVisible(false);
-                        StackedImageView.setVisible(true);
-                        for (final Path imagePath : game.getImageList()) {
-                            Logger.INST.debug(() -> imagePath + " got as image");
-                            final Image image = new Image(imagePath.toUri().toString());
-                            StackedImageView.setImage(image);
-                            StackedImageView.setFitWidth(ViewStackPane.getWidth());
-                            try {
-                                Thread.sleep(2500);
-                            } catch (InterruptedException ex) {
-                                Logger.INST.critical("Thread-sleep is interrupted.").logException(ex);
-                            }
-                        }
-                    }
-                }
-            });
-
-        }
 
         if(event.getClickCount() != 2)return;//ダブルクリックじゃない
 
