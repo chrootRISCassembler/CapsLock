@@ -42,31 +42,12 @@ final class ContentsAreaController {
         movieIterator = game.getMovieList().iterator();
 
         if(movieIterator.hasNext()){
-            final Media media = new Media(movieIterator.next().toUri().toString());
-            player = new MediaPlayer(media);
-            player.setAutoPlay(true);
-            player.setOnEndOfMedia(() -> onMovieEnd());
-            player.setCycleCount(1);
-
-            mediaView.setMediaPlayer(player);
-            mediaView.setFitWidth(stackPane.getWidth());
-
+            displayMovie();
             mediaView.setVisible(true);
             imageView.setVisible(false);
 
         }else{
-            final Image image = new Image(imageIterator.next().toUri().toString());
-            imageView.setImage(image);
-            imageView.setFitWidth(stackPane.getWidth());
-
-            timer = new Timer(true);
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    onImageEnd();
-                }
-            }, 1000);
-
+            displayImage();
             mediaView.setVisible(false);
             imageView.setVisible(true);
         }
@@ -77,14 +58,7 @@ final class ContentsAreaController {
         player.dispose();
 
         if(movieIterator.hasNext()){
-            final Media media = new Media(movieIterator.next().toUri().toString());
-            player = new MediaPlayer(media);
-            player.setAutoPlay(true);
-            player.setOnEndOfMedia(() -> onMovieEnd());
-            player.setCycleCount(1);
-
-            mediaView.setMediaPlayer(player);
-            mediaView.setFitWidth(stackPane.getWidth());
+            displayMovie();
         }else {
             onMovieExhaust();
         }
@@ -94,17 +68,7 @@ final class ContentsAreaController {
         timer.cancel();
 
         if(imageIterator.hasNext()){
-            final Image image = new Image(imageIterator.next().toUri().toString());
-            imageView.setImage(image);
-            imageView.setFitWidth(stackPane.getWidth());
-
-            timer = new Timer(true);
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    onImageEnd();
-                }
-            }, 1000);
+            displayImage();
         }else{
             onImageExhaust();
         }
@@ -113,33 +77,12 @@ final class ContentsAreaController {
     private void onMovieExhaust(){
         if(imageIterator.hasNext()) {
             player = null;
-            movieIterator = game.getMovieList().iterator();
-
-            final Image image = new Image(imageIterator.next().toUri().toString());
-            imageView.setImage(image);
-            imageView.setFitWidth(stackPane.getWidth());
-
-            timer = new Timer(true);
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    onImageEnd();
-                }
-            }, 1000);
-
+            displayImage();
             mediaView.setVisible(false);
             imageView.setVisible(true);
 
         }else {
-            movieIterator = game.getMovieList().iterator();
-            final Media media = new Media(movieIterator.next().toUri().toString());
-            player = new MediaPlayer(media);
-            player.setAutoPlay(true);
-            player.setOnEndOfMedia(() -> onMovieEnd());
-            player.setCycleCount(1);
-
-            mediaView.setMediaPlayer(player);
-            mediaView.setFitWidth(stackPane.getWidth());
+            displayMovie();
         }
     }
 
@@ -147,31 +90,39 @@ final class ContentsAreaController {
         imageIterator = game.getImageList().iterator();
 
         if(movieIterator.hasNext()){
-            final Media media = new Media(movieIterator.next().toUri().toString());
-            player = new MediaPlayer(media);
-            player.setAutoPlay(true);
-            player.setOnEndOfMedia(() -> onMovieEnd());
-            player.setCycleCount(1);
-
-            mediaView.setMediaPlayer(player);
-            mediaView.setFitWidth(stackPane.getWidth());
+            displayMovie();
 
             mediaView.setVisible(true);
             imageView.setVisible(false);
 
         }else{
-            final Image image = new Image(imageIterator.next().toUri().toString());
-            imageView.setImage(image);
-            imageView.setFitWidth(stackPane.getWidth());
-
-            timer = new Timer(true);
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    onImageEnd();
-                }
-            }, 1000);
+            displayImage();
         }
+    }
+
+    private void displayMovie(){
+        final Media media = new Media(movieIterator.next().toUri().toString());
+        player = new MediaPlayer(media);
+        player.setAutoPlay(true);
+        player.setOnEndOfMedia(() -> onMovieEnd());
+        player.setCycleCount(1);
+
+        mediaView.setMediaPlayer(player);
+        mediaView.setFitWidth(stackPane.getWidth());
+    }
+
+    private void displayImage(){
+        final Image image = new Image(imageIterator.next().toUri().toString());
+        imageView.setImage(image);
+        imageView.setFitWidth(stackPane.getWidth());
+
+        timer = new Timer(true);
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                onImageEnd();
+            }
+        }, 1000);
     }
 
     private void clear(){
