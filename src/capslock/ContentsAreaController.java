@@ -3,7 +3,7 @@ package capslock;
 import game_info.GameEntry;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Region;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -14,7 +14,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 final class ContentsAreaController {
-    private final StackPane stackPane;
+    private final Region parentRegion;
     private final MediaView mediaView;
     private final ImageView imageView;
 
@@ -25,8 +25,8 @@ final class ContentsAreaController {
     private volatile GameEntry game;
     private volatile MediaPlayer player = null;
 
-    ContentsAreaController(StackPane pane, MediaView mediaView, ImageView imageView){
-        this.stackPane = pane;
+    ContentsAreaController(Region pane, MediaView mediaView, ImageView imageView){
+        this.parentRegion = pane;
         this.mediaView = mediaView;
         this.imageView = imageView;
     }
@@ -108,13 +108,13 @@ final class ContentsAreaController {
         player.setCycleCount(1);
 
         mediaView.setMediaPlayer(player);
-        mediaView.setFitWidth(stackPane.getWidth());
+        mediaView.setFitWidth(parentRegion.getWidth());
     }
 
     private void displayImage(){
         final Image image = new Image(imageIterator.next().toUri().toString());
         imageView.setImage(image);
-        imageView.setFitWidth(stackPane.getWidth());
+        imageView.setFitWidth(parentRegion.getWidth());
 
         timer = new Timer(true);
         timer.schedule(new TimerTask() {
