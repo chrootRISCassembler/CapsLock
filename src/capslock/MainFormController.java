@@ -38,6 +38,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -115,9 +116,12 @@ public final class MainFormController implements Initializable {
         final Tooltip tooltip = new Tooltip("ダブルクリックでゲーム起動");
         for(final GameEntry game : handler.getGameList()){
 
-            final ImageView view = new ImageView(
-                    game.mapPanelImage().orElse(CharPanelGenerator.generate(game.getName().orElse("?").charAt(0), sequencer.get()))
-            );
+            final Image panelImage = game.mapPanelImage().orElseGet(() -> {
+                Logger.INST.info(() -> game.getUUID() + " has no panel.");
+                return CharPanelGenerator.generate(game.getName().orElse("?").charAt(0), sequencer.get());
+            });
+
+            final ImageView view = new ImageView(panelImage);
 
             view.setPreserveRatio(false);
             view.setFitWidth(PanelImageSideLength);
