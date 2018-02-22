@@ -44,18 +44,15 @@ import java.util.concurrent.Executors;
  * エントリポイント.
  */
 public final class CapsLock extends Application {
-
-    private static final Path DB_PATH = Paths.get("./GamesInfo.json");
-
-    /**
-     * @param args the command line arguments
-     */
 	private WarningTimer warning=new WarningTimer();
 
 	private static final Path CONFIG_FILE = Paths.get("./config.properties");
     private static final ExecutorService executor = Executors.newWorkStealingPool();
     private MainHandler handler;
 
+    /**
+     * @param args the command line arguments
+     */
     public static void main(String[] args) {
         Logger.INST.setCurrentLogLevel(LogLevel.DEBUG);
 
