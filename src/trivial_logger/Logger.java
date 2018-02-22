@@ -111,10 +111,10 @@ public enum Logger {
         }
     }
 
-    public void logException(Exception ex){
+    public Logger logException(Exception ex){
         ex.printStackTrace();
 
-        if (writer == null)return;
+        if (writer == null)return this;
 
         try {
             writer.write("---------- StackTrace begin ----------");
@@ -138,7 +138,7 @@ public enum Logger {
                             + "] (INNER) Failed to write the log message to " + logFile);
             ioex.printStackTrace();
         }
-
+        return this;
     }
 
     public void flush(){
