@@ -63,12 +63,15 @@ public final class CapsLock extends Application {
             final Properties properties = new Properties();
             properties.load(reader);
 
-            Logger.INST.setCurrentLogLevel(LogLevel.valueOf(properties.getProperty("LogLevel")));
+            final String rawValue = properties.getProperty("LogLevel");
+            if(rawValue == null)throw new IOException("LogLevel value is not found.");
 
-        }catch (IOException ex) {
-            Logger.INST.warn("Failed to load config form " + CONFIG_FILE);
-            Logger.INST.warn("Logger runs default log level : " + Logger.INST.getCurrentLogLevel());
-            Logger.INST.logException(ex);
+            Logger.INST.setCurrentLogLevel(LogLevel.valueOf(rawValue.toUpperCase()));
+
+        }catch (IOException | IllegalArgumentException ex) {
+            Logger.INST.warn(() -> "Failed to load config form " + CONFIG_FILE)
+                    .warn(() -> "Logger runs default log level : " + Logger.INST.getCurrentLogLevel())
+                    .logException(ex);
         }
 
         Logger.INST.info("CapsLock started.");
