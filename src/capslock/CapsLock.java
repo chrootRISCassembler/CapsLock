@@ -36,6 +36,7 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -56,17 +57,21 @@ public final class CapsLock extends Application {
     private MainHandler handler;
 
     public static void main(String[] args) {
-        try (final Reader reader = Files.newBufferedReader(CONFIG_FILE)){
+        Logger.INST.setCurrentLogLevel(LogLevel.DEBUG);
 
-        }catch (IOException ex){
+        try (final Reader reader = Files.newBufferedReader(CONFIG_FILE)){
+            final Properties properties = new Properties();
+            properties.load(reader);
+
+            Logger.INST.setCurrentLogLevel(LogLevel.valueOf(properties.getProperty("LogLevel")));
+
+        }catch (IOException ex) {
             Logger.INST.warn("Failed to load config form " + CONFIG_FILE);
             Logger.INST.warn("Logger runs default log level : " + Logger.INST.getCurrentLogLevel());
             Logger.INST.logException(ex);
         }
 
-        Logger.INST.setCurrentLogLevel(LogLevel.DEBUG);
-
-        Logger.INST.info(() -> "CapsLock started.");
+        Logger.INST.info("CapsLock started.");
 
         launch(args);
 
