@@ -6,6 +6,7 @@ version '1.0'
 
 apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: "groovy"
 
 sourceCompatibility = 1.8
 
@@ -13,11 +14,16 @@ mainClassName = 'capslock.CapsLock'
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
     compile group: 'org.json', name: 'json', version:  '+'
+    compile 'org.codehaus.groovy:groovy-all:2.4.12'
     testCompile 'org.testng:testng:6.+'
+    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+    testCompile group: "org.testfx", name: "testfx-core", version: "4.0.8-alpha"
+    testCompile group: 'org.testfx', name: 'testfx-spock', version: '4.0.12-alpha'
 }
 
 tasks.withType(JavaCompile){
@@ -35,9 +41,13 @@ sourceSets{
         java{
             srcDir 'test'
         }
+        groovy {
+            srcDirs = ['test/groovy']
+        }
     }
-
 }
+
+
 
 task cpFXMLandCSS(type : Copy){
     from 'src/capslock/MainForm.css'
@@ -52,16 +62,14 @@ run {
     println("cd to the testing environment : " + workingDir)
 }
 
-test{
+task testNG (type: Test) {
     workingDir = '../TestEnv'
-
-//    final file_checkerRootDir = Paths.get("file_checker/");
-//    final dir = Paths.get("file_checker/dir");
-//    final readOnly = Paths.get("file_checker/ReadOnlyFile");
-//    final writeOnly = Paths.get("file_checker/WriteOnlyFile");
-
     useTestNG() {
         suites 'test/game_infoTest.xml', 'test/file_checkerTest.xml', 'test/trivial_loggerTest.xml'
     }
+}
+
+test{
+    dependsOn testNG
 }
 
