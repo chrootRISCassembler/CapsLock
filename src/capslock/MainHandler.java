@@ -2,7 +2,11 @@ package capslock;
 
 import game_info.GameEntry;
 import game_info.JSONDBReader;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 import trivial_logger.Logger;
 
 import java.io.IOException;
@@ -13,14 +17,26 @@ import java.util.List;
 
 class MainHandler {
     private static final Path JSON_DB_PATH = Paths.get("./GamesInfo.json");
+    private static final int WARN_INTERVAL_MINUTE = 5;
+
     private final MainFormController controller;
     private final List<GameEntry> gameList;
     private boolean onCreatedDispatched = false;
+    private int pastMinutes = 0;
+    private final Timeline timer;
 
     private Process gameProcess = null;
 
     MainHandler(MainFormController controller){
         this.controller = controller;
+
+        timer = new Timeline(new KeyFrame(Duration.minutes(WARN_INTERVAL_MINUTE), event -> {
+            pastMinutes += WARN_INTERVAL_MINUTE;
+            final AchievementWindow warn = new AchievementWindow(null,
+                    "プレイ開始から" + pastMinutes + "分経過しました\n混雑している場合は次の人に\n交代してください");
+            warn.display();
+        }));
+        timer.setCycleCount(Animation.INDEFINITE);
 
         final JSONDBReader reader;
         try {
@@ -96,16 +112,21 @@ class MainHandler {
 
     void onGameLaunched(GameEntry game){
         Logger.INST.info(() -> game.getExe() + " is launched successfully.");
+        timer.play();
         controller.onGameLaunched();
     }
 
     void onLaunchFailed(){
         gameProcess = null;
+        timer.stop();
+        pastMinutes = 0;
         controller.onLaunchFailed();
     }
 
     void onGameQuit(){
         Logger.INST.info("game quit.");
+        timer.stop();
+        pastMinutes = 0;
         controller.onGameQuit();
     }
 }
