@@ -30,8 +30,7 @@ public final class AchievementWindow {
         final ImageView iconView = new ImageView(icon);
         final Label label = new Label(message);
         hBox = new HBox(iconView, label);
-        //hBox.setBackground(Background.EMPTY);
-        hBox.setStyle("-fx-background-color: rgba(100,0,0,0.3);");
+        hBox.setStyle("-fx-background-color: rgba(0,0,0,0);");
 
         final Scene scene = new Scene(hBox);
         scene.setFill(Color.TRANSPARENT);
@@ -50,17 +49,22 @@ public final class AchievementWindow {
         }
 
         isDisplayed = true;
-        stage.show();
 
         final Rectangle2D displayRect = Screen.getPrimary().getBounds();
 
         final double width = displayRect.getWidth() * WINDOW_WIDTH_RATIO;
         final double height = displayRect.getHeight() * WINDOW_HEIGHT_RATIO;
 
+
+        //Stage#show()を呼び出す前にHBox#resize()やHBox#relocate()を呼び出すと表示がおかしくなる
+        stage.show();
+
         hBox.resize(width, height);
 
         hBox.relocate(displayRect.getWidth() - width - displayRect.getWidth() * MARGIN_LEFT_RIGHT_RATIO,
                 displayRect.getHeight());
+
+        hBox.setStyle("-fx-background-color: rgba(100,0,0,1);");
 
         final FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), hBox);
         fadeIn.setFromValue(0);
