@@ -59,23 +59,23 @@ public final class AchievementWindow {
         hBox.relocate(scene.getWidth() - width - scene.getWidth() * MARGIN_LEFT_RIGHT_RATIO,
                 scene.getHeight());
 
-        final FadeTransition fadein = new FadeTransition(Duration.seconds(1), hBox);
-        fadein.setFromValue(0);
-        fadein.setToValue(1);
+        final FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), hBox);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
 
         final TranslateTransition moveUp = new TranslateTransition(Duration.seconds(1), hBox);
         moveUp.setByY(- height - scene.getHeight() * MARGIN_TOP_BOTTOM_RATIO);
 
-        final ParallelTransition in = new ParallelTransition(fadein, moveUp);
+        final ParallelTransition in = new ParallelTransition(fadeIn, moveUp);
         final PauseTransition pause = new PauseTransition(Duration.seconds(1));
-        final FadeTransition fadeout = new FadeTransition(Duration.seconds(1), hBox);
-        fadeout.setFromValue(1);
-        fadeout.setToValue(0);
+        final FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), hBox);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
 
         final TranslateTransition moveRight = new TranslateTransition(Duration.seconds(1), hBox);
         moveRight.setByX(width + scene.getWidth() * MARGIN_LEFT_RIGHT_RATIO);
 
-        final ParallelTransition out = new ParallelTransition(fadeout, moveRight);
+        final ParallelTransition out = new ParallelTransition(fadeOut, moveRight);
         final SequentialTransition sequence = new SequentialTransition(in, pause, out);
 
         sequence.setOnFinished(dummy -> onEnd());
