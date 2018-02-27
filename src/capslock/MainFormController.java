@@ -157,45 +157,44 @@ public final class MainFormController implements Initializable {
 
     void onPanelClicked(MouseEvent event){
         if(!event.getButton().equals(MouseButton.PRIMARY))return;//右クリックじゃない
-    	System.err.println("is clicked");
 
         final ImageView view = (ImageView)event.getSource();//クリックされたパネルの取得
         final GameEntry NextGame = (GameEntry)view.getUserData();//パネルが示すゲーム
 
-        if(game == NextGame)return;
+        if(game != NextGame) {
 
+            PanelTilePane.getChildren().stream()
+                    .peek(panel -> panel.setScaleX(1))
+                    .peek(panel -> panel.setScaleY(1))
+                    .forEach(panel -> panel.setEffect(null));
 
-        PanelTilePane.getChildren().stream()
-                .peek(panel -> panel.setScaleX(1))
-                .peek(panel -> panel.setScaleY(1))
-                .forEach(panel -> panel.setEffect(null));
+            {//選択されたパネルにエフェクトを適応
+                view.setScaleX(1.15);
+                view.setScaleY(1.15);
 
-        {//選択されたパネルにエフェクトを適応
-            view.setScaleX(1.15);
-            view.setScaleY(1.15);
+                final DropShadow effect = new DropShadow(20, Color.BLUE);//影つけて
+                effect.setInput(new Glow(0.5));//光らせる
+                view.setEffect(effect);
+            }
 
-            final DropShadow effect = new DropShadow(20, Color.BLUE);//影つけて
-            effect.setInput(new Glow(0.5));//光らせる
-            view.setEffect(effect);
+            game = NextGame;
+
+            Logger.INST.debug("ContentsAreaController#setGame() call");
+            contentsAreaController.setGame(game);
+
+            {
+                final String name = NextGame.getName().orElse("");
+                NameLabel.setText("[P-" + NextGame.getGameID().orElse(0) + "]" + name);
+            }
+
+            if (!NextGame.getDesc().isPresent()) {
+                Logger.INST.debug("No desc!");
+            }
+
+            DescriptionLabel.setText(NextGame.getDesc().orElse(""));
+            DescriptionLabel.setPadding(Insets.EMPTY);
+            DescriptionLabel.autosize();
         }
-
-        game = NextGame;
-
-        Logger.INST.debug("ContentsAreaController#setGame() call");
-        contentsAreaController.setGame(game);
-
-        {
-            final String name = NextGame.getName().orElse("");
-            NameLabel.setText("[P-" + NextGame.getGameID().orElse(0) + "]" + name);
-        }
-
-        if(!NextGame.getDesc().isPresent()){
-            Logger.INST.debug("No desc!");
-        }
-
-        DescriptionLabel.setText(NextGame.getDesc().orElse(""));
-        DescriptionLabel.setPadding(Insets.EMPTY);
-        DescriptionLabel.autosize();
 
         if(event.getClickCount() != 2)return;//ダブルクリックじゃない
 
