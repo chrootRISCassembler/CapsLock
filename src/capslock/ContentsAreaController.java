@@ -1,12 +1,16 @@
 package capslock;
 
 import game_info.GameEntry;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.util.Duration;
 
 import java.nio.file.Path;
 import java.util.Iterator;
@@ -19,8 +23,7 @@ final class ContentsAreaController {
     private final Region parentRegion;
     private final MediaView mediaView;
     private final ImageView imageView;
-
-    private volatile Timer timer;
+    private final Timeline imageTimer;
 
     private volatile Iterator<Path> movieIterator;
     private volatile Iterator<Path> imageIterator;
@@ -31,6 +34,9 @@ final class ContentsAreaController {
         this.parentRegion = pane;
         this.mediaView = mediaView;
         this.imageView = imageView;
+
+        imageTimer = new Timeline(new KeyFrame(Duration.millis(IMAGE_DISPLAY_INTERVAL_MS), dummy -> onImageEnd()));
+        imageTimer.setCycleCount(Animation.INDEFINITE);
     }
 
     final void setGame(GameEntry game){
@@ -55,6 +61,22 @@ final class ContentsAreaController {
         }
     }
 
+    final void suspend(){
+        if(game == null ||
+                game.getMovieList().isEmpty() && game.getImageList().isEmpty())return;
+
+        imageTimer.pause();
+        player.pause();
+    }
+
+    final void resume(){
+        if(game == null ||
+                game.getMovieList().isEmpty() && game.getImageList().isEmpty())return;
+
+        if(imageTimer.getStatus() == Animation.Status.PAUSED)imageTimer.play();
+        if(player.getStatus() == MediaPlayer.Status.PAUSED)player.play();
+    }
+
     private void onMovieEnd(){
         mediaView.setMediaPlayer(null);
         player.dispose();
@@ -67,8 +89,6 @@ final class ContentsAreaController {
     }
 
     private void onImageEnd(){
-        timer.cancel();
-
         if(imageIterator.hasNext()){
             displayImage();
         }else{
@@ -89,6 +109,7 @@ final class ContentsAreaController {
     }
 
     private void onImageExhaust(){
+        imageTimer.stop();
         imageIterator = game.getImageList().iterator();
 
         if(movieIterator.hasNext()){
@@ -117,14 +138,7 @@ final class ContentsAreaController {
         final Image image = new Image(imageIterator.next().toUri().toString());
         imageView.setImage(image);
         imageView.setFitWidth(parentRegion.getWidth());
-
-        timer = new Timer(true);
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                onImageEnd();
-            }
-        }, IMAGE_DISPLAY_INTERVAL_MS);
+        imageTimer.play();
     }
 
     private void clear(){
@@ -133,11 +147,7 @@ final class ContentsAreaController {
             player = null;
         }
 
-        if(timer != null){
-            timer.cancel();
-            timer = null;
-        }
-
+        imageTimer.stop();
         mediaView.setMediaPlayer(null);
         imageView.setImage(null);
     }
