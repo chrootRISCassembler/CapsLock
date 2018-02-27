@@ -1,6 +1,7 @@
 package capslock;
 
 import javafx.animation.*;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -8,6 +9,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -23,7 +25,6 @@ public final class AchievementWindow {
     volatile private boolean isDisplayed = false;
     private final Stage stage;
     private final HBox hBox;
-    private final Scene scene;
 
     public AchievementWindow(Image icon, String message){
         final ImageView iconView = new ImageView(icon);
@@ -32,7 +33,7 @@ public final class AchievementWindow {
         //hBox.setBackground(Background.EMPTY);
         hBox.setStyle("-fx-background-color: rgba(100,0,0,0.3);");
 
-        scene = new Scene(hBox);
+        final Scene scene = new Scene(hBox);
         scene.setFill(Color.TRANSPARENT);
 
         stage = new Stage(StageStyle.TRANSPARENT);
@@ -51,20 +52,22 @@ public final class AchievementWindow {
         isDisplayed = true;
         stage.show();
 
-        final double width = scene.getWidth() * WINDOW_WIDTH_RATIO;
-        final double height = scene.getHeight() * WINDOW_HEIGHT_RATIO;
+        final Rectangle2D displayRect = Screen.getPrimary().getBounds();
+
+        final double width = displayRect.getWidth() * WINDOW_WIDTH_RATIO;
+        final double height = displayRect.getHeight() * WINDOW_HEIGHT_RATIO;
 
         hBox.resize(width, height);
 
-        hBox.relocate(scene.getWidth() - width - scene.getWidth() * MARGIN_LEFT_RIGHT_RATIO,
-                scene.getHeight());
+        hBox.relocate(displayRect.getWidth() - width - displayRect.getWidth() * MARGIN_LEFT_RIGHT_RATIO,
+                displayRect.getHeight());
 
         final FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), hBox);
         fadeIn.setFromValue(0);
         fadeIn.setToValue(1);
 
         final TranslateTransition moveUp = new TranslateTransition(Duration.seconds(1), hBox);
-        moveUp.setByY(- height - scene.getHeight() * MARGIN_TOP_BOTTOM_RATIO);
+        moveUp.setByY(- height - displayRect.getHeight() * MARGIN_TOP_BOTTOM_RATIO);
 
         final ParallelTransition in = new ParallelTransition(fadeIn, moveUp);
         final PauseTransition pause = new PauseTransition(Duration.seconds(1));
@@ -73,7 +76,7 @@ public final class AchievementWindow {
         fadeOut.setToValue(0);
 
         final TranslateTransition moveRight = new TranslateTransition(Duration.seconds(1), hBox);
-        moveRight.setByX(width + scene.getWidth() * MARGIN_LEFT_RIGHT_RATIO);
+        moveRight.setByX(width + displayRect.getWidth() * MARGIN_LEFT_RIGHT_RATIO);
 
         final ParallelTransition out = new ParallelTransition(fadeOut, moveRight);
         final SequentialTransition sequence = new SequentialTransition(in, pause, out);
