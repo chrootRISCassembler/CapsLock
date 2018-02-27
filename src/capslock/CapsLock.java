@@ -44,8 +44,6 @@ import java.util.concurrent.Executors;
  * エントリポイント.
  */
 public final class CapsLock extends Application {
-	private WarningTimer warning=new WarningTimer();
-
 	private static final Path CONFIG_FILE = Paths.get("./config.properties");
     private static final ExecutorService executor = Executors.newWorkStealingPool();
     private MainHandler handler;
@@ -110,8 +108,6 @@ public final class CapsLock extends Application {
 
             final Scene scene=new Scene(root);
             scene.setOnKeyPressed(event -> PushKey(event, controller));
-            EventHandler<MouseEvent>    sceneClickFilter= ( event ) -> warning.Start();
-            scene.addEventFilter( MouseEvent.MOUSE_PRESSED , sceneClickFilter );
             stage.setScene(scene);
             stage.setOnShown(event -> handler.onLoad(event));
             stage.setTitle("CapsLock");
@@ -135,7 +131,6 @@ public final class CapsLock extends Application {
             case F1:
                 System.err.println("F1_Key_Pushed");
                 controller.ShufflePanels();
-                warning.Stop();
                 break;
             default:
                 break;
