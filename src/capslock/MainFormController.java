@@ -139,7 +139,7 @@ public final class MainFormController implements Initializable {
     }
 
     void onGameLaunched(){
-
+        contentsAreaController.suspend();
     }
 
     void onLaunchFailed(){
@@ -147,7 +147,7 @@ public final class MainFormController implements Initializable {
     }
 
     void onGameQuit(){
-
+        contentsAreaController.resume();
     }
 
     @FXML

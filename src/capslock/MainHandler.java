@@ -81,8 +81,6 @@ class MainHandler {
 
             try {
                 gameProcess = pb.start();
-                // LogHandler.inst.finest("StopMovie");
-                // playstop.stop();
             } catch (SecurityException ex){
                 Logger.INST.critical("Blocked by security software.").logException(ex);
                 onLaunchFailed();
