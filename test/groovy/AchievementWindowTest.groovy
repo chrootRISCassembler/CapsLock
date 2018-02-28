@@ -1,9 +1,12 @@
 import capslock.AchievementWindow
+import javafx.scene.image.Image
 import javafx.stage.Stage
 import org.testfx.api.FxToolkit
 import org.testfx.framework.spock.ApplicationSpec
 import trivial_logger.LogLevel
 import trivial_logger.Logger
+
+import java.nio.file.Paths
 
 class AchievementWindowTest extends ApplicationSpec {
     def achievementWindow
@@ -18,7 +21,8 @@ class AchievementWindowTest extends ApplicationSpec {
 
     @Override
     void start(Stage stage) {
-        achievementWindow = new AchievementWindow(null, "message")
+        final Image icon = new Image(Paths.get("./hourglass.png").toUri().toString())
+        achievementWindow = new AchievementWindow(icon, "message")
         achievementWindow.display()
     }
 
