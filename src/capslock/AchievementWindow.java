@@ -7,7 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
@@ -23,17 +23,34 @@ public final class AchievementWindow {
     private static final double MARGIN_TOP_BOTTOM_RATIO = 0.1;
     private static final double MARGIN_LEFT_RIGHT_RATIO = 0.08;
 
+    private static final double ICON_RATIO = 0.1;
+
     volatile private boolean isDisplayed = false;
     private final Stage stage;
-    private final HBox hBox;
+    private final AnchorPane rootPane;
+    private final ImageView iconView;
+
+    //private final HBox hBox;
 
     public AchievementWindow(Image icon, String message){
-        final ImageView iconView = new ImageView(icon);
+        iconView = new ImageView(icon);
+        iconView.setPreserveRatio(true);
         final Label label = new Label(message);
-        hBox = new HBox(iconView, label);
-        hBox.setStyle("-fx-background-color: rgba(0,0,0,0);");
+        label.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
-        final Scene scene = new Scene(hBox);
+        //iconView.
+        label.setGraphic(iconView);
+        //System.err.println("ImageView resizable ? " + iconView.isResizable());
+
+        AnchorPane.setBottomAnchor(label, 0.0);
+        AnchorPane.setLeftAnchor(label, 0.0);
+        AnchorPane.setRightAnchor(label, 0.0);
+        AnchorPane.setTopAnchor(label, 0.0);
+
+        rootPane = new AnchorPane(label);
+        rootPane.setStyle("-fx-background-color: rgba(0,0,0,0);");
+
+        final Scene scene = new Scene(rootPane);
         scene.setFill(Color.TRANSPARENT);
 
         stage = new Stage(StageStyle.TRANSPARENT);
@@ -62,27 +79,29 @@ public final class AchievementWindow {
         //Stage#show()を呼び出す前にHBox#resize()やHBox#relocate()を呼び出すと表示がおかしくなる
         stage.show();
 
-        hBox.resize(width, height);
+        rootPane.resize(width, height);
 
-        hBox.relocate(displayRect.getWidth() - width - displayRect.getWidth() * MARGIN_LEFT_RIGHT_RATIO,
+        rootPane.relocate(displayRect.getWidth() - width - displayRect.getWidth() * MARGIN_LEFT_RIGHT_RATIO,
                 displayRect.getHeight());
 
-        hBox.setStyle("-fx-background-color: rgba(100,0,0,1);");
+        rootPane.setStyle("-fx-background-color: rgba(100,0,0,1);");
 
-        final FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), hBox);
+        iconView.setFitWidth(width * ICON_RATIO);
+
+        final FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), rootPane);
         fadeIn.setFromValue(0);
         fadeIn.setToValue(1);
 
-        final TranslateTransition moveUp = new TranslateTransition(Duration.seconds(1), hBox);
+        final TranslateTransition moveUp = new TranslateTransition(Duration.seconds(1), rootPane);
         moveUp.setByY(- height - displayRect.getHeight() * MARGIN_TOP_BOTTOM_RATIO);
 
         final ParallelTransition in = new ParallelTransition(fadeIn, moveUp);
         final PauseTransition pause = new PauseTransition(Duration.seconds(1));
-        final FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), hBox);
+        final FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), rootPane);
         fadeOut.setFromValue(1);
         fadeOut.setToValue(0);
 
-        final TranslateTransition moveRight = new TranslateTransition(Duration.seconds(1), hBox);
+        final TranslateTransition moveRight = new TranslateTransition(Duration.seconds(1), rootPane);
         moveRight.setByX(width + displayRect.getWidth() * MARGIN_LEFT_RIGHT_RATIO);
 
         final ParallelTransition out = new ParallelTransition(fadeOut, moveRight);
