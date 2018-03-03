@@ -1,9 +1,10 @@
+import java.awt.Desktop
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
 group 'CapsLock'
-version '1.0'
+version '1.0.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'application'
@@ -151,4 +152,35 @@ task forceUpdateLib{
             throw ex
         }
     }
+}
+
+task game_infoPackageJar(type: Jar) {
+    from "build/classes/java/main/game_info"
+    baseName = 'game_info'
+}
+
+task game_infoJavadocJar(type: Jar, dependsOn: javadoc){
+    classifier = 'javadoc'
+    baseName = 'game_info'
+    from javadoc.destinationDir
+}
+
+javadoc {
+    include 'game_info/*'
+
+    options.charSet = 'UTF-8'
+    options.encoding = 'UTF-8'
+    options.links "https://docs.oracle.com/javase/jp/8/docs/api/"
+
+    doLast{
+        //デフォルトブラウザで生成したjavadocを自動で開く
+        def userDir = System.getProperty("user.dir")
+        def indexURI = new URI(userDir.replace('\\', '/') + "/build/docs/javadoc/index.html")
+        Desktop.getDesktop().browse(indexURI)
+    }
+}
+
+artifacts {
+    archives game_infoPackageJar
+    archives game_infoJavadocJar
 }
