@@ -19,17 +19,15 @@
 package capslock;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
-import trivial_logger.LogLevel;
-import trivial_logger.Logger;
+import methg.commonlib.trivial_logger.LogLevel;
+import methg.commonlib.trivial_logger.Logger;
 
 import java.io.IOException;
 import java.io.Reader;

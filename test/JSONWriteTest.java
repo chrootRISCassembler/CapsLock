@@ -1,4 +1,4 @@
-import file_checker.FileChecker;
+import methg.commonlib.file_checker.FileChecker;
 import game_info.GameInfoBuilder;
 import game_info.GameRecord;
 import game_info.JSONDBWriter;

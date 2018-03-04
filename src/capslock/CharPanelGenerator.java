@@ -30,7 +30,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import trivial_logger.Logger;
+import methg.commonlib.trivial_logger.Logger;
 
 /**
  * Generates a square panel image from char.

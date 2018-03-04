@@ -50,7 +50,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
 
-import trivial_logger.Logger;
+import methg.commonlib.trivial_logger.Logger;
 
 /**
  * メインフォームのFXMLコントローラークラス.

@@ -14,7 +14,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import trivial_logger.Logger;
+import methg.commonlib.trivial_logger.Logger;
 
 
 public final class AchievementWindow {

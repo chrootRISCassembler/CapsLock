@@ -7,7 +7,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import trivial_logger.Logger;
+import methg.commonlib.trivial_logger.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
