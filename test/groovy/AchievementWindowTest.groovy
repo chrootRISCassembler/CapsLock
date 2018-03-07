@@ -3,8 +3,8 @@ import javafx.scene.image.Image
 import javafx.stage.Stage
 import org.testfx.api.FxToolkit
 import org.testfx.framework.spock.ApplicationSpec
-import trivial_logger.LogLevel
-import trivial_logger.Logger
+import methg.commonlib.trivial_logger.LogLevel
+import methg.commonlib.trivial_logger.Logger
 
 import java.nio.file.Paths
 
