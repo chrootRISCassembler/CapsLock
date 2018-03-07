@@ -18,17 +18,9 @@
 
 package capslock.capslock.main;
 
-import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-
 import capslock.game_info.GameEntry;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
@@ -49,13 +41,16 @@ import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
-
 import methg.commonlib.trivial_logger.Logger;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * メインフォームのFXMLコントローラークラス.
  */
-public final class MainFormController implements Initializable {
+public final class MainFormController{
 
     /** Constants */
     private static final double PANEL_RATIO = 0.25;
@@ -75,10 +70,6 @@ public final class MainFormController implements Initializable {
     @FXML private Label NameLabel;
     @FXML private Label DescriptionLabel;
     @FXML private Button playButton;
-
-    @Override
-    public void initialize(URL url, ResourceBundle rb){
-    }
 
     void onCreated(MainHandler handler){
         this.handler = handler;
