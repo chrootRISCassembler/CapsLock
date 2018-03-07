@@ -1,4 +1,4 @@
-package capslock;
+package capslock.capslock.main;
 
 import javafx.animation.*;
 import javafx.geometry.Rectangle2D;

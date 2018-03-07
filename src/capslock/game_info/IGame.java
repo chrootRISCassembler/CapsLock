@@ -16,7 +16,7 @@
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package game_info;
+package capslock.game_info;
 
 import java.nio.file.Path;
 import java.time.Instant;

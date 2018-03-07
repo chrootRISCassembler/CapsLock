@@ -1,7 +1,7 @@
 import methg.commonlib.file_checker.FileChecker;
-import game_info.GameInfoBuilder;
-import game_info.GameRecord;
-import game_info.JSONDBWriter;
+import capslock.game_info.GameInfoBuilder;
+import capslock.game_info.GameRecord;
+import capslock.game_info.JSONDBWriter;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 

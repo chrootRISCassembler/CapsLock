@@ -1,5 +1,5 @@
-import game_info.GameEntry;
-import game_info.JSONDBReader;
+import capslock.game_info.GameEntry;
+import capslock.game_info.JSONDBReader;
 import org.testng.Assert;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.Parameters;

@@ -1,4 +1,4 @@
-package game_info;
+package capslock.game_info;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

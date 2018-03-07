@@ -1,6 +1,6 @@
-package capslock;
+package capslock.capslock.main;
 
-import game_info.GameEntry;
+import capslock.game_info.GameEntry;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

@@ -1,4 +1,4 @@
-import capslock.AchievementWindow
+import capslock.capslock.main.AchievementWindow
 import javafx.scene.image.Image
 import javafx.stage.Stage
 import org.testfx.api.FxToolkit

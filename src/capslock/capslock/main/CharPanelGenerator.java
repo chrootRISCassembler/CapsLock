@@ -16,7 +16,7 @@
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package capslock;
+package capslock.capslock.main;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

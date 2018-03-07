@@ -1,7 +1,7 @@
-package capslock;
+package capslock.capslock.main;
 
-import game_info.GameEntry;
-import game_info.JSONDBReader;
+import capslock.game_info.GameEntry;
+import capslock.game_info.JSONDBReader;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

@@ -16,7 +16,7 @@
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package capslock;
+package capslock.capslock.main;
 
 import java.net.URL;
 import java.util.Collections;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-import game_info.GameEntry;
+import capslock.game_info.GameEntry;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
