@@ -55,7 +55,7 @@ public final class GameRecord implements IGame {
         lastMod = builder.getLastMod().orElse(null);
         panel = builder.getPanel().orElse(null);
         imageList = builder.getImageList();
-        movieList = builder.getImageList();
+        movieList = builder.getMovieList();
         gameID = builder.getGameID().orElse(null);
 
         uuidProperty = new SimpleStringProperty(uuid.toString());
