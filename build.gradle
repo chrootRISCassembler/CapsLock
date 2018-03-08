@@ -155,7 +155,9 @@ task forceUpdateLib{
 }
 
 task game_infoPackageJar(type: Jar) {
-    from "build/classes/java/main/capslock/game_info"
+    from(sourceSets.main.output) {
+        include 'capslock/game_info/**'
+    }
     baseName = 'game_info'
 }
 
