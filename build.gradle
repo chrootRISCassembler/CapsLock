@@ -7,6 +7,8 @@ group 'CapsLock'
 version '1.0.0-SNAPSHOT'
 
 apply plugin: 'java'
+sourceCompatibility = 1.8
+
 apply plugin: "groovy"
 
 apply plugin: 'application'
@@ -15,9 +17,7 @@ startScripts.enabled = false
 distZip.enabled = false
 distTar.enabled = false
 
-
-sourceCompatibility = 1.8
-
+apply plugin: 'com.github.johnrengelman.shadow'
 
 repositories {
     mavenCentral()
@@ -25,6 +25,15 @@ repositories {
 
     flatDir{
         dirs 'lib'
+    }
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
     }
 }
 
@@ -61,7 +70,11 @@ sourceSets{
     }
 }
 
-
+jar{
+    manifest{
+        attributes 'Main-Class': mainClassName
+    }
+}
 
 task cpFXMLandCSS(type : Copy){
     from 'src/capslock/capslock/main/MainForm.css'
