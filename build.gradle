@@ -7,12 +7,17 @@ group 'CapsLock'
 version '1.0.0-SNAPSHOT'
 
 apply plugin: 'java'
-apply plugin: 'application'
 apply plugin: "groovy"
+
+apply plugin: 'application'
+mainClassName = 'capslock.capslock.main.CapsLock'
+startScripts.enabled = false
+distZip.enabled = false
+distTar.enabled = false
+
 
 sourceCompatibility = 1.8
 
-mainClassName = 'capslock.capslock.main.CapsLock'
 
 repositories {
     mavenCentral()
