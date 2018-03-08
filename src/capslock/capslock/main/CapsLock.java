@@ -102,12 +102,12 @@ public final class CapsLock extends Application {
         try {
             final MainFormController controller = (MainFormController)loader.getController();
 
-            handler = new MainHandler(controller);
+            MainHandler.INST.setController(controller);
 
             final Scene scene=new Scene(root);
             scene.setOnKeyPressed(event -> PushKey(event, controller));
             stage.setScene(scene);
-            stage.setOnShown(event -> handler.onLoad(event));
+            stage.setOnShown(event -> MainHandler.INST.onLoad(event));
             stage.setTitle("CapsLock");
             stage.setFullScreen(true);
             stage.setAlwaysOnTop(true);

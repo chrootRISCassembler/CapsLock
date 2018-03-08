@@ -15,11 +15,13 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
-class MainHandler {
-    private static final Path JSON_DB_PATH = Paths.get("./GamesInfo.json");
-    private static final int WARN_INTERVAL_MINUTE = 5;
+enum MainHandler {
+    INST;
 
-    private final MainFormController controller;
+    private final Path JSON_DB_PATH = Paths.get("./GamesInfo.json");
+    private final int WARN_INTERVAL_MINUTE = 5;
+
+    private MainFormController controller;
     private final List<GameEntry> gameList;
     private boolean onCreatedDispatched = false;
     private int pastMinutes = 0;
@@ -27,9 +29,11 @@ class MainHandler {
 
     private Process gameProcess = null;
 
-    MainHandler(MainFormController controller){
+    void setController(MainFormController controller){
         this.controller = controller;
+    }
 
+    private MainHandler(){
         timer = new Timeline(new KeyFrame(Duration.minutes(WARN_INTERVAL_MINUTE), event -> {
             pastMinutes += WARN_INTERVAL_MINUTE;
             final AchievementWindow warn = new AchievementWindow(null,
