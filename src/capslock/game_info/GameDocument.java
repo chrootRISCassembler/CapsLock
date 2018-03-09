@@ -23,6 +23,13 @@ import java.util.UUID;
 public final class GameDocument extends Game {
 
     /**
+     * 新規登録用コンストラクタ.UUIDが自動でセットされる.
+     */
+    public GameDocument(){
+        uuid = UUID.randomUUID();
+    }
+
+    /**
      * UUIDを置換する.
      * UUIDはゲームを特性する主キーである.登録情報の整合性が取れなくなる可能性があるため注意して使用する.
      * @param newUUID 新しいUUID{@link UUID}
