@@ -1,5 +1,21 @@
+/*
+    Copyright (C) 2018 RISCassembler
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 package capslock.game_info;
 
+import methg.commonlib.file_checker.FileChecker;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -11,69 +27,49 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * JSONファイルからゲーム情報を読み出して{@link GameDocument}オブジェクトを作成する.
+ */
 public final class JSONDBReader {
-    private final String rawString;
-    private final int docCount;
-    private List<GameInfoBuilder> games;
+    private final List<GameDocument> gameList;
 
-    public JSONDBReader(Path filePath) throws IllegalArgumentException {
-        boolean failedToLoad = false;
+    /**
+     * ゲーム情報を読み出すJSONパスを指定してインスタンスを作成する.ファイル内容は直ちに読み出される.
+     * @param filePath JSONファイルのパス.
+     * @throws IllegalArgumentException 不正なファイルパスを渡した
+     * @throws IOException ファイル読み込み中にエラーが発生した
+     */
+    public JSONDBReader(Path filePath) throws IllegalArgumentException, IOException {
+        final String JSONRawString = Files.newBufferedReader
+                (
+                        new FileChecker(filePath)
+                        .onCannotWrite(dummy -> true)
+                        .onCanExec(dummy -> true)
+                        .check()
+                        .orElseThrow(IllegalArgumentException::new)
+                )
+                .lines()
+                .collect(Collectors.joining());
 
-        String JSON_String = "";
+        final List<GameDocument> mutableGameList = new ArrayList<>();
 
-        try{
-            JSON_String = Files.newBufferedReader(filePath).lines()
-                    .collect(Collectors.joining());
-
-        } catch (SecurityException ex) {//セキュリティソフト等に読み込みを阻害されたとき
-            System.err.println("File-loading is blocked by security manager");
-            ex.printStackTrace();
-            failedToLoad = true;
-        } catch (IOException ex) {
-            System.err.println("Failed to open " + filePath.toString());
-            ex.printStackTrace();
-            failedToLoad = true;
-        } catch(Exception ex) {
-            System.err.println("Unexpected Exception!");
-            ex.printStackTrace();
-            failedToLoad = true;
-        }
-
-        if(failedToLoad)throw new IllegalArgumentException();
-
-        rawString = JSON_String;
-        List<GameInfoBuilder> builderList = new ArrayList<>();
-        int loadedGamesCount = 0;
-
-        for (Object unchecked : new JSONArray(JSON_String)){
+        for (Object unchecked : new JSONArray(JSONRawString)){
             System.out.println(unchecked.getClass());
             System.out.println(unchecked);
             if(unchecked instanceof JSONObject){
-                final GameInfoBuilder builder = new GameInfoBuilder((JSONObject) unchecked);
-                builderList.add(builder);
-                loadedGamesCount++;
+                final GameDocument document = new GameDocument((JSONObject) unchecked);
+                mutableGameList.add(document);
             }
             System.err.println();
         }
 
-        games = Collections.unmodifiableList(builderList);
-
-        docCount = loadedGamesCount;
-
+        gameList = Collections.unmodifiableList(mutableGameList);
     }
 
-    public final int getDocCount(){return docCount;}
-
-    public final String getRawString() {return rawString;}
-    public final List<GameRecord> toGameRecordList() {
-        return Collections.emptyList();
+    /**
+     * {@link GameDocument}のリストを返す.
+     */
+    public final List<GameDocument> getDocumentList(){
+        return gameList;
     }
-
-    public final List<GameEntry> toGameEntryList(){
-        return games.stream()
-                .filter(builder -> builder.canBuild())
-                .map(builder -> builder.buildGameEntry())
-                .collect(Collectors.toList());
-    }
-
 }

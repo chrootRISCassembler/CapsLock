@@ -15,8 +15,13 @@
 
 package capslock.game_info;
 
+import methg.commonlib.file_checker.FileChecker;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,6 +32,156 @@ public final class GameDocument extends Game {
      */
     public GameDocument(){
         uuid = UUID.randomUUID();
+    }
+
+    /**
+     * このコンストラクタは{@link JSONDBReader}からのみ呼び出される.
+     * 依存ライブラリの型が外部に漏れることを防ぐため,このコンストラクタはpackage-privateである.
+     */
+    GameDocument(JSONObject document){
+        try {
+            uuid = UUID.fromString(document.getString("UUID"));
+        }catch (JSONException ex){
+            if(document.has("UUID")) {
+                System.err.println("There is \"UUID\" key, but wrong value.");
+            }else {
+                System.err.println("There is no \"UUID\" field. This field is necessary.");
+            }
+            ex.printStackTrace();
+        }catch (IllegalArgumentException ex){
+            System.err.println("There is \"UUID\" key, but wrong value. This is not a UUID.");
+            ex.printStackTrace();
+        }
+
+//        if(uuid == null){
+//            uuid = UUID.randomUUID();
+//            System.err.println("UUID isn't set.");
+//            System.err.println("");
+//        }
+
+        ExeField: try {
+            final String uncheckedString = document.getString("exe");
+            if(uncheckedString.isEmpty()){
+                System.err.println("\"exe\" field is empty String.");
+                break ExeField;
+            }
+
+            exe = new FileChecker(uncheckedString)
+                    .onNotExists(file -> {
+                        System.err.println("Warning : exe file isn't found.");
+                        return true;
+                    })
+                    .onCanExec(dummy -> true)
+                    .onCannotRead(file -> true)
+                    .onCannotWrite(dummy -> true)
+                    .check()
+                    .get();
+
+        }catch (JSONException ex){
+            if(document.has("exe")) {
+                System.err.println("There is \"exe\" key, but wrong value.");
+            }else {
+                System.err.println("There is no \"exe\" key. \"exe\" field is necessary.");
+            }
+            ex.printStackTrace();
+        }
+
+        try {
+            name = document.getString("name");
+        }catch (JSONException ex){
+            if(document.has("name")) {
+                System.err.println("There is \"name\" key, but wrong value.");
+                ex.printStackTrace();
+            }
+        }
+
+        try {
+            lastMod = Instant.parse(document.getString("lastMod"));
+        }catch (JSONException ex){
+            if(document.has("lastMod")) {
+                System.err.println("There is \"lastMod\" key, but wrong value.");
+                ex.printStackTrace();
+            }
+        }
+
+        try {
+            desc = document.getString("desc");
+        }catch (JSONException ex){
+            if(document.has("desc")) {
+                System.err.println("There is \"desc\" key, but wrong value.");
+                ex.printStackTrace();
+            }
+        }
+
+        try {
+            panel = new FileChecker(document.getString("panel"))
+                    .onNotExists(dummy -> {
+                        System.err.println("Warning : panel file isn't found.");
+                        return true;
+                    })
+                    .onCanExec(dummy -> {
+                        //余計なパーミッションの警告
+                        return true;
+                    })
+                    .onCannotWrite(dummy -> true)
+                    .check()
+                    .get();
+
+        }catch (JSONException ex){
+            if(document.has("panel")) {
+                System.err.println("There is \"panel\" key, but wrong value.");
+                ex.printStackTrace();
+            }
+        }
+
+        if(document.has("imageList")){
+            imageList = new ArrayList<>();
+            for (final Object unchecked : document.getJSONArray("imageList")){
+                new FileChecker((String)unchecked)
+                        .onNotExists(dummy -> {
+                            System.err.println("Warning : image file isn't found.");
+                            return true;
+                        })
+                        .onCanExec(dummy -> {
+                            //余計なパーミッションの警告
+                            return true;
+                        })
+                        .onCannotWrite(dummy -> true)
+                        .check()
+                        .ifPresent(path -> imageList.add(path));
+            }
+        }
+
+
+        if(document.has("movieList")){
+            movieList = new ArrayList<>();
+            for (final Object unchecked : document.getJSONArray("movieList")){
+                new FileChecker((String)unchecked)
+                        .onNotExists(dummy -> {
+                            System.err.println("Warning : movie file isn't found.");
+                            return true;
+                        })
+                        .onCanExec(dummy -> {
+                            //余計なパーミッションの警告
+                            return true;
+                        })
+                        .onCannotWrite(dummy -> true)
+                        .check()
+                        .ifPresent(path -> movieList.add(path));
+            }
+        }
+
+        try {
+            gameID = document.getInt("gameID");
+            if(Integer.signum(gameID) != 1){
+                System.err.println("\"gameID\" field must be natural number and unique. But the value is " + gameID + '.');
+            }
+        }catch (JSONException ex){
+            if(document.has("gameID")) {
+                System.err.println("There is \"gameID\" key, but wrong value.");
+                ex.printStackTrace();
+            }
+        }
     }
 
     /**

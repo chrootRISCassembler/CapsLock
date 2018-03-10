@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-abstract class Game {
+public abstract class Game {
     protected UUID uuid;
     protected Path exe;
     protected String name;
