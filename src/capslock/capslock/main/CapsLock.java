@@ -72,8 +72,7 @@ public final class CapsLock extends Application {
 
         if (args.length == 2){
             Logger.INST.info("Run as confirm mode.");
-            MainHandler.INST.loadJSONDB(args[0]);
-            System.setProperty("user.dir", args[1]);
+            MainHandler.INST.loadJSONDB(args[0], args[1]);
         }else{
             MainHandler.INST.loadJSONDB();
         }

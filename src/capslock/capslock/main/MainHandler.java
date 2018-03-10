@@ -1,6 +1,7 @@
 package capslock.capslock.main;
 
 import capslock.game_info.Game;
+import capslock.game_info.GameDocument;
 import capslock.game_info.JSONDBReader;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -13,9 +14,9 @@ import methg.commonlib.trivial_logger.Logger;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 enum MainHandler {
     INST;
@@ -66,20 +67,21 @@ enum MainHandler {
 
     /**
      * confirmモード時のJSONの読み出し
-     * @param path 1つのゲームだけが登録されたJSONファイルのパス
+     * @param JSONPath 1つのゲームだけが登録されたJSONファイルのパス
+     * @param realGameRoot ゲームのルートディレクトリ
      */
-    final void loadJSONDB(String path){
-        if(path == null){
+    final void loadJSONDB(String JSONPath, String realGameRoot){
+        if(JSONPath == null){
             Logger.INST.critical("(in ConfirmMode) JSON path is null.");
             return;
         }
 
-        if(path.isEmpty()){
+        if(JSONPath.isEmpty()){
             Logger.INST.critical("(in ConfirmMode) JSON path is empty.");
             return;
         }
 
-        final Optional<Path> tmpJSONFile = new FileChecker(path)
+        final Optional<Path> tmpJSONFile = new FileChecker(JSONPath)
                 .onCannotWrite(dummy -> true)
                 .onCanExec(dummy -> true)
                 .check();
@@ -98,11 +100,40 @@ enum MainHandler {
             return;
         }
 
-        gameList = Collections.unmodifiableList(reader.getDocumentList());
+        final UnaryOperator<Path> closure = (final Path phantomPath) -> {
+            final Iterator<Path> pathElementIterator = phantomPath.iterator();
+            pathElementIterator.next();// Gamesディレクトリを無視
+            pathElementIterator.next();// ゲームのルートディレクトリを無視
 
-        if(gameList.size() != 1){
-            Logger.INST.critical("(in ConfirmMode) Loaded " + gameList.size() + " games.");
-        }
+            final StringBuilder buf = new StringBuilder(realGameRoot);
+            buf.append('/');
+            pathElementIterator.forEachRemaining(buf::append);
+            return Paths.get(buf.toString());
+        };
+
+        final GameDocument doc = reader.getDocumentList().get(0);
+        doc.setExe(closure.apply(doc.getExe()));
+        doc.setPanel(closure.apply(doc.getPanel()));
+        doc.setImageList(
+                doc.getImageList().stream()
+                .map(closure)
+                .collect(Collectors.toList())
+        );
+        doc.setMovieList(
+                doc.getMovieList().stream()
+                .map(closure)
+                .collect(Collectors.toList())
+        );
+
+        final List<Game> fixedGame = new ArrayList<>(1);
+        fixedGame.add(doc);
+
+        System.err.println(doc.getExe());
+        System.err.println(doc.getPanel());
+        System.err.println(doc.getImageList());
+        System.err.println(doc.getMovieList());
+
+        gameList = Collections.unmodifiableList(fixedGame);
     }
 
     void onLoad(WindowEvent event){
@@ -126,8 +157,7 @@ enum MainHandler {
 
             final String ExePathString = game.getExe().toString();
             final ProcessBuilder pb = new ProcessBuilder(ExePathString);
-            final Path gameDir = Paths.get(System.getProperty("user.dir") + "\\" + game.getExe());
-            pb.directory(gameDir.getParent().toFile());
+            pb.directory(game.getExe().getParent().toFile());
             pb.redirectErrorStream(true);
 
             Logger.INST.debug("Try to launch " + ExePathString);
