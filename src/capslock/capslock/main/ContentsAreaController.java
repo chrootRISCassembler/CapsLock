@@ -1,6 +1,6 @@
 package capslock.capslock.main;
 
-import capslock.game_info.GameEntry;
+import capslock.game_info.Game;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -27,7 +27,7 @@ final class ContentsAreaController {
 
     private volatile Iterator<Path> movieIterator;
     private volatile Iterator<Path> imageIterator;
-    private volatile GameEntry game;
+    private volatile Game game;
     private volatile MediaPlayer player = null;
 
     ContentsAreaController(Region pane, MediaView mediaView, ImageView imageView){
@@ -39,7 +39,7 @@ final class ContentsAreaController {
         imageTimer.setCycleCount(Animation.INDEFINITE);
     }
 
-    final void setGame(GameEntry game){
+    final void setGame(Game game){
         clear();
 
         this.game = game;

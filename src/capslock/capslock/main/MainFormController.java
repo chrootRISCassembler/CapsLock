@@ -18,7 +18,7 @@
 
 package capslock.capslock.main;
 
-import capslock.game_info.GameEntry;
+import capslock.game_info.Game;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -43,6 +43,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import methg.commonlib.trivial_logger.Logger;
 
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,7 +59,7 @@ public final class MainFormController{
 
     private MainHandler handler;
     private ContentsAreaController contentsAreaController;
-    private volatile GameEntry game;
+    private volatile Game game;
 
     /** FXML binding */
     @FXML private ScrollPane LeftScrollPane;
@@ -105,12 +106,15 @@ public final class MainFormController{
 
         final ColorSequencer sequencer = new ColorSequencer();
         final Tooltip tooltip = new Tooltip("ダブルクリックでゲーム起動");
-        for(final GameEntry game : handler.getGameList()){
+        for(final Game game : handler.getGameList()){
 
-            final Image panelImage = game.mapPanelImage().orElseGet(() -> {
-                Logger.INST.info(() -> game.getUUID() + " has no panel.");
-                return CharPanelGenerator.generate(game.getName().orElse("?").charAt(0), sequencer.get());
-            });
+            final Image panelImage;
+            final Path panelPath = game.getPanel();
+            if(panelPath == null){
+                panelImage = CharPanelGenerator.generate(game.getName().charAt(0), sequencer.get());
+            }else{
+                panelImage = new Image(panelPath.toUri().toString());
+            }
 
             final ImageView view = new ImageView(panelImage);
 
@@ -150,7 +154,7 @@ public final class MainFormController{
         if(!event.getButton().equals(MouseButton.PRIMARY))return;//右クリックじゃない
 
         final ImageView view = (ImageView)event.getSource();//クリックされたパネルの取得
-        final GameEntry NextGame = (GameEntry)view.getUserData();//パネルが示すゲーム
+        final Game NextGame = (Game)view.getUserData();//パネルが示すゲーム
 
         if(game != NextGame) {
 
@@ -174,15 +178,15 @@ public final class MainFormController{
             contentsAreaController.setGame(game);
 
             {
-                final String name = NextGame.getName().orElse("");
-                NameLabel.setText("[P-" + NextGame.getGameID().orElse(0) + "]" + name);
+                final String name = NextGame.getName();
+                NameLabel.setText("[P-" + NextGame.getGameID() + "]" + name);
             }
 
-            if (!NextGame.getDesc().isPresent()) {
+            if (NextGame.getDesc() == null) {
                 Logger.INST.debug("No desc!");
             }
 
-            DescriptionLabel.setText(NextGame.getDesc().orElse(""));
+            DescriptionLabel.setText(NextGame.getDesc());
             DescriptionLabel.setPadding(Insets.EMPTY);
             DescriptionLabel.autosize();
         }

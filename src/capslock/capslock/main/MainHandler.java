@@ -1,6 +1,6 @@
 package capslock.capslock.main;
 
-import capslock.game_info.GameEntry;
+import capslock.game_info.Game;
 import capslock.game_info.JSONDBReader;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -22,7 +22,7 @@ enum MainHandler {
     private final int WARN_INTERVAL_MINUTE = 5;
 
     private MainFormController controller;
-    private final List<GameEntry> gameList;
+    private final List<Game> gameList;
     private boolean onCreatedDispatched = false;
     private int pastMinutes = 0;
     private final Timeline timer;
@@ -45,14 +45,14 @@ enum MainHandler {
         final JSONDBReader reader;
         try {
             reader = new JSONDBReader(JSON_DB_PATH);
-        }catch (IllegalArgumentException ex) {
+        }catch (IllegalArgumentException | IOException ex) {
             Logger.INST.warn("Failed to load game's information.");
             Logger.INST.logException(ex);
             gameList = Collections.emptyList();
             return;
         }
 
-        gameList = Collections.unmodifiableList(reader.toGameEntryList());
+        gameList = Collections.unmodifiableList(reader.getDocumentList());
         Logger.INST.info(gameList.size() + " games detected.");
     }
 
@@ -64,11 +64,11 @@ enum MainHandler {
         }
     }
 
-    List<GameEntry> getGameList(){
+    List<Game> getGameList(){
         return gameList;
     }
 
-    void launch(GameEntry game){
+    void launch(Game game){
         if(gameProcess != null){
             Logger.INST.debug("Game launched already ; ignore launch request.");
         }
@@ -112,7 +112,7 @@ enum MainHandler {
     }
 
 
-    void onGameLaunched(GameEntry game){
+    void onGameLaunched(Game game){
         Logger.INST.info(() -> game.getExe() + " is launched successfully.");
         timer.play();
         controller.onGameLaunched();
