@@ -47,7 +47,8 @@ public final class CapsLock extends Application {
     private MainHandler handler;
 
     /**
-     * @param args the command line arguments
+     * @param args コマンドライン引数. confirmモード時はargs[0]にJSONファイルのパス, args[1]にゲームの実行ファイルパス
+     *             を渡す.
      */
     public static void main(String[] args) {
         Logger.INST.setCurrentLogLevel(LogLevel.DEBUG);
@@ -68,6 +69,14 @@ public final class CapsLock extends Application {
         }
 
         Logger.INST.info("CapsLock started.");
+
+        if (args.length == 2){
+            Logger.INST.info("Run as confirm mode.");
+            MainHandler.INST.loadJSONDB(args[0]);
+            System.setProperty("user.dir", args[1]);
+        }else{
+            MainHandler.INST.loadJSONDB();
+        }
 
         launch(args);
 
@@ -107,7 +116,7 @@ public final class CapsLock extends Application {
             final Scene scene=new Scene(root);
             scene.setOnKeyPressed(event -> PushKey(event, controller));
             stage.setScene(scene);
-            stage.setOnShown(event -> MainHandler.INST.onLoad(event));
+            stage.setOnShown(MainHandler.INST::onLoad);
             stage.setTitle("CapsLock");
             stage.setFullScreen(true);
             stage.setAlwaysOnTop(true);
