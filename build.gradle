@@ -44,7 +44,6 @@ buildscript {
 dependencies {
     compile group: 'org.json', name: 'json', version:  '+'
     testCompile 'org.codehaus.groovy:groovy-all:2.5.0-beta-2'
-    testCompile 'org.testng:testng:6.+'
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
     testCompile group: "org.testfx", name: "testfx-core", version: "4.0.8-alpha"
     testCompile group: 'org.testfx', name: 'testfx-spock', version: '4.0.12-alpha'
@@ -93,15 +92,7 @@ run {
     println("cd to the testing environment : " + workingDir)
 }
 
-task testNG (type: Test) {
-    workingDir = '../TestEnv'
-    useTestNG() {
-        suites 'test/game_infoTest.xml'
-    }
-}
-
 test{
-    dependsOn testNG
 }
 
 compileJava.doFirst {
