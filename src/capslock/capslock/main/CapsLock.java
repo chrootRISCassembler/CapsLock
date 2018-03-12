@@ -44,8 +44,9 @@ public final class CapsLock extends Application {
     private static final ExecutorService executor = Executors.newWorkStealingPool();
 
     /**
-     * @param args コマンドライン引数. confirmモード時はargs[0]にJSONファイルのパス, args[1]にゲームの実行ファイルパス
-     *             を渡す.
+     * デフォルトのエントリポイント.
+     * 別アプリケーションからこのプログラムを起動するときは{@link CapsLock#InjectionPoint}から起動する.
+     * @param args 変な引数を注入されてもいいよう,無視する.
      */
     public static void main(String[] args) {
         Logger.INST.setCurrentLogLevel(LogLevel.DEBUG);
@@ -67,12 +68,7 @@ public final class CapsLock extends Application {
 
         Logger.INST.info("CapsLock started.");
 
-        if (args.length == 2){
-            Logger.INST.info("Run as confirm mode.");
-            MainHandler.INST.loadJSONDB(args[0], args[1]);
-        }else{
-            MainHandler.INST.loadJSONDB();
-        }
+        MainHandler.INST.loadJSONDB();
 
         launch(args);
 
@@ -81,7 +77,7 @@ public final class CapsLock extends Application {
     }
 
     @Override
-    public void start(Stage stage){
+    public final void start(Stage stage){
         Logger.INST.debug("Application#start called.");
 
         final FXMLLoader loader;
@@ -127,7 +123,7 @@ public final class CapsLock extends Application {
      * 他のJavaFXアプリケーションからこのプログラムを起動する時のエントリポイント.
      * JVM上で@{link {@link Application#launch(String...)}}を2回呼び出しては行けないため,この関数から起動する
      */
-    public void InjectionPoint(Stage stage, String JSONPath, String realGameRootDir){
+    public final void InjectionPoint(Stage stage, Path JSONPath, String realGameRootDir){
         Logger.INST.info("CapsLock#InjectionPoint in");
         MainHandler.INST.loadJSONDB(JSONPath, realGameRootDir);
         start(stage);

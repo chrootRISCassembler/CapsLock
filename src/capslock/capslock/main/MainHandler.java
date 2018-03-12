@@ -70,16 +70,7 @@ enum MainHandler {
      * @param JSONPath 1つのゲームだけが登録されたJSONファイルのパス
      * @param realGameRoot ゲームのルートディレクトリ
      */
-    final void loadJSONDB(String JSONPath, String realGameRoot){
-        if(JSONPath == null){
-            Logger.INST.critical("(in ConfirmMode) JSON path is null.");
-            return;
-        }
-
-        if(JSONPath.isEmpty()){
-            Logger.INST.critical("(in ConfirmMode) JSON path is empty.");
-            return;
-        }
+    final void loadJSONDB(Path JSONPath, String realGameRoot){
 
         final Optional<Path> tmpJSONFile = new FileChecker(JSONPath)
                 .onCannotWrite(dummy -> true)
