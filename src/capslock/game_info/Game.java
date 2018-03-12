@@ -76,11 +76,11 @@ public abstract class Game {
                 .put("UUID", uuid)
                 .put("exe", exe);
 
-        if (name != null && name.isEmpty()) json.put("name", name);
+        if (name != null && !name.isEmpty()) json.put("name", name);
 
         if (lastMod != null) json.put("lastMod", lastMod.toString());
 
-        if (desc != null && desc.isEmpty()) json.put("desc", desc);
+        if (desc != null && !desc.isEmpty()) json.put("desc", desc);
 
         if (panel != null) json.put("panel", panel);
 
