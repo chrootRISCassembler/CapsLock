@@ -127,6 +127,17 @@ public final class CapsLock extends Application {
         }
     }
 
+    /**
+     * 他のJavaFXアプリケーションからこのプログラムを起動する時のエントリポイント.
+     * JVM上で@{link {@link Application#launch(String...)}}を2回呼び出しては行けないため,この関数から起動する
+     */
+    public void InjectionPoint(Stage stage, String JSONPath, String realGameRootDir){
+        Logger.INST.info("CapsLock#InjectionPoint in");
+        MainHandler.INST.loadJSONDB(JSONPath, realGameRootDir);
+        start(stage);
+        Logger.INST.info("CapsLock#InjectionPoint out");
+    }
+
     static ExecutorService getExecutor() {
         return executor;
     }
