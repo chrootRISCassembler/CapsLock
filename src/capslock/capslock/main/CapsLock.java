@@ -70,7 +70,7 @@ public final class CapsLock extends Application {
 
         MainHandler.INST.loadJSONDB();
 
-        launch(args);
+        launch();
 
         Logger.INST.info("CapsLock terminated.");
         Logger.INST.flush();
