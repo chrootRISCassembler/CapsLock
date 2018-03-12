@@ -22,8 +22,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import methg.commonlib.trivial_logger.LogLevel;
@@ -44,7 +42,6 @@ import java.util.concurrent.Executors;
 public final class CapsLock extends Application {
 	private static final Path CONFIG_FILE = Paths.get("./config.properties");
     private static final ExecutorService executor = Executors.newWorkStealingPool();
-    private MainHandler handler;
 
     /**
      * @param args コマンドライン引数. confirmモード時はargs[0]にJSONファイルのパス, args[1]にゲームの実行ファイルパス
@@ -113,7 +110,6 @@ public final class CapsLock extends Application {
             MainHandler.INST.setController(controller);
 
             final Scene scene=new Scene(root);
-            scene.setOnKeyPressed(event -> PushKey(event, controller));
             stage.setScene(scene);
             stage.setOnShown(MainHandler.INST::onLoad);
             stage.setTitle("CapsLock");
@@ -140,17 +136,5 @@ public final class CapsLock extends Application {
 
     static ExecutorService getExecutor() {
         return executor;
-    }
-
-    private void  PushKey(KeyEvent event, MainFormController controller) {
-    	final KeyCode code = event.getCode();
-        switch(code){
-            case F1:
-                System.err.println("F1_Key_Pushed");
-                controller.ShufflePanels();
-                break;
-            default:
-                break;
-	}
     }
 }
