@@ -14,8 +14,6 @@ import javafx.util.Duration;
 
 import java.nio.file.Path;
 import java.util.Iterator;
-import java.util.Timer;
-import java.util.TimerTask;
 
 final class ContentsAreaController {
     private static final int IMAGE_DISPLAY_INTERVAL_MS = 5000;

@@ -23,7 +23,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
 import methg.commonlib.trivial_logger.LogLevel;
 import methg.commonlib.trivial_logger.Logger;
 

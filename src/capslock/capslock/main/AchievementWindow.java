@@ -30,17 +30,13 @@ public final class AchievementWindow {
     private final AnchorPane rootPane;
     private final ImageView iconView;
 
-    //private final HBox hBox;
-
     public AchievementWindow(Image icon, String message){
         iconView = new ImageView(icon);
         iconView.setPreserveRatio(true);
         final Label label = new Label(message);
         label.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
-        //iconView.
         label.setGraphic(iconView);
-        //System.err.println("ImageView resizable ? " + iconView.isResizable());
 
         AnchorPane.setBottomAnchor(label, 0.0);
         AnchorPane.setLeftAnchor(label, 0.0);
