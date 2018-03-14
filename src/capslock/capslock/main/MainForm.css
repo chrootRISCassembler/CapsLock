@@ -19,16 +19,20 @@
 #LeftScrollPane{
     -fx-focus-color: -fx-control-inner-background;
     -fx-faint-focus-color: -fx-control-inner-background;
-    -fx-background-color: gray;
+    -fx-background-color: #434343;
     -fx-padding: 0;
 }
 
+.scroll-pane > .viewport{
+    -fx-background-color: #434343;
+}
+
 #LeftTilePane{
-    -fx-background-color: gray;
+    -fx-background-color: #434343;
 }
 
 #RightVBox{
-    -fx-background-color: grey;
+    -fx-background-color: #434343;
 }
 
 .label{
