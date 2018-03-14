@@ -115,6 +115,7 @@ final class ContentsAreaController {
     }
 
     private void onMovieExhaust(){
+        movieIterator = game.getMovieList().iterator();
         if(imageIterator.hasNext()) {
             player = null;
             displayImage();
