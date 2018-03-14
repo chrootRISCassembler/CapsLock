@@ -212,4 +212,11 @@ public final class MainFormController{
         
         System.out.println("shuffle end");
     }
+
+    /**
+     * ランチャー終了時に呼び出される.
+     */
+    final void onTerminate(){
+        contentsAreaController.kill();
+    }
 }

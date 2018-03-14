@@ -201,4 +201,11 @@ enum MainHandler {
         pastMinutes = 0;
         controller.onGameQuit();
     }
+
+    /**
+     * ランチャー終了時に呼び出される.
+     */
+    void onTerminate(){
+        controller.onTerminate();
+    }
 }

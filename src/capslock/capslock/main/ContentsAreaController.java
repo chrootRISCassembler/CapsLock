@@ -77,6 +77,24 @@ final class ContentsAreaController {
         if(player.getStatus() == MediaPlayer.Status.PAUSED)player.play();
     }
 
+    /**
+     * リソースを解放する.
+     * <p>動画関係のクラスは参照が無くなってもGCに回収されないため,このメソッドを呼び出して解放する.</p>
+     */
+    final void kill(){
+        if(player != null){
+            player.stop();
+            player.dispose();
+            player = null;
+        }
+
+        if(movieIterator != null){
+            movieIterator = null;
+        }
+
+        mediaView.setMediaPlayer(null);
+    }
+
     private void onMovieEnd(){
         mediaView.setMediaPlayer(null);
         player.dispose();

@@ -108,6 +108,7 @@ public final class CapsLock extends Application {
             final Scene scene=new Scene(root);
             stage.setScene(scene);
             stage.setOnShown(MainHandler.INST::onLoad);
+            stage.setOnCloseRequest(event -> MainHandler.INST.onTerminate());
             stage.setTitle("CapsLock");
             stage.setFullScreen(true);
             stage.setAlwaysOnTop(true);
