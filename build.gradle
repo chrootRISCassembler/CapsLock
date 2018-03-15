@@ -56,38 +56,20 @@ tasks.withType(JavaCompile){
     options.encoding = 'UTF-8'
 }
 
-sourceSets{
-    main {
-        java{
-            srcDirs 'src'
-        }
-    }
-
-    test {
-        java{
-            srcDir 'test'
-        }
-        groovy {
-            srcDirs = ['test/groovy']
-        }
-    }
-}
-
 jar{
     manifest{
         attributes 'Main-Class': mainClassName
     }
 }
 
-task cpFXMLandCSS(type : Copy){
-    from 'src/capslock/capslock/main/MainForm.css'
-    from 'src/capslock/capslock/main/MainForm.fxml'
+task cpResources(type : Copy){
+    from 'src/main/resources'
     into 'build/classes/java/main/capslock/capslock/main'
 }
 
 run {
     println("Current directory is " + workingDir)
-    tasks.cpFXMLandCSS.execute()
+    tasks.cpResources.execute()
     workingDir = '../TestEnv'
     println("cd to the testing environment : " + workingDir)
 }
