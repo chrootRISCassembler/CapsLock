@@ -222,5 +222,6 @@ enum MainHandler {
      */
     void onTerminate(){
         controller.onTerminate();
+        onCreatedDispatched = false;//登録ツールから起動されたとき用
     }
 }
