@@ -15,6 +15,7 @@
 
 import java.awt.Desktop
 import java.nio.file.Files
+import java.nio.file.LinkOption
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.time.LocalDateTime
@@ -102,8 +103,38 @@ run {
     println("cd to the testing environment : " + workingDir)
 }
 
-test{
+class PrivateLibDownload{
+    private static final String GitHubRepository = 'https://github.com/chrootRISCassembler/dependence/raw/master/'
+    String libName
+    String libVersion
+    String jarName(){libName + '-' + libVersion + '.jar'}
+    def localJarPath(){Paths.get(System.getProperty("user.dir") + "/lib/" + jarName())}
+
+    void downloadLibJar(){
+        try {
+            URL url = new URL(GitHubRepository + jarName())
+            InputStream inStream = url.openStream()
+            Files.copy(inStream, localJarPath(), StandardCopyOption.REPLACE_EXISTING)
+            println "Download succeeded "
+        } catch (Exception ex) {
+            println "Download failed"
+            throw ex
+        }
+    }
+
+    void downloadIfNotExist(){
+        if(Files.exists(localJarPath(), LinkOption.NOFOLLOW_LINKS))downloadLibJar()
+    }
 }
+
+final fileChecker = new PrivateLibDownload()
+fileChecker.libName = "FileChecker"
+fileChecker.libVersion = "1.1.1-SNAPSHOT"
+
+final trivialLogger = new PrivateLibDownload()
+trivialLogger.libName = "TrivialLogger"
+trivialLogger.libVersion = "1.1.1-SNAPSHOT"
+
 
 compileJava.doFirst {
     def libDir = Paths.get(System.getProperty("user.dir") + "/lib/")
