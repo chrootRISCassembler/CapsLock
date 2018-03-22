@@ -178,7 +178,7 @@ task game_infoPackageJar(type: Jar) {
     from(sourceSets.main.output) {
         include 'capslock/game_info/**'
     }
-    version = '1.0.0-SNAPSHOT'
+    version = '1.0.1-SNAPSHOT'
     baseName = 'game_info'
 }
 
@@ -186,7 +186,7 @@ task game_infoJavadocJar(type: Jar, dependsOn: javadoc){
     classifier = 'javadoc'
     baseName = 'game_info'
     from javadoc.destinationDir
-    version = '1.0.0-SNAPSHOT'
+    version = '1.0.1-SNAPSHOT'
 }
 
 javadoc {

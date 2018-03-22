@@ -58,7 +58,8 @@ public final class JSONDBWriter {
      * @throws IOException ファイル書き込み中にエラーが発生した.
      */
     public final void flush() throws IOException{
-        try(final BufferedWriter writer = Files.newBufferedWriter(filePath, StandardOpenOption.CREATE)){
+        try(final BufferedWriter writer = Files.newBufferedWriter(filePath,
+                StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)){
             gameList.write(writer);
         } catch (IOException ex) {
             System.err.println("Failed to write on " + filePath);
