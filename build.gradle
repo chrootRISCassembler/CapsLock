@@ -72,12 +72,15 @@ tasks.withType(JavaCompile){
     options.encoding = 'UTF-8'
 }
 
-processResources.doLast {
-    def buildInfoFile = new File(processResources.destinationDir.path + '/BuildInfo.txt')
-    buildInfoFile.bytes = []
-    buildInfoFile << 'version : ' + version + '\n'
-    buildInfoFile << 'git_commit_hash : ' +  'git rev-parse HEAD'.execute().text.trim()  + '\n'
-    buildInfoFile << 'date : ' + LocalDateTime.now()
+processResources{
+    exclude 'MainForm.*'
+    doLast {
+        def buildInfoFile = new File(processResources.destinationDir.path + '/BuildInfo.txt')
+        buildInfoFile.bytes = []
+        buildInfoFile << 'version : ' + version + '\n'
+        buildInfoFile << 'git_commit_hash : ' +  'git rev-parse HEAD'.execute().text.trim()  + '\n'
+        buildInfoFile << 'date : ' + LocalDateTime.now()
+    }
 }
 
 jar{
