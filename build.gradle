@@ -49,6 +49,38 @@ repositories {
     }
 }
 
+class PrivateLibDownload{
+    private static final String GitHubRepository = 'https://github.com/chrootRISCassembler/dependence/raw/master/'
+    String libName
+    String libVersion
+    String jarName(){libName + '-' + libVersion + '.jar'}
+    def localJarPath(){Paths.get(System.getProperty("user.dir") + "/lib/" + jarName())}
+
+    void downloadLibJar(){
+        try {
+            URL url = new URL(GitHubRepository + jarName())
+            InputStream inStream = url.openStream()
+            Files.copy(inStream, localJarPath(), StandardCopyOption.REPLACE_EXISTING)
+            println "Download " + libName +  " succeeded"
+        } catch (Exception ex) {
+            println "Download " + libName + " failed"
+            throw ex
+        }
+    }
+
+    void downloadIfNotExist(){
+        if(Files.exists(localJarPath(), LinkOption.NOFOLLOW_LINKS))downloadLibJar()
+    }
+}
+
+final fileChecker = new PrivateLibDownload()
+fileChecker.libName = "FileChecker"
+fileChecker.libVersion = "1.1.1-SNAPSHOT"
+
+final trivialLogger = new PrivateLibDownload()
+trivialLogger.libName = "TrivialLogger"
+trivialLogger.libVersion = "1.1.1-SNAPSHOT"
+
 buildscript {
     repositories {
         jcenter()
@@ -65,8 +97,8 @@ dependencies {
     testCompile group: "org.testfx", name: "testfx-core", version: "4.0.8-alpha"
     testCompile group: 'org.testfx', name: 'testfx-spock', version: '4.0.12-alpha'
 
-    compile name: "file_checker"
-    compile name: "trivial_logger"
+    compile name: fileChecker.libName, version: fileChecker.libVersion
+    compile name: trivialLogger.libName, version: trivialLogger.libVersion
 }
 
 tasks.withType(JavaCompile){
@@ -103,108 +135,24 @@ run {
     println("cd to the testing environment : " + workingDir)
 }
 
-class PrivateLibDownload{
-    private static final String GitHubRepository = 'https://github.com/chrootRISCassembler/dependence/raw/master/'
-    String libName
-    String libVersion
-    String jarName(){libName + '-' + libVersion + '.jar'}
-    def localJarPath(){Paths.get(System.getProperty("user.dir") + "/lib/" + jarName())}
-
-    void downloadLibJar(){
-        try {
-            URL url = new URL(GitHubRepository + jarName())
-            InputStream inStream = url.openStream()
-            Files.copy(inStream, localJarPath(), StandardCopyOption.REPLACE_EXISTING)
-            println "Download succeeded "
-        } catch (Exception ex) {
-            println "Download failed"
-            throw ex
-        }
-    }
-
-    void downloadIfNotExist(){
-        if(Files.exists(localJarPath(), LinkOption.NOFOLLOW_LINKS))downloadLibJar()
-    }
-}
-
-final fileChecker = new PrivateLibDownload()
-fileChecker.libName = "FileChecker"
-fileChecker.libVersion = "1.1.1-SNAPSHOT"
-
-final trivialLogger = new PrivateLibDownload()
-trivialLogger.libName = "TrivialLogger"
-trivialLogger.libVersion = "1.1.1-SNAPSHOT"
-
-
 compileJava.doFirst {
     def libDir = Paths.get(System.getProperty("user.dir") + "/lib/")
     if (Files.notExists(libDir)) {
         Files.createDirectory(libDir)
     }
 
-    def file_checkerPath = Paths.get(System.getProperty("user.dir") + "/lib/file_checker.jar")
-    if (Files.notExists(file_checkerPath)) {
-        println "Downloading file_checker.jar ..."
-        try {
-            URL website = new URL("https://github.com/chrootRISCassembler/dependence/raw/master/file_checker-1.0.0-SNAPSHOT.jar")
-            InputStream inStream = website.openStream()
-            Files.copy(inStream, file_checkerPath, StandardCopyOption.REPLACE_EXISTING)
-
-            println "Download succeeded "
-        } catch (Exception ex) {
-            println "Download failed"
-            throw ex
-        }
-    }
-
-    def trivial_loggerPath = Paths.get(System.getProperty("user.dir") + "/lib/trivial_logger.jar")
-    if (Files.notExists(trivial_loggerPath)) {
-        println "Downloading trivial_logger.jar ..."
-        try {
-            URL website = new URL("https://github.com/chrootRISCassembler/dependence/raw/master/trivial_logger-1.0.0-SNAPSHOT.jar")
-            InputStream inStream = website.openStream()
-            Files.copy(inStream, trivial_loggerPath, StandardCopyOption.REPLACE_EXISTING)
-
-            println "Download succeeded "
-        } catch (Exception ex) {
-            println "Download failed"
-            throw ex
-        }
-    }
+    fileChecker.downloadIfNotExist()
+    trivialLogger.downloadIfNotExist()
 }
 
 task forceUpdateLib{
     doLast {
-        println "force update library"
-
         def libDir = Paths.get(System.getProperty("user.dir") + "/lib/")
         if (Files.notExists(libDir)) {
             Files.createDirectory(libDir)
         }
-
-        println "Downloading file_checker.jar ..."
-        try {
-            URL website = new URL("https://github.com/chrootRISCassembler/dependence/raw/master/file_checker-1.0.0-SNAPSHOT.jar")
-            InputStream inStream = website.openStream()
-            def file_checkerPath = Paths.get(System.getProperty("user.dir") + "/lib/file_checker.jar")
-            Files.copy(inStream, file_checkerPath, StandardCopyOption.REPLACE_EXISTING)
-            println "Download succeeded "
-        } catch (Exception ex) {
-            println "Download failed"
-            throw ex
-        }
-
-        println "Downloading trivial_logger.jar ..."
-        try {
-            URL website = new URL("https://github.com/chrootRISCassembler/dependence/raw/master/trivial_logger-1.0.0-SNAPSHOT.jar")
-            InputStream inStream = website.openStream()
-            def trivial_loggerPath = Paths.get(System.getProperty("user.dir") + "/lib/trivial_logger.jar")
-            Files.copy(inStream, trivial_loggerPath, StandardCopyOption.REPLACE_EXISTING)
-            println "Download succeeded "
-        } catch (Exception ex) {
-            println "Download failed"
-            throw ex
-        }
+        fileChecker.downloadLibJar()
+        trivialLogger.downloadLibJar()
     }
 }
 
