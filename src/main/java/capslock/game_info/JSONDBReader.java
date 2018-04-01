@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,19 +50,17 @@ public final class JSONDBReader {
                 .lines()
                 .collect(Collectors.joining());
 
-        final List<GameDocument> mutableGameList = new ArrayList<>();
+        gameList = new ArrayList<>();
 
         for (Object unchecked : new JSONArray(JSONRawString)){
             System.out.println(unchecked.getClass());
             System.out.println(unchecked);
             if(unchecked instanceof JSONObject){
                 final GameDocument document = new GameDocument((JSONObject) unchecked);
-                mutableGameList.add(document);
+                gameList.add(document);
             }
             System.err.println();
         }
-
-        gameList = Collections.unmodifiableList(mutableGameList);
     }
 
     /**

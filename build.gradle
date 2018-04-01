@@ -160,7 +160,7 @@ task game_infoPackageJar(type: Jar) {
     from(sourceSets.main.output) {
         include 'capslock/game_info/**'
     }
-    version = '1.0.1-SNAPSHOT'
+    version = '1.0.2-SNAPSHOT'
     baseName = 'game_info'
 }
 
