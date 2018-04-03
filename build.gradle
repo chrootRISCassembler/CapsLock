@@ -173,8 +173,6 @@ task game_infoJavadocJar(type: Jar, dependsOn: javadoc){
 }
 
 javadoc {
-    include 'game_info/*'
-
     options.charSet = 'UTF-8'
     options.encoding = 'UTF-8'
     options.links "https://docs.oracle.com/javase/10/docs/api/"
