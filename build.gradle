@@ -130,8 +130,8 @@ task cpResources(type : Copy){
 }
 
 run {
+    dependsOn cpResources
     println("Current directory is " + workingDir)
-    tasks.cpResources.execute()
     workingDir = '../TestEnv'
     println("cd to the testing environment : " + workingDir)
 }
@@ -177,7 +177,7 @@ javadoc {
 
     options.charSet = 'UTF-8'
     options.encoding = 'UTF-8'
-    options.links "https://docs.oracle.com/javase/jp/8/docs/api/"
+    options.links "https://docs.oracle.com/javase/10/docs/api/"
 
     doLast{
         //デフォルトブラウザで生成したjavadocを自動で開く
