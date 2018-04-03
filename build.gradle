@@ -28,7 +28,6 @@ sourceCompatibility = 10
 targetCompatibility = 10
 
 apply plugin: "groovy"
-//compileTestGroovy.enabled = false
 compileGroovy.enabled = false
 
 apply plugin: 'application'
@@ -71,7 +70,7 @@ class PrivateLibDownload{
     }
 
     void downloadIfNotExist(){
-        if(Files.exists(localJarPath(), LinkOption.NOFOLLOW_LINKS))downloadLibJar()
+        if(!Files.exists(localJarPath(), LinkOption.NOFOLLOW_LINKS))downloadLibJar()
     }
 }
 
@@ -143,8 +142,8 @@ compileJava.doFirst {
         Files.createDirectory(libDir)
     }
 
-    //fileChecker.downloadIfNotExist()
-    //trivialLogger.downloadIfNotExist()
+    fileChecker.downloadIfNotExist()
+    trivialLogger.downloadIfNotExist()
 }
 
 task forceUpdateLib{
@@ -162,7 +161,7 @@ task game_infoPackageJar(type: Jar) {
     from(sourceSets.main.output) {
         include 'capslock/game_info/**'
     }
-    version = '1.0.2-SNAPSHOT'
+    version = '2.0.0-SNAPSHOT'
     baseName = 'game_info'
 }
 
@@ -170,7 +169,7 @@ task game_infoJavadocJar(type: Jar, dependsOn: javadoc){
     classifier = 'javadoc'
     baseName = 'game_info'
     from javadoc.destinationDir
-    version = '1.0.1-SNAPSHOT'
+    version = '2.0.0-SNAPSHOT'
 }
 
 javadoc {
