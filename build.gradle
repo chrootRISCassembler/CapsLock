@@ -21,12 +21,14 @@ import java.nio.file.StandardCopyOption
 import java.time.LocalDateTime
 
 group 'CapsLock'
-version '2.0.2'
+version '3.0.0-SNAPSHOT'
 
 apply plugin: 'java'
-sourceCompatibility = 1.8
+sourceCompatibility = 10
+targetCompatibility = 10
 
 apply plugin: "groovy"
+compileTestGroovy.enabled = false
 compileGroovy.enabled = false
 
 apply plugin: 'application'
@@ -92,10 +94,10 @@ buildscript {
 
 dependencies {
     compile group: 'org.json', name: 'json', version:  '+'
-    testCompile 'org.codehaus.groovy:groovy-all:2.5.0-beta-2'
-    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
-    testCompile group: "org.testfx", name: "testfx-core", version: "4.0.8-alpha"
-    testCompile group: 'org.testfx', name: 'testfx-spock', version: '4.0.12-alpha'
+    //testCompile 'org.codehaus.groovy:groovy-all:2.5.0-beta-2'
+    //testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+    //testCompile group: "org.testfx", name: "testfx-core", version: "4.0.8-alpha"
+    //testCompile group: 'org.testfx', name: 'testfx-spock', version: '4.0.12-alpha'
 
     compile name: fileChecker.libName, version: fileChecker.libVersion
     compile name: trivialLogger.libName, version: trivialLogger.libVersion
@@ -141,8 +143,8 @@ compileJava.doFirst {
         Files.createDirectory(libDir)
     }
 
-    fileChecker.downloadIfNotExist()
-    trivialLogger.downloadIfNotExist()
+    //fileChecker.downloadIfNotExist()
+    //trivialLogger.downloadIfNotExist()
 }
 
 task forceUpdateLib{
