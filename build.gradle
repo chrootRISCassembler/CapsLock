@@ -75,12 +75,16 @@ class PrivateLibDownload{
 }
 
 final fileChecker = new PrivateLibDownload()
-fileChecker.libName = "FileChecker"
-fileChecker.libVersion = "1.1.1-SNAPSHOT"
+fileChecker.libName = 'FileChecker'
+fileChecker.libVersion = '1.1.1-SNAPSHOT'
 
 final trivialLogger = new PrivateLibDownload()
-trivialLogger.libName = "TrivialLogger"
-trivialLogger.libVersion = "1.1.1-SNAPSHOT"
+trivialLogger.libName = 'TrivialLogger'
+trivialLogger.libVersion = '1.1.1-SNAPSHOT'
+
+final gameInfo = new PrivateLibDownload()
+gameInfo.libName = 'game_info'
+gameInfo.libVersion = '1.0.2-SNAPSHOT'
 
 buildscript {
     repositories {
@@ -100,6 +104,7 @@ dependencies {
 
     compile name: fileChecker.libName, version: fileChecker.libVersion
     compile name: trivialLogger.libName, version: trivialLogger.libVersion
+    compile name: gameInfo.libName, version: gameInfo.libVersion
 }
 
 tasks.withType(JavaCompile){
@@ -144,6 +149,7 @@ compileJava.doFirst {
 
     fileChecker.downloadIfNotExist()
     trivialLogger.downloadIfNotExist()
+    gameInfo.downloadIfNotExist()
 }
 
 task forceUpdateLib{
@@ -154,22 +160,8 @@ task forceUpdateLib{
         }
         fileChecker.downloadLibJar()
         trivialLogger.downloadLibJar()
+        gameInfo.downloadLibJar()
     }
-}
-
-task game_infoPackageJar(type: Jar) {
-    from(sourceSets.main.output) {
-        include 'capslock/game_info/**'
-    }
-    version = '2.0.0-SNAPSHOT'
-    baseName = 'game_info'
-}
-
-task game_infoJavadocJar(type: Jar, dependsOn: javadoc){
-    classifier = 'javadoc'
-    baseName = 'game_info'
-    from javadoc.destinationDir
-    version = '2.0.0-SNAPSHOT'
 }
 
 javadoc {
@@ -183,9 +175,4 @@ javadoc {
         def indexURI = new URI(userDir.replace('\\', '/') + "/build/docs/javadoc/index.html")
         Desktop.getDesktop().browse(indexURI)
     }
-}
-
-artifacts {
-    archives game_infoPackageJar
-    archives game_infoJavadocJar
 }
