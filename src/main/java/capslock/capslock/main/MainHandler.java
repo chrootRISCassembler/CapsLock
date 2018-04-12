@@ -15,6 +15,7 @@
 
 package capslock.capslock.main;
 
+import capslock.capslock.gamepad.GamepadHandler;
 import capslock.game_info.Game;
 import capslock.game_info.GameDocument;
 import capslock.game_info.JSONDBReader;
@@ -46,6 +47,8 @@ enum MainHandler {
     private final Timeline timer;
 
     private Process gameProcess = null;
+
+    private GamepadHandler gamepadHandler;
 
     void setController(MainFormController controller){
         this.controller = controller;
@@ -148,6 +151,8 @@ enum MainHandler {
             onCreatedDispatched = true;
             controller.onCreated(this);
         }
+        gamepadHandler = new GamepadHandler();
+        gamepadHandler.pool();
     }
 
     List<Game> getGameList(){
