@@ -21,7 +21,7 @@ import java.nio.file.StandardCopyOption
 import java.time.LocalDateTime
 
 group 'CapsLock'
-version '3.1.0-RC'
+version '3.1.1-RC'
 
 apply plugin: 'java'
 sourceCompatibility = 10
@@ -113,13 +113,6 @@ tasks.withType(JavaCompile){
 
 processResources{
     exclude 'MainForm.*'
-    doLast {
-        def buildInfoFile = new File(processResources.destinationDir.path + '/BuildInfo.txt')
-        buildInfoFile.bytes = []
-        buildInfoFile << 'version : ' + version + '\n'
-        buildInfoFile << 'git_commit_hash : ' +  'git rev-parse HEAD'.execute().text.trim()  + '\n'
-        buildInfoFile << 'date : ' + LocalDateTime.now()
-    }
 }
 
 jar{
@@ -127,6 +120,14 @@ jar{
         attributes 'Main-Class': mainClassName
     }
     println version
+}
+
+shadowJar.doFirst {
+    def buildInfoFile = new File(System.getProperty("user.dir") + '/src/main/resources/BuildInfo.txt')
+    buildInfoFile.bytes = []
+    buildInfoFile << 'version : ' + version + '\n'
+    buildInfoFile << 'git_commit_hash : ' +  'git rev-parse HEAD'.execute().text.trim()  + '\n'
+    buildInfoFile << 'date : ' + LocalDateTime.now()
 }
 
 task cpResources(type : Copy){
