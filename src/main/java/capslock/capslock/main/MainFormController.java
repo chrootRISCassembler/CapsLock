@@ -128,6 +128,29 @@ public final class MainFormController{
 
         Logger.INST.debug("MainForm window is displayed.");
         System.gc();
+
+        onPanelClicked(new MouseEvent(
+                PanelTilePane.getChildren().get(0),
+                null,
+                MouseEvent.MOUSE_CLICKED,
+                0,
+                0,
+                0,
+                0,
+                MouseButton.PRIMARY,
+                1,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                null
+        ));
     }
 
     void onGameLaunched(){
