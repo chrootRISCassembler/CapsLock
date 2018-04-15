@@ -15,6 +15,7 @@
 
 package capslock.capslock.main;
 
+import capslock.capslock.gamepad.Gamepad;
 import capslock.capslock.gamepad.GamepadHandler;
 import capslock.game_info.Game;
 import capslock.game_info.GameDocument;
@@ -151,8 +152,47 @@ enum MainHandler {
             onCreatedDispatched = true;
             controller.onCreated(this);
         }
-        gamepadHandler = new GamepadHandler();
-        gamepadHandler.pool();
+        gamepadHandler = new GamepadHandler(new Gamepad() {
+            @Override
+            public void onOkButtonReleased() {
+                System.out.println("Ok button");
+            }
+
+            @Override
+            public void onCancelButtonReleased() {
+                System.out.println("Cancel button");
+            }
+
+            @Override
+            public void onRight() {
+                System.out.println("Right");
+            }
+
+            @Override
+            public void onLeft() {
+                System.out.println("Left");
+            }
+
+            @Override
+            public void onUp() {
+                System.out.println("Up");
+            }
+
+            @Override
+            public void onDown() {
+                System.out.println("Down");
+            }
+        });
+        CapsLock.getExecutor().execute(() -> {
+            while (true){
+                gamepadHandler.pool();
+                try {
+                    Thread.sleep(20);
+                }catch (InterruptedException ex){
+                    Logger.INST.logException(ex);
+                }
+            }
+        });
     }
 
     List<Game> getGameList(){

@@ -1,31 +1,25 @@
 package capslock.capslock.gamepad;
 
-import net.java.games.input.Component;
-import net.java.games.input.Controller;
-import net.java.games.input.ControllerEnvironment;
+import methg.commonlib.trivial_logger.Logger;
+import net.java.games.input.*;
 
 public class GamepadHandler {
-    private final Controller gamepad;
+    private final Controller gamepadController;
+    private final Gamepad notionalGamepad;
+    private CDST rightCDST = CDST.positive(0.3f, 0.7f);
+    private CDST leftCDST = CDST.negative(-0.3f, -0.7f);
+    private CDST upCDST = CDST.negative(-0.3f, -0.7f);
+    private CDST downCDST = CDST.positive(0.3f, 0.7f);
 
-    private enum XAxisInput{
-        RIGHT,
-        NEUTRAL,
-        LEFT;
+    public GamepadHandler(Gamepad gamepad) {
+        notionalGamepad = gamepad;
+        gamepadController = getGamepadController();
+        if (gamepadController == null) return;
+
+        Logger.INST.info("Gamepad is found.");
     }
 
-    private enum YAxisInput{
-        UP,
-        NEUTRAL,
-        DOWN;
-    }
-
-    public GamepadHandler(){
-        gamepad = getGamepad();
-        if(gamepad == null)return;
-
-    }
-
-    private Controller getGamepad(){
+    private Controller getGamepadController() {
         for (final var controller : ControllerEnvironment.getDefaultEnvironment().getControllers()) {
             if (controller != null && controller.getType() == Controller.Type.GAMEPAD) {
                 return controller;
@@ -34,45 +28,46 @@ public class GamepadHandler {
         return null;
     }
 
-    public final void pool(){
-        System.out.println("pool called");
-        if(gamepad == null)return;
+    public final void pool() {
+        if (gamepadController == null) return;
 
-        System.out.println("pool not return");
+        if (!gamepadController.poll()) {
+            Logger.INST.warn("Gamepad is not valid");
+        }
 
-        if(gamepad.poll()){
-            final var Xinput = getXAxisInput();
-            switch (Xinput){
-                case RIGHT:
-                case LEFT:
+        final EventQueue eventQueue = gamepadController.getEventQueue();
+        final var event = new Event();
+        while (eventQueue.getNextEvent(event)) {
+            final var type = event.getComponent().getIdentifier();
+
+            if (type.equals(Component.Identifier.Axis.X)) {
+                final float val = event.getValue();
+                if (val > 0.0f) {
+                    if (rightCDST.test(val)) notionalGamepad.onRight();
+                } else if (val < -0.0f) {
+                    if (leftCDST.test(val)) notionalGamepad.onLeft();
+                }
             }
 
-            final var Yinput = getYAxisInput();
-            switch (Yinput){
-                case UP:
-                case DOWN:
+            if (type.equals(Component.Identifier.Axis.Y)) {
+                final float val = event.getValue();
+                if (val > 0.0f) {
+                    if (downCDST.test(val)) notionalGamepad.onDown();
+                } else if (val < -0.0f) {
+                    if (upCDST.test(val)) notionalGamepad.onUp();
+                }
+            }
+
+
+            if (type.equals(Component.Identifier.Button._0)) {
+                if (event.getValue() != 0.0f) continue;
+                notionalGamepad.onOkButtonReleased();
+            }
+
+            if (type.equals(Component.Identifier.Button._1)) {
+                if (event.getValue() != 0.0f) continue;
+                notionalGamepad.onCancelButtonReleased();
             }
         }
-        System.out.println("pool OK");
-    }
-
-    private XAxisInput getXAxisInput(){
-        final float x = gamepad.getComponent(Component.Identifier.Axis.X).getPollData();
-        if(x > 1.0f){
-            return XAxisInput.RIGHT;
-        }else if(x < -1.0f){
-            return XAxisInput.LEFT;
-        }
-        return XAxisInput.NEUTRAL;
-    }
-
-    private YAxisInput getYAxisInput(){
-        final float y = gamepad.getComponent(Component.Identifier.Axis.Y).getPollData();
-        if(y > 1.0f){
-            return YAxisInput.UP;
-        }else if(y < -1.0f){
-            return YAxisInput.DOWN;
-        }
-        return YAxisInput.NEUTRAL;
     }
 }
