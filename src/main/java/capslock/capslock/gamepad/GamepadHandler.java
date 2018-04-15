@@ -6,10 +6,10 @@ import net.java.games.input.*;
 public class GamepadHandler {
     private final Controller gamepadController;
     private final Gamepad notionalGamepad;
-    private CDST rightCDST = CDST.positive(0.3f, 0.7f);
-    private CDST leftCDST = CDST.negative(-0.3f, -0.7f);
-    private CDST upCDST = CDST.negative(-0.3f, -0.7f);
-    private CDST downCDST = CDST.positive(0.3f, 0.7f);
+    private CDST rightCDST = CDST.positive(0.4f, 0.7f);
+    private CDST leftCDST = CDST.negative(-0.4f, -0.7f);
+    private CDST upCDST = CDST.negative(-0.4f, -0.7f);
+    private CDST downCDST = CDST.positive(0.4f, 0.7f);
 
     public GamepadHandler(Gamepad gamepad) {
         notionalGamepad = gamepad;
@@ -42,22 +42,27 @@ public class GamepadHandler {
 
             if (type.equals(Component.Identifier.Axis.X)) {
                 final float val = event.getValue();
-                if (val > 0.0f) {
-                    if (rightCDST.test(val)) notionalGamepad.onRight();
-                } else if (val < -0.0f) {
-                    if (leftCDST.test(val)) notionalGamepad.onLeft();
+                if (rightCDST.test(val)){
+                    leftCDST.reset();
+                    notionalGamepad.onRight();
+                }
+                if (leftCDST.test(val)){
+                    rightCDST.reset();
+                    notionalGamepad.onLeft();
                 }
             }
 
             if (type.equals(Component.Identifier.Axis.Y)) {
                 final float val = event.getValue();
-                if (val > 0.0f) {
-                    if (downCDST.test(val)) notionalGamepad.onDown();
-                } else if (val < -0.0f) {
-                    if (upCDST.test(val)) notionalGamepad.onUp();
+                if (downCDST.test(val)){
+                    upCDST.reset();
+                    notionalGamepad.onDown();
+                }
+                if (upCDST.test(val)){
+                    downCDST.reset();
+                    notionalGamepad.onUp();
                 }
             }
-
 
             if (type.equals(Component.Identifier.Button._0)) {
                 if (event.getValue() != 0.0f) continue;
@@ -69,5 +74,10 @@ public class GamepadHandler {
                 notionalGamepad.onCancelButtonReleased();
             }
         }
+
+        if(rightCDST.get())notionalGamepad.onRight();
+        if(leftCDST.get())notionalGamepad.onLeft();
+        if(upCDST.get())notionalGamepad.onUp();
+        if(downCDST.get())notionalGamepad.onDown();
     }
 }

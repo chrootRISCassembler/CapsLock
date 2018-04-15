@@ -1,7 +1,7 @@
 package capslock.capslock.gamepad;
 
 abstract class CDST {
-    static final byte COUNTDOWN_WAIT = 10;
+    static final byte COUNTDOWN_WAIT = 40;
     boolean state = false;
     byte countdown;
 
@@ -14,6 +14,10 @@ abstract class CDST {
         }
         countdown--;
         return false;
+    }
+
+    void reset(){
+        state = false;
     }
 
     abstract boolean test(float val);
