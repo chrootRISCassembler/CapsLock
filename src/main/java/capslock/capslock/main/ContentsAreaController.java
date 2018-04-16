@@ -159,7 +159,7 @@ final class ContentsAreaController {
         final Media media = new Media(movieIterator.next().toUri().toString());
         player = new MediaPlayer(media);
         player.setAutoPlay(true);
-        player.setOnEndOfMedia(() -> onMovieEnd());
+        player.setOnEndOfMedia(this::onMovieEnd);
         player.setCycleCount(1);
 
         mediaView.setMediaPlayer(player);

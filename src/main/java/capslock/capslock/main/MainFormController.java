@@ -134,7 +134,7 @@ public final class MainFormController{
             view.setPreserveRatio(false);
             view.setFitWidth(PanelImageSideLength);
             view.setFitHeight(PanelImageSideLength);
-            view.setOnMouseClicked(eve -> onPanelClicked(eve));
+            view.setOnMouseClicked(this::onPanelClicked);
             Tooltip.install(view, tooltip);
             view.setUserData(game);
             PanelTilePane.getChildren().add(view);
