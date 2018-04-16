@@ -15,8 +15,6 @@
 
 package capslock.capslock.main;
 
-import capslock.capslock.gamepad.Gamepad;
-import capslock.capslock.gamepad.GamepadHandler;
 import capslock.game_info.Game;
 import capslock.game_info.GameDocument;
 import capslock.game_info.JSONDBReader;
