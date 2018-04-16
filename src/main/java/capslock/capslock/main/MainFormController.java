@@ -65,6 +65,8 @@ public final class MainFormController{
     private volatile ImageView panelView;
 
     private GamepadHandler gamepadHandler;
+    private boolean isConfirm = false;
+    private boolean isLaunchSelected = false;
 
     /** FXML binding */
     @FXML private ScrollPane LeftScrollPane;
@@ -76,6 +78,10 @@ public final class MainFormController{
     @FXML private Label NameLabel;
     @FXML private Label DescriptionLabel;
     @FXML private Button playButton;
+
+    @FXML private VBox confirmVBox;
+    @FXML private Button cancelButton;
+    @FXML private Button OKButton;
 
     void onCreated(MainHandler handler){
         this.handler = handler;
@@ -142,6 +148,26 @@ public final class MainFormController{
         gamepadHandler = new GamepadHandler(new Gamepad() {
             @Override
             public void onOkButtonReleased() {
+                if(isConfirm){
+                    if(isLaunchSelected)handler.launch((Game) panelView.getUserData());
+
+                    confirmVBox.setVisible(false);
+                    isConfirm = false;
+                    isLaunchSelected = false;
+                } else {
+                    confirmVBox.setVisible(true);
+                    isConfirm = true;
+
+                    OKButton.setScaleX(1);
+                    OKButton.setScaleY(1);
+                    OKButton.setEffect(null);
+
+                    cancelButton.setScaleX(1.15);
+                    cancelButton.setScaleY(1.15);
+                    final DropShadow effect = new DropShadow(20, Color.BLUE);//影つけて
+                    effect.setInput(new Glow(0.5));//光らせる
+                    cancelButton.setEffect(effect);
+                }
                 System.out.println("Ok button");
             }
 
@@ -152,29 +178,59 @@ public final class MainFormController{
 
             @Override
             public void onRight() {
-                final int nextIndex = PanelTilePane.getChildren().indexOf(panelView) + 1;
-                if(nextIndex % 3 == 0)return;
-                if(nextIndex == PanelTilePane.getChildren().size())return;
+                if(isConfirm) {
+                    cancelButton.setScaleX(1);
+                    cancelButton.setScaleY(1);
+                    cancelButton.setEffect(null);
 
-                emulateClick(PanelTilePane.getChildren().get(nextIndex));
+                    OKButton.setScaleX(1.15);
+                    OKButton.setScaleY(1.15);
+                    final DropShadow effect = new DropShadow(20, Color.BLUE);//影つけて
+                    effect.setInput(new Glow(0.5));//光らせる
+                    OKButton.setEffect(effect);
+
+                    isLaunchSelected = true;
+                } else {
+                    final int nextIndex = PanelTilePane.getChildren().indexOf(panelView) + 1;
+                    if (nextIndex % 3 == 0) return;
+                    if (nextIndex == PanelTilePane.getChildren().size()) return;
+
+                    emulateClick(PanelTilePane.getChildren().get(nextIndex));
+                }
             }
 
             @Override
             public void onLeft() {
-                final int currentIndex = PanelTilePane.getChildren().indexOf(panelView);
-                if(currentIndex % 3 == 0)return;
+                if(isConfirm) {
+                    OKButton.setScaleX(1);
+                    OKButton.setScaleY(1);
+                    OKButton.setEffect(null);
 
-                emulateClick(PanelTilePane.getChildren().get(currentIndex - 1));
+                    cancelButton.setScaleX(1.15);
+                    cancelButton.setScaleY(1.15);
+                    final DropShadow effect = new DropShadow(20, Color.BLUE);//影つけて
+                    effect.setInput(new Glow(0.5));//光らせる
+                    cancelButton.setEffect(effect);
+
+                    isLaunchSelected = false;
+                } else {
+                    final int currentIndex = PanelTilePane.getChildren().indexOf(panelView);
+                    if (currentIndex % 3 == 0) return;
+
+                    emulateClick(PanelTilePane.getChildren().get(currentIndex - 1));
+                }
             }
 
             @Override
             public void onUp() {
+                if(isConfirm)return;
                 final int nextIndex = PanelTilePane.getChildren().indexOf(panelView) - 3;
                 if(nextIndex >= 0)emulateClick(PanelTilePane.getChildren().get(nextIndex));
             }
 
             @Override
             public void onDown() {
+                if(isConfirm)return;
                 final int nextIndex = PanelTilePane.getChildren().indexOf(panelView) + 3;
                 if(nextIndex < PanelTilePane.getChildren().size())
                     emulateClick(PanelTilePane.getChildren().get(nextIndex));
@@ -211,6 +267,17 @@ public final class MainFormController{
     @FXML
     protected void onButtonClick(ActionEvent evt) {
         handler.launch((Game) panelView.getUserData());
+    }
+
+    @FXML
+    private void onCancelButtonClicked(ActionEvent event){
+        confirmVBox.setVisible(false);
+    }
+
+    @FXML
+    private void onOKButtonClicked(ActionEvent event){
+        handler.launch((Game) panelView.getUserData());
+        confirmVBox.setVisible(false);
     }
 
     void onPanelClicked(MouseEvent event){

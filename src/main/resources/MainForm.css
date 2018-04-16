@@ -36,6 +36,11 @@
     -fx-text-fill: white;
 }
 
+#ConfirmVBox{
+    -fx-background-color: gray;
+    -fx-opacity: 0.8;
+}
+
 #DescriptionLabel{
     
 }

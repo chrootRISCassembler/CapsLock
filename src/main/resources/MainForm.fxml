@@ -25,50 +25,69 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<HBox id="hbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@MainForm.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="capslock.capslock.main.MainFormController">
+<StackPane stylesheets="@MainForm.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="capslock.capslock.main.MainFormController">
    <children>
-      <ScrollPane id="LeftScrollPane" fx:id="LeftScrollPane" fitToWidth="true" focusTraversable="false" hbarPolicy="NEVER" pannable="true" HBox.hgrow="NEVER">
-         <content>
-            <TilePane id="LeftTilePane" fx:id="PanelTilePane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefColumns="20" prefRows="3" />
-         </content>
-      </ScrollPane>
-      <VBox id="RightVBox" fx:id="RightVBox" alignment="CENTER_LEFT" depthTest="DISABLE" HBox.hgrow="SOMETIMES">
+      <HBox id="hbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
          <children>
-            <StackPane fx:id="ViewStackPane" prefHeight="150.0" prefWidth="200.0" VBox.vgrow="SOMETIMES">
+            <ScrollPane id="LeftScrollPane" fx:id="LeftScrollPane" fitToWidth="true" focusTraversable="false" hbarPolicy="NEVER" pannable="true" HBox.hgrow="NEVER">
+               <content>
+                  <TilePane id="LeftTilePane" fx:id="PanelTilePane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefColumns="20" prefRows="3" />
+               </content>
+            </ScrollPane>
+            <VBox id="RightVBox" fx:id="RightVBox" alignment="CENTER_LEFT" depthTest="DISABLE" HBox.hgrow="SOMETIMES">
                <children>
-                  <ImageView fx:id="StackedImageView" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER" />
-                  <MediaView fx:id="StackedMediaView" StackPane.alignment="CENTER" />
-               </children></StackPane>
-            <VBox fx:id="BottomVBox">
-               <children>
-                  <Label id="NameLabel" fx:id="NameLabel" text="Label">
-                     <font>
-                        <Font name="System Bold" size="24.0" />
-                     </font>
-                  </Label>
-                  <Label id="DescriptionLabel" fx:id="DescriptionLabel" text="Label" wrapText="true">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Label>
-                  <HBox alignment="BOTTOM_RIGHT">
+                  <StackPane fx:id="ViewStackPane" prefHeight="150.0" prefWidth="200.0" VBox.vgrow="SOMETIMES">
                      <children>
-                        <Button fx:id="playButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#onButtonClick" text="ゲームを遊ぶ">
+                        <ImageView fx:id="StackedImageView" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER" />
+                        <MediaView fx:id="StackedMediaView" StackPane.alignment="CENTER" />
+                     </children>
+                  </StackPane>
+                  <VBox fx:id="BottomVBox">
+                     <children>
+                        <Label id="NameLabel" fx:id="NameLabel" text="Label">
+                           <font>
+                              <Font name="System Bold" size="24.0" />
+                           </font>
+                        </Label>
+                        <Label id="DescriptionLabel" fx:id="DescriptionLabel" text="Label" wrapText="true">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <HBox alignment="BOTTOM_RIGHT">
+                           <children>
+                              <Button fx:id="playButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#onButtonClick" text="ゲームを遊ぶ">
+                                 <opaqueInsets>
+                                    <Insets top="20.0" />
+                                 </opaqueInsets>
+                              </Button>
+                           </children>
                            <opaqueInsets>
                               <Insets top="20.0" />
                            </opaqueInsets>
-                        </Button>
+                        </HBox>
                      </children>
                      <opaqueInsets>
-                        <Insets top="20.0" />
+                        <Insets />
                      </opaqueInsets>
-                  </HBox>
+                  </VBox>
                </children>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
             </VBox>
+         </children>
+      </HBox>
+      <VBox id="ConfirmVBox" fx:id="confirmVBox" alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" spacing="20.0" visible="false">
+         <children>
+            <Label text="このゲームを遊びますか?">
+               <font>
+                  <Font size="20.0" />
+               </font></Label>
+            <HBox alignment="CENTER" spacing="50.0">
+               <children>
+                  <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#onCancelButtonClicked" text="キャンセル" />
+                  <Button fx:id="OKButton" mnemonicParsing="false" onAction="#onOKButtonClicked" text="OK" />
+               </children>
+            </HBox>
          </children>
       </VBox>
    </children>
-</HBox>
+</StackPane>
