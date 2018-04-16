@@ -68,6 +68,8 @@ public final class MainFormController{
     private boolean isConfirm = false;
     private boolean isLaunchSelected = false;
 
+    private ScheduledService<Void> poolServive;
+
     /** FXML binding */
     @FXML private ScrollPane LeftScrollPane;
         @FXML private TilePane PanelTilePane;
@@ -149,7 +151,10 @@ public final class MainFormController{
             @Override
             public void onOkButtonReleased() {
                 if(isConfirm){
-                    if(isLaunchSelected)handler.launch((Game) panelView.getUserData());
+                    if(isLaunchSelected){
+                        poolServive.cancel();
+                        handler.launch((Game) panelView.getUserData());
+                    }
 
                     confirmVBox.setVisible(false);
                     isConfirm = false;
@@ -237,7 +242,7 @@ public final class MainFormController{
             }
         });
 
-        ScheduledService<Void> scheduledService = new ScheduledService<>() {
+        poolServive = new ScheduledService<>() {
             protected Task<Void> createTask() {
                 return new Task<>() {
                     protected Void call() {
@@ -247,9 +252,9 @@ public final class MainFormController{
                 };
             }
         };
-        scheduledService.setPeriod(Duration.millis(20));
-        scheduledService.setExecutor(CapsLock.getExecutor());
-        scheduledService.start();
+        poolServive.setPeriod(Duration.millis(20));
+        poolServive.setExecutor(CapsLock.getExecutor());
+        poolServive.start();
     }
 
     void onGameLaunched(){
@@ -257,11 +262,36 @@ public final class MainFormController{
     }
 
     void onLaunchFailed(){
-
+        poolServive = new ScheduledService<>() {
+            protected Task<Void> createTask() {
+                return new Task<>() {
+                    protected Void call() {
+                        Platform.runLater(gamepadHandler::pool);
+                        return null;
+                    }
+                };
+            }
+        };
+        poolServive.setPeriod(Duration.millis(20));
+        poolServive.setExecutor(CapsLock.getExecutor());
+        poolServive.start();
     }
 
     void onGameQuit(){
         contentsAreaController.resume();
+        poolServive = new ScheduledService<>() {
+            protected Task<Void> createTask() {
+                return new Task<>() {
+                    protected Void call() {
+                        Platform.runLater(gamepadHandler::pool);
+                        return null;
+                    }
+                };
+            }
+        };
+        poolServive.setPeriod(Duration.millis(20));
+        poolServive.setExecutor(CapsLock.getExecutor());
+        poolServive.start();
     }
 
     @FXML
@@ -323,6 +353,7 @@ public final class MainFormController{
 
         if(event.getClickCount() != 2)return;//ダブルクリックじゃない
 
+        poolServive.cancel();
         handler.launch((Game)eventSourcePanel.getUserData());
     }
     
