@@ -6,10 +6,10 @@ import net.java.games.input.*;
 public class GamepadHandler {
     private final Controller gamepadController;
     private final Gamepad notionalGamepad;
-    private CDST rightCDST = CDST.positive(0.4f, 0.7f);
-    private CDST leftCDST = CDST.negative(-0.4f, -0.7f);
-    private CDST upCDST = CDST.negative(-0.4f, -0.7f);
-    private CDST downCDST = CDST.positive(0.4f, 0.7f);
+    private final CDST rightCDST = CDST.positive(0.4f, 0.7f);
+    private final CDST leftCDST = CDST.negative(-0.4f, -0.7f);
+    private final CDST upCDST = CDST.negative(-0.4f, -0.7f);
+    private final CDST downCDST = CDST.positive(0.4f, 0.7f);
 
     public GamepadHandler(Gamepad gamepad) {
         notionalGamepad = gamepad;
