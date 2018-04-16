@@ -236,8 +236,8 @@ public final class MainFormController{
             }
 
             panelView = eventSourcePanel;
+            autoScroll(panelView);
 
-            Logger.INST.debug("ContentsAreaController#setGame() call");
             contentsAreaController.setGame((Game) panelView.getUserData());
 
             {
@@ -274,6 +274,17 @@ public final class MainFormController{
         PanelTilePane.getChildren().addAll(views);
         
         System.out.println("shuffle end");
+    }
+
+    /**
+     * 選択されたパネル画像が範囲外で隠れてしまいそうなとき,　自動的にスクロールを行う.
+     * @param panelView 選択されているパネル画像の{@link ImageView}
+     */
+    private void autoScroll(ImageView panelView) {
+        final double h = LeftScrollPane.getContent().getBoundsInLocal().getHeight();
+        final double y = (panelView.getBoundsInParent().getMaxY() + panelView.getBoundsInParent().getMinY()) / 2.0;
+        final double v = LeftScrollPane.getViewportBounds().getHeight();
+        LeftScrollPane.setVvalue(LeftScrollPane.getVmax() * ((y - 0.5 * v) / (h - v)));
     }
 
     /**
