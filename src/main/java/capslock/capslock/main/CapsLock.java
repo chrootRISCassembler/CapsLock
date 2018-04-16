@@ -97,7 +97,7 @@ public final class CapsLock extends Application {
 
 
         try {
-            final MainFormController controller = (MainFormController)loader.getController();
+            final MainFormController controller = loader.getController();
 
             MainHandler.INST.setController(controller);
 
