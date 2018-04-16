@@ -49,8 +49,6 @@ enum MainHandler {
 
     private Process gameProcess = null;
 
-    private GamepadHandler gamepadHandler;
-
     void setController(MainFormController controller){
         this.controller = controller;
     }
@@ -152,47 +150,6 @@ enum MainHandler {
             onCreatedDispatched = true;
             controller.onCreated(this);
         }
-        gamepadHandler = new GamepadHandler(new Gamepad() {
-            @Override
-            public void onOkButtonReleased() {
-                System.out.println("Ok button");
-            }
-
-            @Override
-            public void onCancelButtonReleased() {
-                System.out.println("Cancel button");
-            }
-
-            @Override
-            public void onRight() {
-                System.out.println("Right");
-            }
-
-            @Override
-            public void onLeft() {
-                System.out.println("Left");
-            }
-
-            @Override
-            public void onUp() {
-                System.out.println("Up");
-            }
-
-            @Override
-            public void onDown() {
-                System.out.println("Down");
-            }
-        });
-        CapsLock.getExecutor().execute(() -> {
-            while (true){
-                gamepadHandler.pool();
-                try {
-                    Thread.sleep(20);
-                }catch (InterruptedException ex){
-                    Logger.INST.logException(ex);
-                }
-            }
-        });
     }
 
     List<Game> getGameList(){

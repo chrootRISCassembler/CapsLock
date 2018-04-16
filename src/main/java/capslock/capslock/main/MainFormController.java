@@ -15,6 +15,8 @@
 
 package capslock.capslock.main;
 
+import capslock.capslock.gamepad.Gamepad;
+import capslock.capslock.gamepad.GamepadHandler;
 import capslock.game_info.Game;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -56,7 +58,9 @@ public final class MainFormController{
 
     private MainHandler handler;
     private ContentsAreaController contentsAreaController;
-    private volatile Game game;
+    private volatile ImageView panelView;
+
+    private GamepadHandler gamepadHandler;
 
     /** FXML binding */
     @FXML private ScrollPane LeftScrollPane;
@@ -129,28 +133,60 @@ public final class MainFormController{
         Logger.INST.debug("MainForm window is displayed.");
         System.gc();
 
-        onPanelClicked(new MouseEvent(
-                PanelTilePane.getChildren().get(0),
-                null,
-                MouseEvent.MOUSE_CLICKED,
-                0,
-                0,
-                0,
-                0,
-                MouseButton.PRIMARY,
-                1,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                null
-        ));
+        emulateClick(PanelTilePane.getChildren().get(0));
+
+        gamepadHandler = new GamepadHandler(new Gamepad() {
+            @Override
+            public void onOkButtonReleased() {
+                System.out.println("Ok button");
+            }
+
+            @Override
+            public void onCancelButtonReleased() {
+                System.out.println("Cancel button");
+            }
+
+            @Override
+            public void onRight() {
+                final int nextIndex = PanelTilePane.getChildren().indexOf(panelView) + 1;
+                if(nextIndex % 3 == 0)return;
+                if(nextIndex == PanelTilePane.getChildren().size())return;
+
+                emulateClick(PanelTilePane.getChildren().get(nextIndex));
+            }
+
+            @Override
+            public void onLeft() {
+                final int currentIndex = PanelTilePane.getChildren().indexOf(panelView);
+                if(currentIndex % 3 == 0)return;
+
+                emulateClick(PanelTilePane.getChildren().get(currentIndex - 1));
+            }
+
+            @Override
+            public void onUp() {
+                final int nextIndex = PanelTilePane.getChildren().indexOf(panelView) - 3;
+                if(nextIndex >= 0)emulateClick(PanelTilePane.getChildren().get(nextIndex));
+            }
+
+            @Override
+            public void onDown() {
+                final int nextIndex = PanelTilePane.getChildren().indexOf(panelView) + 3;
+                if(nextIndex < PanelTilePane.getChildren().size())
+                    emulateClick(PanelTilePane.getChildren().get(nextIndex));
+            }
+        });
+
+        CapsLock.getExecutor().execute(() -> {
+            while (true){
+                gamepadHandler.pool();
+                try {
+                    Thread.sleep(20);
+                }catch (InterruptedException ex){
+                    Logger.INST.logException(ex);
+                }
+            }
+        });
     }
 
     void onGameLaunched(){
@@ -167,16 +203,16 @@ public final class MainFormController{
 
     @FXML
     protected void onButtonClick(ActionEvent evt) {
-        handler.launch(game);
+        handler.launch((Game) panelView.getUserData());
     }
 
     void onPanelClicked(MouseEvent event){
         if(!event.getButton().equals(MouseButton.PRIMARY))return;//右クリックじゃない
 
-        final ImageView view = (ImageView)event.getSource();//クリックされたパネルの取得
-        final Game NextGame = (Game)view.getUserData();//パネルが示すゲーム
+        final ImageView eventSourcePanel = (ImageView)event.getSource();//クリックされたパネルの取得
+        final var nextGame = (Game)eventSourcePanel.getUserData();
 
-        if(game != NextGame) {
+        if(panelView != eventSourcePanel){
 
             PanelTilePane.getChildren().stream()
                     .peek(panel -> panel.setScaleX(1))
@@ -184,36 +220,36 @@ public final class MainFormController{
                     .forEach(panel -> panel.setEffect(null));
 
             {//選択されたパネルにエフェクトを適応
-                view.setScaleX(1.15);
-                view.setScaleY(1.15);
+                eventSourcePanel.setScaleX(1.15);
+                eventSourcePanel.setScaleY(1.15);
 
                 final DropShadow effect = new DropShadow(20, Color.BLUE);//影つけて
                 effect.setInput(new Glow(0.5));//光らせる
-                view.setEffect(effect);
+                eventSourcePanel.setEffect(effect);
             }
 
-            game = NextGame;
+            panelView = eventSourcePanel;
 
             Logger.INST.debug("ContentsAreaController#setGame() call");
-            contentsAreaController.setGame(game);
+            contentsAreaController.setGame((Game) panelView.getUserData());
 
             {
-                final String name = NextGame.getName();
-                NameLabel.setText("[P-" + NextGame.getGameID() + "]" + name);
+                final String name = nextGame.getName();
+                NameLabel.setText("[P-" + nextGame.getGameID() + "]" + name);
             }
 
-            if (NextGame.getDesc() == null) {
+            if (nextGame.getDesc() == null) {
                 Logger.INST.debug("No desc!");
             }
 
-            DescriptionLabel.setText(NextGame.getDesc());
+            DescriptionLabel.setText(nextGame.getDesc());
             DescriptionLabel.setPadding(Insets.EMPTY);
             DescriptionLabel.autosize();
         }
 
         if(event.getClickCount() != 2)return;//ダブルクリックじゃない
 
-        handler.launch(game);
+        handler.launch((Game)eventSourcePanel.getUserData());
     }
     
     final void ShufflePanels(){
@@ -238,5 +274,34 @@ public final class MainFormController{
      */
     final void onTerminate(){
         contentsAreaController.kill();
+    }
+
+    /**
+     * ゲームパッド用, マウスクリックをエミュレートする.
+     * @param target クリックイベントを発生させる対象の{@link Node}
+     */
+    private void emulateClick(Node target){
+        onPanelClicked(new MouseEvent(
+                target,
+                null,
+                MouseEvent.MOUSE_CLICKED,
+                0,
+                0,
+                0,
+                0,
+                MouseButton.PRIMARY,
+                1,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                null
+        ));
     }
 }
