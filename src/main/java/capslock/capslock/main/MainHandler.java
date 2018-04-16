@@ -48,7 +48,7 @@ enum MainHandler {
 
     private Process gameProcess = null;
 
-    void setController(MainFormController controller){
+    final void setController(MainFormController controller){
         this.controller = controller;
     }
 
@@ -143,7 +143,7 @@ enum MainHandler {
         gameList = Collections.unmodifiableList(fixedGame);
     }
 
-    void onLoad(WindowEvent event){
+    final void onLoad(WindowEvent event){
         Logger.INST.debug(" onLoad called.");
         if (!onCreatedDispatched){
             onCreatedDispatched = true;
@@ -151,11 +151,11 @@ enum MainHandler {
         }
     }
 
-    List<Game> getGameList(){
+    final List<Game> getGameList(){
         return gameList;
     }
 
-    void launch(Game game){
+    final void launch(Game game){
         if(gameProcess != null){
             Logger.INST.debug("Game launched already ; ignore launch request.");
         }
@@ -201,21 +201,20 @@ enum MainHandler {
         });
     }
 
-
-    void onGameLaunched(Game game){
+    final void onGameLaunched(Game game){
         Logger.INST.info(() -> game.getExe() + " is launched successfully.");
         timer.play();
         controller.onGameLaunched();
     }
 
-    void onLaunchFailed(){
+    final void onLaunchFailed(){
         gameProcess = null;
         timer.stop();
         pastMinutes = 0;
         controller.onLaunchFailed();
     }
 
-    void onGameQuit(){
+    final void onGameQuit(){
         Logger.INST.info("game quit.");
         timer.stop();
         pastMinutes = 0;
@@ -225,7 +224,7 @@ enum MainHandler {
     /**
      * ランチャー終了時に呼び出される.
      */
-    void onTerminate(){
+    final void onTerminate(){
         controller.onTerminate();
         onCreatedDispatched = false;//登録ツールから起動されたとき用
     }
