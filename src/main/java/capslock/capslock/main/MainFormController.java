@@ -18,6 +18,9 @@ package capslock.capslock.main;
 import capslock.capslock.gamepad.Gamepad;
 import capslock.capslock.gamepad.GamepadHandler;
 import capslock.game_info.Game;
+import javafx.application.Platform;
+import javafx.concurrent.ScheduledService;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -40,6 +43,7 @@ import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
+import javafx.util.Duration;
 import methg.commonlib.trivial_logger.Logger;
 
 import java.nio.file.Path;
@@ -177,16 +181,19 @@ public final class MainFormController{
             }
         });
 
-        CapsLock.getExecutor().execute(() -> {
-            while (true){
-                gamepadHandler.pool();
-                try {
-                    Thread.sleep(20);
-                }catch (InterruptedException ex){
-                    Logger.INST.logException(ex);
-                }
+        ScheduledService<Void> scheduledService = new ScheduledService<>() {
+            protected Task<Void> createTask() {
+                return new Task<>() {
+                    protected Void call() {
+                        Platform.runLater(gamepadHandler::pool);
+                        return null;
+                    }
+                };
             }
-        });
+        };
+        scheduledService.setPeriod(Duration.millis(20));
+        scheduledService.setExecutor(CapsLock.getExecutor());
+        scheduledService.start();
     }
 
     void onGameLaunched(){
