@@ -31,6 +31,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Effect;
 import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -66,7 +67,6 @@ public final class MainFormController{
 
     private GamepadHandler gamepadHandler;
     private boolean isConfirm = false;
-    private boolean isLaunchSelected = false;
 
     private ScheduledService<Void> poolServive;
 
@@ -157,6 +157,15 @@ public final class MainFormController{
         emulateClick(PanelTilePane.getChildren().get(0));
 
         gamepadHandler = new GamepadHandler(new Gamepad() {
+            private final Effect selectedButtonEffect;
+            private boolean isLaunchSelected = false;
+
+            {
+                final var effect = new DropShadow(20, Color.BLUE);//影つけて
+                effect.setInput(new Glow(0.5));//光らせる
+                selectedButtonEffect = effect;
+            }
+
             @Override
             public void onOkButtonReleased() {
                 if(isConfirm){
@@ -172,15 +181,8 @@ public final class MainFormController{
                     confirmVBox.setVisible(true);
                     isConfirm = true;
 
-                    OKButton.setScaleX(1);
-                    OKButton.setScaleY(1);
-                    OKButton.setEffect(null);
-
-                    cancelButton.setScaleX(1.15);
-                    cancelButton.setScaleY(1.15);
-                    final DropShadow effect = new DropShadow(20, Color.BLUE);//影つけて
-                    effect.setInput(new Glow(0.5));//光らせる
-                    cancelButton.setEffect(effect);
+                    unperkButton(OKButton);
+                    perkButton(cancelButton);
                 }
                 System.out.println("Ok button");
             }
@@ -190,20 +192,25 @@ public final class MainFormController{
                 System.out.println("Cancel button");
             }
 
+            private void perkButton(Button button){
+                button.setScaleX(1.15);
+                button.setScaleY(1.15);
+                button.setEffect(selectedButtonEffect);
+            }
+
+            private void unperkButton(Button button){
+                button.setScaleX(1);
+                button.setScaleY(1);
+                button.setEffect(null);
+            }
+
             @Override
             public void onRight() {
                 if(isConfirm) {
-                    cancelButton.setScaleX(1);
-                    cancelButton.setScaleY(1);
-                    cancelButton.setEffect(null);
-
-                    OKButton.setScaleX(1.15);
-                    OKButton.setScaleY(1.15);
-                    final DropShadow effect = new DropShadow(20, Color.BLUE);//影つけて
-                    effect.setInput(new Glow(0.5));//光らせる
-                    OKButton.setEffect(effect);
-
+                    unperkButton(cancelButton);
+                    perkButton(OKButton);
                     isLaunchSelected = true;
+
                 } else {
                     final int nextIndex = PanelTilePane.getChildren().indexOf(panelView) + 1;
                     if (nextIndex % 3 == 0) return;
@@ -216,16 +223,8 @@ public final class MainFormController{
             @Override
             public void onLeft() {
                 if(isConfirm) {
-                    OKButton.setScaleX(1);
-                    OKButton.setScaleY(1);
-                    OKButton.setEffect(null);
-
-                    cancelButton.setScaleX(1.15);
-                    cancelButton.setScaleY(1.15);
-                    final DropShadow effect = new DropShadow(20, Color.BLUE);//影つけて
-                    effect.setInput(new Glow(0.5));//光らせる
-                    cancelButton.setEffect(effect);
-
+                    unperkButton(OKButton);
+                    perkButton(cancelButton);
                     isLaunchSelected = false;
                 } else {
                     final int currentIndex = PanelTilePane.getChildren().indexOf(panelView);
