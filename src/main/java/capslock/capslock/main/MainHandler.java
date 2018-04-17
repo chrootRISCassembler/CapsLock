@@ -22,7 +22,6 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.concurrent.Task;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import methg.commonlib.file_checker.FileChecker;
 import methg.commonlib.trivial_logger.Logger;
@@ -48,7 +47,6 @@ enum MainHandler {
 
     private MainFormController controller;
     private List<Game> gameList;
-    private boolean onCreatedDispatched = false;
     private int pastMinutes = 0;
     private final Timeline timer;
 
@@ -155,19 +153,6 @@ enum MainHandler {
     }
 
     /**
-     * {@link javafx.stage.Stage}のOnShownイベントをフィルタリングして
-     * {@link MainFormController}に<code>onLoad</code>イベントを送る
-     * @param event {@link javafx.stage.Stage}がdispatchする{@link WindowEvent}
-     */
-    final void onLoad(WindowEvent event){
-        Logger.INST.debug(" onLoad called.");
-        if (!onCreatedDispatched){
-            onCreatedDispatched = true;
-            controller.onCreated(this);
-        }
-    }
-
-    /**
      * JSONファイルから読み出された変更不可能なゲームのリストを返す.
      * @return 変更不可能なゲームの {@link List}
      */
@@ -260,6 +245,5 @@ enum MainHandler {
      */
     final void onTerminate(){
         controller.onTerminate();
-        onCreatedDispatched = false;//登録ツールから起動されたとき用
     }
 }

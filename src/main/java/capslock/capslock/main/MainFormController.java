@@ -60,7 +60,7 @@ public final class MainFormController{
     private static final double PANEL_RATIO = 0.25;
     private static final double PANEL_GAP_RATIO = 0.03;
 
-    private MainHandler handler;
+    private boolean onCreatedCalled = false;
     private ContentsAreaController contentsAreaController;
     private volatile ImageView panelView;
 
@@ -85,8 +85,17 @@ public final class MainFormController{
     @FXML private Button cancelButton;
     @FXML private Button OKButton;
 
-    void onCreated(MainHandler handler){
-        this.handler = handler;
+    final void onShown(){
+        if(onCreatedCalled)return;
+
+        onCreatedCalled = true;
+        onCreated();
+    }
+
+    /**
+     * 初めてウィンドウが表示されたときに呼び出される.UIの初期化を行う.
+     */
+    private void onCreated(){
 
         final double PanelImageSideLength;
 
@@ -119,7 +128,7 @@ public final class MainFormController{
 
         final ColorSequencer sequencer = new ColorSequencer();
         final Tooltip tooltip = new Tooltip("ダブルクリックでゲーム起動");
-        for(final Game game : handler.getGameList()){
+        for(final Game game : MainHandler.INST.getGameList()){
 
             final Image panelImage;
             final Path panelPath = game.getPanel();
@@ -153,7 +162,7 @@ public final class MainFormController{
                 if(isConfirm){
                     if(isLaunchSelected){
                         poolServive.cancel();
-                        handler.launch((Game) panelView.getUserData());
+                        MainHandler.INST.launch((Game) panelView.getUserData());
                     }
 
                     confirmVBox.setVisible(false);
@@ -296,7 +305,7 @@ public final class MainFormController{
 
     @FXML
     protected void onButtonClick(ActionEvent evt) {
-        handler.launch((Game) panelView.getUserData());
+        MainHandler.INST.launch((Game) panelView.getUserData());
     }
 
     @FXML
@@ -306,7 +315,7 @@ public final class MainFormController{
 
     @FXML
     private void onOKButtonClicked(ActionEvent event){
-        handler.launch((Game) panelView.getUserData());
+        MainHandler.INST.launch((Game) panelView.getUserData());
         confirmVBox.setVisible(false);
     }
 
@@ -354,7 +363,7 @@ public final class MainFormController{
         if(event.getClickCount() != 2)return;//ダブルクリックじゃない
 
         poolServive.cancel();
-        handler.launch((Game)eventSourcePanel.getUserData());
+        MainHandler.INST.launch((Game)eventSourcePanel.getUserData());
     }
     
     final void ShufflePanels(){
