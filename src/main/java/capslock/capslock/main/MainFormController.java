@@ -183,12 +183,13 @@ public final class MainFormController{
                     unperkButton(OKButton);
                     perkButton(cancelButton);
                 }
-                System.out.println("Ok button");
             }
 
             @Override
             public void onCancelButtonReleased() {
-                System.out.println("Cancel button");
+                isConfirm = false;
+                isLaunchSelected = false;
+                confirmVBox.setVisible(false);
             }
 
             private void perkButton(Button button){
@@ -303,12 +304,14 @@ public final class MainFormController{
 
     @FXML
     private void onCancelButtonClicked(ActionEvent event){
+        isConfirm = false;
         confirmVBox.setVisible(false);
     }
 
     @FXML
     private void onOKButtonClicked(ActionEvent event){
         MainHandler.INST.launch((Game) panelView.getUserData());
+        isConfirm = false;
         confirmVBox.setVisible(false);
     }
 
