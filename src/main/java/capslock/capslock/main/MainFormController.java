@@ -79,7 +79,6 @@ public final class MainFormController{
             @FXML private volatile MediaView StackedMediaView;
     @FXML private Label NameLabel;
     @FXML private Label DescriptionLabel;
-    @FXML private Button playButton;
 
     @FXML private VBox confirmVBox;
     @FXML private Button cancelButton;
@@ -300,11 +299,6 @@ public final class MainFormController{
         poolServive.setPeriod(Duration.millis(20));
         poolServive.setExecutor(CapsLock.getExecutor());
         poolServive.start();
-    }
-
-    @FXML
-    protected void onButtonClick(ActionEvent evt) {
-        MainHandler.INST.launch((Game) panelView.getUserData());
     }
 
     @FXML

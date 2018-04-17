@@ -54,18 +54,6 @@
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <HBox alignment="BOTTOM_RIGHT">
-                           <children>
-                              <Button fx:id="playButton" alignment="BOTTOM_RIGHT" mnemonicParsing="false" onAction="#onButtonClick" text="ゲームを遊ぶ">
-                                 <opaqueInsets>
-                                    <Insets top="20.0" />
-                                 </opaqueInsets>
-                              </Button>
-                           </children>
-                           <opaqueInsets>
-                              <Insets top="20.0" />
-                           </opaqueInsets>
-                        </HBox>
                      </children>
                      <opaqueInsets>
                         <Insets />
