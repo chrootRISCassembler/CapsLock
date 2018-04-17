@@ -34,6 +34,12 @@ import java.util.*;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
+/**
+ * {@link MainFormController}と協調動作するEnum-singleton.
+ * <p>
+ *     このenumは{@link MainFormController}からUI処理以外を切り離すために存在する.
+ * </p>
+ */
 enum MainHandler {
     INST;
 
@@ -48,10 +54,6 @@ enum MainHandler {
 
     private Process gameProcess = null;
 
-    final void setController(MainFormController controller){
-        this.controller = controller;
-    }
-
     MainHandler(){
         timer = new Timeline(new KeyFrame(Duration.minutes(WARN_INTERVAL_MINUTE), event -> {
             pastMinutes += WARN_INTERVAL_MINUTE;
@@ -60,6 +62,15 @@ enum MainHandler {
             warn.display();
         }));
         timer.setCycleCount(Animation.INDEFINITE);
+    }
+
+    /**
+     * 協調動作する{@link MainFormController}のインスタンスを登録する.
+     * @param controller {@link MainFormController}のインスタンス.
+     */
+    final void setController(MainFormController controller){
+        assert controller != null;
+        this.controller = controller;
     }
 
     /**
@@ -143,6 +154,11 @@ enum MainHandler {
         gameList = Collections.unmodifiableList(fixedGame);
     }
 
+    /**
+     * {@link javafx.stage.Stage}のOnShownイベントをフィルタリングして
+     * {@link MainFormController}に<code>onLoad</code>イベントを送る
+     * @param event {@link javafx.stage.Stage}がdispatchする{@link WindowEvent}
+     */
     final void onLoad(WindowEvent event){
         Logger.INST.debug(" onLoad called.");
         if (!onCreatedDispatched){
@@ -151,10 +167,18 @@ enum MainHandler {
         }
     }
 
+    /**
+     * JSONファイルから読み出された変更不可能なゲームのリストを返す.
+     * @return 変更不可能なゲームの {@link List}
+     */
     final List<Game> getGameList(){
         return gameList;
     }
 
+    /**
+     * ゲームを別のプロセスで起動する.
+     * @param game 起動するゲームの{@link Game}
+     */
     final void launch(Game game){
         if(gameProcess != null){
             Logger.INST.debug("Game launched already ; ignore launch request.");
@@ -201,12 +225,19 @@ enum MainHandler {
         });
     }
 
+    /**
+     * {@link #launch(Game)}が呼び出された結果, 正常にゲームが起動できたとき呼び出される.
+     * @param game 正常に起動されたゲーム
+     */
     final void onGameLaunched(Game game){
         Logger.INST.info(() -> game.getExe() + " is launched successfully.");
         timer.play();
         controller.onGameLaunched();
     }
 
+    /**
+     * {@link #launch(Game)}が呼び出された結果, ゲーム起動に失敗したとき呼び出される.
+     */
     final void onLaunchFailed(){
         gameProcess = null;
         timer.stop();
@@ -214,6 +245,9 @@ enum MainHandler {
         controller.onLaunchFailed();
     }
 
+    /**
+     * {@link #launch(Game)}によって起動されたゲームが終了したとき呼び出される.
+     */
     final void onGameQuit(){
         Logger.INST.info("game quit.");
         timer.stop();
