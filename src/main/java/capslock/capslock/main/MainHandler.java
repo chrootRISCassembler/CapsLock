@@ -15,6 +15,7 @@
 
 package capslock.capslock.main;
 
+import capslock.capslock.os_absorbing.NullDevice;
 import capslock.game_info.Game;
 import capslock.game_info.GameDocument;
 import capslock.game_info.JSONDBReader;
@@ -175,7 +176,8 @@ enum MainHandler {
                 final String ExePathString = game.getExe().toString();
                 final ProcessBuilder pb = new ProcessBuilder(ExePathString);
                 pb.directory(game.getExe().getParent().toFile());
-                pb.redirectErrorStream(true);
+                pb.redirectOutput(NullDevice.getAsFile());
+                pb.redirectError(NullDevice.getAsFile());
 
                 Logger.INST.debug("Try to launch " + ExePathString);
 
