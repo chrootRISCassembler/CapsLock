@@ -111,6 +111,7 @@ public final class CapsLock extends Application {
 
             Logger.INST.debug("Try to display MainForm window.");
             stage.show();
+            controller.initFirst();
         }catch (Exception ex){
             Logger.INST.logException(ex);
         }

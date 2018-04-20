@@ -151,9 +151,6 @@ public final class MainFormController{
         contentsAreaController = new ContentsAreaController(ViewStackPane, StackedMediaView, StackedImageView);
 
         Logger.INST.debug("MainForm window is displayed.");
-        System.gc();
-
-        emulateClick(PanelTilePane.getChildren().get(0));
 
         gamepadHandler = new GamepadHandler(new Gamepad() {
             private final Effect selectedButtonEffect;
@@ -263,6 +260,13 @@ public final class MainFormController{
         poolServive.setPeriod(Duration.millis(20));
         poolServive.setExecutor(CapsLock.getExecutor());
         poolServive.start();
+    }
+
+    /**
+     * {@link javafx.stage.Stage}が表示された直後の処理を行う
+     */
+    final void initFirst(){
+        emulateClick(PanelTilePane.getChildren().get(0));
     }
 
     void onGameLaunched(){
