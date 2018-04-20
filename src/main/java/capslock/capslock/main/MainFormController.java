@@ -15,12 +15,7 @@
 
 package capslock.capslock.main;
 
-import capslock.capslock.gamepad.Gamepad;
-import capslock.capslock.gamepad.GamepadHandler;
 import capslock.game_info.Game;
-import javafx.application.Platform;
-import javafx.concurrent.ScheduledService;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -31,7 +26,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Effect;
 import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -44,7 +38,6 @@ import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
-import javafx.util.Duration;
 import methg.commonlib.trivial_logger.Logger;
 
 import java.nio.file.Path;
@@ -64,11 +57,6 @@ public final class MainFormController{
     private boolean onCreatedCalled = false;
     private ContentsAreaController contentsAreaController;
     private volatile ImageView panelView;
-
-    private GamepadHandler gamepadHandler;
-    private boolean isConfirm = false;
-
-    private ScheduledService<Void> poolServive;
 
     /** FXML binding */
     @FXML private ScrollPane LeftScrollPane;
@@ -151,115 +139,6 @@ public final class MainFormController{
         contentsAreaController = new ContentsAreaController(ViewStackPane, StackedMediaView, StackedImageView);
 
         Logger.INST.debug("MainForm window is displayed.");
-
-        gamepadHandler = new GamepadHandler(new Gamepad() {
-            private final Effect selectedButtonEffect;
-            private boolean isLaunchSelected = false;
-
-            {
-                final var effect = new DropShadow(20, Color.BLUE);//影つけて
-                effect.setInput(new Glow(0.5));//光らせる
-                selectedButtonEffect = effect;
-            }
-
-            @Override
-            public void onOkButtonReleased() {
-                if(isConfirm){
-                    if(isLaunchSelected){
-                        poolServive.cancel();
-                        MainHandler.INST.launch((Game) panelView.getUserData());
-                    }
-
-                    confirmVBox.setVisible(false);
-                    isConfirm = false;
-                    isLaunchSelected = false;
-                } else {
-                    confirmVBox.setVisible(true);
-                    isConfirm = true;
-
-                    unperkButton(OKButton);
-                    perkButton(cancelButton);
-                }
-            }
-
-            @Override
-            public void onCancelButtonReleased() {
-                isConfirm = false;
-                isLaunchSelected = false;
-                confirmVBox.setVisible(false);
-            }
-
-            private void perkButton(Button button){
-                button.setScaleX(1.15);
-                button.setScaleY(1.15);
-                button.setEffect(selectedButtonEffect);
-            }
-
-            private void unperkButton(Button button){
-                button.setScaleX(1);
-                button.setScaleY(1);
-                button.setEffect(null);
-            }
-
-            @Override
-            public void onRight() {
-                if(isConfirm) {
-                    unperkButton(cancelButton);
-                    perkButton(OKButton);
-                    isLaunchSelected = true;
-
-                } else {
-                    final int nextIndex = PanelTilePane.getChildren().indexOf(panelView) + 1;
-                    if (nextIndex % 3 == 0) return;
-                    if (nextIndex == PanelTilePane.getChildren().size()) return;
-
-                    emulateClick(PanelTilePane.getChildren().get(nextIndex));
-                }
-            }
-
-            @Override
-            public void onLeft() {
-                if(isConfirm) {
-                    unperkButton(OKButton);
-                    perkButton(cancelButton);
-                    isLaunchSelected = false;
-                } else {
-                    final int currentIndex = PanelTilePane.getChildren().indexOf(panelView);
-                    if (currentIndex % 3 == 0) return;
-
-                    emulateClick(PanelTilePane.getChildren().get(currentIndex - 1));
-                }
-            }
-
-            @Override
-            public void onUp() {
-                if(isConfirm)return;
-                final int nextIndex = PanelTilePane.getChildren().indexOf(panelView) - 3;
-                if(nextIndex >= 0)emulateClick(PanelTilePane.getChildren().get(nextIndex));
-            }
-
-            @Override
-            public void onDown() {
-                if(isConfirm)return;
-                final int nextIndex = PanelTilePane.getChildren().indexOf(panelView) + 3;
-                if(nextIndex < PanelTilePane.getChildren().size())
-                    emulateClick(PanelTilePane.getChildren().get(nextIndex));
-            }
-        });
-
-        poolServive = new ScheduledService<>() {
-            protected Task<Void> createTask() {
-                return new Task<>() {
-                    protected Void call() {
-                        Platform.runLater(gamepadHandler::pool);
-                        return null;
-                    }
-                };
-            }
-        };
-        poolServive.setPeriod(Duration.millis(20));
-        poolServive.setExecutor(CapsLock.getExecutor());
-        poolServive.start();
     }
 
     /**
@@ -274,48 +153,20 @@ public final class MainFormController{
     }
 
     void onLaunchFailed(){
-        poolServive = new ScheduledService<>() {
-            protected Task<Void> createTask() {
-                return new Task<>() {
-                    protected Void call() {
-                        Platform.runLater(gamepadHandler::pool);
-                        return null;
-                    }
-                };
-            }
-        };
-        poolServive.setPeriod(Duration.millis(20));
-        poolServive.setExecutor(CapsLock.getExecutor());
-        poolServive.start();
     }
 
     void onGameQuit(){
         contentsAreaController.resume();
-        poolServive = new ScheduledService<>() {
-            protected Task<Void> createTask() {
-                return new Task<>() {
-                    protected Void call() {
-                        Platform.runLater(gamepadHandler::pool);
-                        return null;
-                    }
-                };
-            }
-        };
-        poolServive.setPeriod(Duration.millis(20));
-        poolServive.setExecutor(CapsLock.getExecutor());
-        poolServive.start();
     }
 
     @FXML
     private void onCancelButtonClicked(ActionEvent event){
-        isConfirm = false;
         confirmVBox.setVisible(false);
     }
 
     @FXML
     private void onOKButtonClicked(ActionEvent event){
         MainHandler.INST.launch((Game) panelView.getUserData());
-        isConfirm = false;
         confirmVBox.setVisible(false);
     }
 
@@ -362,7 +213,6 @@ public final class MainFormController{
 
         if(event.getClickCount() != 2)return;//ダブルクリックじゃない
 
-        poolServive.cancel();
         MainHandler.INST.launch((Game)eventSourcePanel.getUserData());
     }
     
