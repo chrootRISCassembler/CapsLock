@@ -123,8 +123,11 @@ enum MainHandler {
             pathElementIterator.next();// ゲームのルートディレクトリを無視
 
             final StringBuilder buf = new StringBuilder(realGameRoot);
-            buf.append('/');
-            pathElementIterator.forEachRemaining(buf::append);
+            pathElementIterator.forEachRemaining(element -> {
+                buf.append('/');
+                buf.append(element);
+            });
+
             return Paths.get(buf.toString());
         };
 
