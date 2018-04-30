@@ -62,6 +62,12 @@ public final class CapsLock extends Application {
                     .logException(ex);
         }
 
+        try {
+            Logger.INST.setLogFile(Paths.get("./Capslock.log"));
+        }catch (IOException ex){
+            Logger.INST.logException(ex);
+        }
+
         Logger.INST.info("CapsLock started.");
 
         MainHandler.INST.loadJSONDB();
