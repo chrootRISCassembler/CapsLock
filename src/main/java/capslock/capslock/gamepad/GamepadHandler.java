@@ -55,7 +55,7 @@ public class GamepadHandler {
     }
 
     private Controller getGamepadController() {
-        for (final var controller : ControllerEnvironment.getDefaultEnvironment().getControllers()) {
+        for (final var controller : new DirectAndRawInputEnvironmentPlugin().getControllers()) {
             if (controller != null && controller.getType() == Controller.Type.GAMEPAD) {
                 return controller;
             }
@@ -73,7 +73,10 @@ public class GamepadHandler {
         }
 
         if (!gamepadController.poll()) {
-            Logger.INST.warn("Gamepad is invalid");
+            Logger.INST.warn("Gamepad is invalid. It should be disconnected.");
+            gamepadController = null;
+            pollService.setPeriod(Duration.millis(GAMEPAD_DETECTION_INTERVAL_MS));
+            return;
         }
 
         final EventQueue eventQueue = gamepadController.getEventQueue();
