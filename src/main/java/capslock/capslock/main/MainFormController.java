@@ -207,7 +207,9 @@ public final class MainFormController{
                     if (nextIndex % 3 == 0) return;
                     if (nextIndex == PanelTilePane.getChildren().size()) return;
 
-                    emulateClick(PanelTilePane.getChildren().get(nextIndex));
+                    final var panel = (ImageView)PanelTilePane.getChildren().get(nextIndex);
+                    autoScroll(panel);
+                    emulateClick(panel);
                 }
             }
 
@@ -221,7 +223,9 @@ public final class MainFormController{
                     final int currentIndex = PanelTilePane.getChildren().indexOf(panelView);
                     if (currentIndex % 3 == 0) return;
 
-                    emulateClick(PanelTilePane.getChildren().get(currentIndex - 1));
+                    final var panel = (ImageView)PanelTilePane.getChildren().get(currentIndex - 1);
+                    autoScroll(panel);
+                    emulateClick(panel);
                 }
             }
 
@@ -229,16 +233,35 @@ public final class MainFormController{
             public void onUp() {
                 if(isConfirm)return;
                 final int nextIndex = PanelTilePane.getChildren().indexOf(panelView) - 3;
-                if(nextIndex >= 0)emulateClick(PanelTilePane.getChildren().get(nextIndex));
+                if(nextIndex >= 0){
+                    final var panel = (ImageView)PanelTilePane.getChildren().get(nextIndex);
+                    autoScroll(panel);
+                    emulateClick(panel);
+                }
             }
 
             @Override
             public void onDown() {
                 if(isConfirm)return;
                 final int nextIndex = PanelTilePane.getChildren().indexOf(panelView) + 3;
-                if(nextIndex < PanelTilePane.getChildren().size())
-                    emulateClick(PanelTilePane.getChildren().get(nextIndex));
+                if(nextIndex < PanelTilePane.getChildren().size()){
+                    final var panel = (ImageView)PanelTilePane.getChildren().get(nextIndex);
+                    autoScroll(panel);
+                    emulateClick(panel);
+                }
             }
+
+            /**
+             * 選択されたパネル画像が範囲外で隠れてしまいそうなとき,　自動的にスクロールを行う.
+             * @param panelView 選択されているパネル画像の{@link ImageView}
+             */
+            private void autoScroll(ImageView panelView) {
+                final double h = LeftScrollPane.getContent().getBoundsInLocal().getHeight();
+                final double y = (panelView.getBoundsInParent().getMaxY() + panelView.getBoundsInParent().getMinY()) / 2.0;
+                final double v = LeftScrollPane.getViewportBounds().getHeight();
+                LeftScrollPane.setVvalue(LeftScrollPane.getVmax() * ((y - 0.5 * v) / (h - v)));
+            }
+
         }, CapsLock.getExecutor());
     }
 
@@ -298,7 +321,6 @@ public final class MainFormController{
             }
 
             panelView = eventSourcePanel;
-            autoScroll(panelView);
 
             contentsAreaController.setGame((Game) panelView.getUserData());
 
@@ -337,17 +359,6 @@ public final class MainFormController{
         PanelTilePane.getChildren().addAll(views);
         
         System.out.println("shuffle end");
-    }
-
-    /**
-     * 選択されたパネル画像が範囲外で隠れてしまいそうなとき,　自動的にスクロールを行う.
-     * @param panelView 選択されているパネル画像の{@link ImageView}
-     */
-    private void autoScroll(ImageView panelView) {
-        final double h = LeftScrollPane.getContent().getBoundsInLocal().getHeight();
-        final double y = (panelView.getBoundsInParent().getMaxY() + panelView.getBoundsInParent().getMinY()) / 2.0;
-        final double v = LeftScrollPane.getViewportBounds().getHeight();
-        LeftScrollPane.setVvalue(LeftScrollPane.getVmax() * ((y - 0.5 * v) / (h - v)));
     }
 
     /**
