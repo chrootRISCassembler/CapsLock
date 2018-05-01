@@ -22,6 +22,7 @@ import capslock.game_info.JSONDBReader;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.util.Duration;
 import methg.commonlib.file_checker.FileChecker;
@@ -170,46 +171,55 @@ enum MainHandler {
             Logger.INST.debug("Game launched already ; ignore launch request.");
         }
 
-        CapsLock.getExecutor().execute(new Task<Void>() {
-            @Override protected Void call() throws Exception {
+        final var gameService = new Service<Void>() {
+            @Override
+            protected Task<Void> createTask() {
+                return new Task<>() {
+                    @Override
+                    protected Void call() throws Exception {
 
-                final String ExePathString = game.getExe().toString();
-                final ProcessBuilder pb = new ProcessBuilder(ExePathString);
-                pb.directory(game.getExe().getParent().toFile());
-                pb.redirectOutput(NullDevice.getAsFile());
-                pb.redirectError(NullDevice.getAsFile());
+                        final String ExePathString = game.getExe().toString();
+                        final ProcessBuilder pb = new ProcessBuilder(ExePathString);
+                        pb.directory(game.getExe().getParent().toFile());
+                        pb.redirectOutput(NullDevice.getAsFile());
+                        pb.redirectError(NullDevice.getAsFile());
 
-                Logger.INST.debug("Try to launch " + ExePathString);
+                        Logger.INST.debug("Try to launch " + ExePathString);
 
-                try {
-                    gameProcess = pb.start();
-                } catch (SecurityException ex) {
-                    Logger.INST.critical("Blocked by security software.").logException(ex);
-                    onLaunchFailed();
-                    return null;
-                } catch (IOException ex) {
-                    Logger.INST.warn("Failed to launch game : " + ExePathString).logException(ex);
-                    onLaunchFailed();
-                    return null;
-                }
+                        try {
+                            gameProcess = pb.start();
+                        } catch (SecurityException ex) {
+                            Logger.INST.critical("Blocked by security software.").logException(ex);
+                            onLaunchFailed();
+                            return null;
+                        } catch (IOException ex) {
+                            Logger.INST.warn("Failed to launch game : " + ExePathString).logException(ex);
+                            onLaunchFailed();
+                            return null;
+                        }
 
-                onGameLaunched(game);
+                        onGameLaunched(game);
 
-                try {
-                    gameProcess.waitFor();
-
-                } catch (InterruptedException ex) {
-                    Logger.INST.debug("Game's process is interrupted.")
-                            .logException(ex);
-                } finally {
-                    Logger.INST.debug("game process terminate");
-                    gameProcess.destroyForcibly();
-                    gameProcess = null;
-                    onGameQuit();
-                }
-                return null;
+                        try {
+                            Logger.INST.debug("Wait for game's process is done");
+                            gameProcess.waitFor();
+                        } catch (InterruptedException ex) {
+                            Logger.INST.debug("Game's process is interrupted.")
+                                    .logException(ex);
+                        } finally {
+                            Logger.INST.debug("Game's process is done");
+                            gameProcess.destroyForcibly();
+                            gameProcess = null;
+                            onGameQuit();
+                        }
+                        return null;
+                    }
+                };
             }
-        });
+        };
+
+        gameService.setExecutor(CapsLock.getExecutor());
+        gameService.start();
     }
 
     /**

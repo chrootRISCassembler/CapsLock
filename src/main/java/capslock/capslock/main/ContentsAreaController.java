@@ -77,9 +77,8 @@ final class ContentsAreaController {
     final void suspend(){
         if(game == null ||
                 game.getMovieList().isEmpty() && game.getImageList().isEmpty())return;
-
-        imageTimer.pause();
-        player.pause();
+        imageTimer.pause();//imageTimerはnullにならないか? チェック
+        if(player != null)player.pause();
     }
 
     final void resume(){
