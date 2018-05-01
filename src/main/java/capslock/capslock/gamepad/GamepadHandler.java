@@ -1,22 +1,57 @@
 package capslock.capslock.gamepad;
 
+import javafx.application.Platform;
+import javafx.concurrent.ScheduledService;
+import javafx.concurrent.Task;
+import javafx.util.Duration;
 import methg.commonlib.trivial_logger.Logger;
 import net.java.games.input.*;
 
+import java.util.concurrent.Executor;
+
 public class GamepadHandler {
-    private final Controller gamepadController;
-    private final Gamepad notionalGamepad;
+    //ゲームパッドが検出されていないとき, 接続されたかどうかの検査間隔時間
+    private static final int GAMEPAD_DETECTION_INTERVAL_MS = 1000;
+
+    //ゲームパッドの入力のポーリング間隔時間
+    private static final int POLL_INTERVAL_MS = 20;
+
     private final CDST rightCDST = CDST.positive(0.4f, 0.7f);
     private final CDST leftCDST = CDST.negative(-0.4f, -0.7f);
     private final CDST upCDST = CDST.negative(-0.4f, -0.7f);
     private final CDST downCDST = CDST.positive(0.4f, 0.7f);
 
-    public GamepadHandler(Gamepad gamepad) {
-        notionalGamepad = gamepad;
-        gamepadController = getGamepadController();
-        if (gamepadController == null) return;
+    private final ScheduledService<Void> pollService;
+    private final Gamepad notionalGamepad;
 
-        Logger.INST.info("Gamepad is found.");
+    private Controller gamepadController;
+
+    public GamepadHandler(Gamepad gamepadBehavior, Executor executor) {
+        notionalGamepad = gamepadBehavior;
+        gamepadController = getGamepadController();
+
+        pollService = new ScheduledService<>() {
+            protected Task<Void> createTask() {
+                return new Task<>() {
+                    protected Void call() {
+                        Platform.runLater(GamepadHandler.this::pool);
+                        return null;
+                    }
+                };
+            }
+        };
+        pollService.setExecutor(executor);
+        pollService.setDelay(Duration.seconds(1));
+
+        if (gamepadController == null){
+            Logger.INST.info("Gamepad is not found.");
+            pollService.setPeriod(Duration.millis(GAMEPAD_DETECTION_INTERVAL_MS));
+        }else {
+            Logger.INST.info("Gamepad is detected.");
+            pollService.setPeriod(Duration.millis(POLL_INTERVAL_MS));
+        }
+
+        pollService.start();
     }
 
     private Controller getGamepadController() {
@@ -28,11 +63,17 @@ public class GamepadHandler {
         return null;
     }
 
-    public final void pool() {
-        if (gamepadController == null) return;
+    private void pool() {
+        if (gamepadController == null){
+            gamepadController = getGamepadController();
+            if(gamepadController == null)return;
+
+            Logger.INST.info("Gamepad is detected.");
+            pollService.setPeriod(Duration.millis(POLL_INTERVAL_MS));
+        }
 
         if (!gamepadController.poll()) {
-            Logger.INST.warn("Gamepad is not valid");
+            Logger.INST.warn("Gamepad is invalid");
         }
 
         final EventQueue eventQueue = gamepadController.getEventQueue();
@@ -79,5 +120,34 @@ public class GamepadHandler {
         if(leftCDST.get())notionalGamepad.onLeft();
         if(upCDST.get())notionalGamepad.onUp();
         if(downCDST.get())notionalGamepad.onDown();
+    }
+
+    /**
+     * ゲームパッドによる操作を有効にする.
+     * <p>
+     *     ゲームパッドが接続されていない状態から接続されると,
+     *     自動的にゲームパッドによる操作が有効になる.
+     * </p>
+     */
+    public final void enable(){
+        if(Platform.isFxApplicationThread()){
+            pollService.restart();
+        }else{
+            Platform.runLater(pollService::restart);
+        }
+
+        Logger.INST.debug("Gamepad is enabled");
+    }
+
+    /**
+     * ゲームパッドによる操作を無効にする.
+     * <p>
+     *     ゲームパッドが抜き差しされるなどのイベントの検知も無効になる.
+     * </p>
+     */
+    public final void disable(){
+        assert Platform.isFxApplicationThread() : "This function must be call by the JavaFX Application Thread";
+        pollService.cancel();
+        Logger.INST.debug("Gamepad is disabled");
     }
 }

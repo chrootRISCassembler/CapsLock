@@ -18,9 +18,6 @@ package capslock.capslock.main;
 import capslock.capslock.gamepad.Gamepad;
 import capslock.capslock.gamepad.GamepadHandler;
 import capslock.game_info.Game;
-import javafx.application.Platform;
-import javafx.concurrent.ScheduledService;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -44,7 +41,6 @@ import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
-import javafx.util.Duration;
 import methg.commonlib.trivial_logger.Logger;
 
 import java.nio.file.Path;
@@ -67,8 +63,6 @@ public final class MainFormController{
 
     private GamepadHandler gamepadHandler;
     private boolean isConfirm = false;
-
-    private ScheduledService<Void> poolServive;
 
     /** FXML binding */
     @FXML private ScrollPane LeftScrollPane;
@@ -166,7 +160,7 @@ public final class MainFormController{
             public void onOkButtonReleased() {
                 if(isConfirm){
                     if(isLaunchSelected){
-                        poolServive.cancel();
+                        gamepadHandler.disable();
                         MainHandler.INST.launch((Game) panelView.getUserData());
                     }
 
@@ -245,21 +239,7 @@ public final class MainFormController{
                 if(nextIndex < PanelTilePane.getChildren().size())
                     emulateClick(PanelTilePane.getChildren().get(nextIndex));
             }
-        });
-
-        poolServive = new ScheduledService<>() {
-            protected Task<Void> createTask() {
-                return new Task<>() {
-                    protected Void call() {
-                        Platform.runLater(gamepadHandler::pool);
-                        return null;
-                    }
-                };
-            }
-        };
-        poolServive.setPeriod(Duration.millis(20));
-        poolServive.setExecutor(CapsLock.getExecutor());
-        poolServive.start();
+        }, CapsLock.getExecutor());
     }
 
     /**
@@ -274,36 +254,12 @@ public final class MainFormController{
     }
 
     void onLaunchFailed(){
-        poolServive = new ScheduledService<>() {
-            protected Task<Void> createTask() {
-                return new Task<>() {
-                    protected Void call() {
-                        Platform.runLater(gamepadHandler::pool);
-                        return null;
-                    }
-                };
-            }
-        };
-        poolServive.setPeriod(Duration.millis(20));
-        poolServive.setExecutor(CapsLock.getExecutor());
-        poolServive.start();
+        gamepadHandler.enable();
     }
 
     void onGameQuit(){
+        gamepadHandler.enable();
         contentsAreaController.resume();
-        poolServive = new ScheduledService<>() {
-            protected Task<Void> createTask() {
-                return new Task<>() {
-                    protected Void call() {
-                        Platform.runLater(gamepadHandler::pool);
-                        return null;
-                    }
-                };
-            }
-        };
-        poolServive.setPeriod(Duration.millis(20));
-        poolServive.setExecutor(CapsLock.getExecutor());
-        poolServive.start();
     }
 
     @FXML
@@ -362,7 +318,7 @@ public final class MainFormController{
 
         if(event.getClickCount() != 2)return;//ダブルクリックじゃない
 
-        poolServive.cancel();
+        gamepadHandler.disable();
         MainHandler.INST.launch((Game)eventSourcePanel.getUserData());
     }
     
