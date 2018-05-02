@@ -63,6 +63,7 @@ public final class MainFormController{
 
     private GamepadHandler gamepadHandler;
     private boolean isConfirm = false;
+    private boolean isLaunchSelected = false;
 
     /** FXML binding */
     @FXML private ScrollPane LeftScrollPane;
@@ -148,7 +149,6 @@ public final class MainFormController{
 
         gamepadHandler = new GamepadHandler(new Gamepad() {
             private final Effect selectedButtonEffect;
-            private boolean isLaunchSelected = false;
 
             {
                 final var effect = new DropShadow(20, Color.BLUE);//影つけて
@@ -299,6 +299,11 @@ public final class MainFormController{
     }
 
     void onPanelClicked(MouseEvent event){
+        if(!event.isSynthesized()){
+            confirmVBox.setVisible(false);
+            isConfirm = false;
+            isLaunchSelected = false;
+        }
         if(!event.getButton().equals(MouseButton.PRIMARY))return;//右クリックじゃない
 
         final ImageView eventSourcePanel = (ImageView)event.getSource();//クリックされたパネルの取得
@@ -390,7 +395,7 @@ public final class MainFormController{
                 false,
                 false,
                 false,
-                false,
+                true,
                 false,
                 false,
                 null
