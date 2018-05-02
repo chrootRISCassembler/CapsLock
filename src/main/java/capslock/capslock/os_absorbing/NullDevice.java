@@ -17,7 +17,18 @@ package capslock.capslock.os_absorbing;
 
 import java.io.File;
 
-public class NullDevice {
+/**
+ * OSごとに異なるnullデバイスを返すユーティリティクラス.
+ */
+public final class NullDevice {
+    private NullDevice(){
+        assert false : "DO NOT create instance of NullDevice";
+    }
+
+    /**
+     * OSごとに異なるnullデバイスを{@link File}として返す.
+     * @return そのOSのnullデバイス.
+     */
     static public File getAsFile(){
         return System.getProperty("os.name").toLowerCase().startsWith("windows") ?
                 new File("nul") : new File("/dev/null");

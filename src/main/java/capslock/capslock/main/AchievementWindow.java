@@ -129,7 +129,8 @@ public final class AchievementWindow {
         }
 
         Logger.INST.debug("wait start");
-        while(isDisplayed){
+        while (isDisplayed) {
+            Thread.onSpinWait();
         }
         Logger.INST.debug("wait end");
     }

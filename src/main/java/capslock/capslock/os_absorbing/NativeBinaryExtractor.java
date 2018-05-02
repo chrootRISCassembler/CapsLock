@@ -28,7 +28,9 @@ import java.util.List;
  * JInputのネイティブのバイナリをロードできるようにFatjarから取り出す.
  */
 public final class NativeBinaryExtractor {
-    private NativeBinaryExtractor(){}
+    private NativeBinaryExtractor(){
+        assert false : "DO NOT create instance of NativeBinaryExtractor";
+    }
 
     public static void extractBinaries(){
         final var osName = System.getProperty("os.name").toLowerCase();

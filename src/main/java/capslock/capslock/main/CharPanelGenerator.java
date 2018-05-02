@@ -27,7 +27,6 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import methg.commonlib.trivial_logger.Logger;
 
 /**
  * Generates a square panel image from char.
@@ -42,21 +41,19 @@ final class CharPanelGenerator{
      * You MUST NOT create the instance of this class.
      */
     private CharPanelGenerator(){
-        Logger.INST.critical("Utility class' instance \"CharPanelGenerator\" is created! Call the developer!");
+        assert false : "DO NOT create instance of CharPanelGenerator";
     }
     
     /**
-     * Generates a panel image form char.
-     * <p>First, this function converts ch to upper case if ch is lower case.</p>
-     * <p>Then, this generates javafx's image from ch.And return it.</p>
-     * You can fix the resolution of image through {@link capslock.CharPanelGenerator#PANEL_IMAGE_SIZE}
-     * and {@link capslock.CharPanelGenerator#FONT_SIZE}.
+     * 文字からパネル画像を生成する.
+     * <p>引数の文字を大文字にし, その文字を使って{@link Image}を生成して返す.</p>
+     * <p>{@link #PANEL_IMAGE_SIZE}と{@link #FONT_SIZE}で生成する画像の解像度を変更できる.</p>
      * @param ch パネルの生成に使う1文字.
      * @param color 背景色.
      * @return 生成されたパネル.
      */
-    static final Image generate(char ch, Color color){
-        final Label label = new Label(Character.toString(Character.toUpperCase(ch)));
+    static Image generate(char ch, Color color){
+        final var label = new Label(Character.toString(Character.toUpperCase(ch)));
         label.setMinSize(PANEL_IMAGE_SIZE, PANEL_IMAGE_SIZE);
         label.setMaxSize(PANEL_IMAGE_SIZE, PANEL_IMAGE_SIZE);
         label.setPrefSize(PANEL_IMAGE_SIZE, PANEL_IMAGE_SIZE);
@@ -64,8 +61,8 @@ final class CharPanelGenerator{
         label.setAlignment(Pos.CENTER);
         label.setTextFill(Color.WHITE);
         label.setBackground(new Background(new BackgroundFill(color, CornerRadii.EMPTY, Insets.EMPTY)));
-        final Scene scene = new Scene(new Group(label));
-        final WritableImage img = new WritableImage(PANEL_IMAGE_SIZE, PANEL_IMAGE_SIZE);
+        final var scene = new Scene(new Group(label));
+        final var img = new WritableImage(PANEL_IMAGE_SIZE, PANEL_IMAGE_SIZE);
         scene.snapshot(img);
         return img ;
     }

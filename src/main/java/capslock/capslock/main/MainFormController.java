@@ -157,7 +157,7 @@ public final class MainFormController{
             }
 
             @Override
-            public void onOkButtonReleased() {
+            public final void onOkButtonReleased() {
                 if(isConfirm){
                     if(isLaunchSelected){
                         gamepadHandler.disable();
@@ -177,7 +177,7 @@ public final class MainFormController{
             }
 
             @Override
-            public void onCancelButtonReleased() {
+            public final void onCancelButtonReleased() {
                 isConfirm = false;
                 isLaunchSelected = false;
                 confirmVBox.setVisible(false);
@@ -196,7 +196,7 @@ public final class MainFormController{
             }
 
             @Override
-            public void onRight() {
+            public final void onRight() {
                 if(isConfirm) {
                     unperkButton(cancelButton);
                     perkButton(OKButton);
@@ -214,7 +214,7 @@ public final class MainFormController{
             }
 
             @Override
-            public void onLeft() {
+            public final void onLeft() {
                 if(isConfirm) {
                     unperkButton(OKButton);
                     perkButton(cancelButton);
@@ -230,7 +230,7 @@ public final class MainFormController{
             }
 
             @Override
-            public void onUp() {
+            public final void onUp() {
                 if(isConfirm)return;
                 final int nextIndex = PanelTilePane.getChildren().indexOf(panelView) - 3;
                 if(nextIndex >= 0){
@@ -241,7 +241,7 @@ public final class MainFormController{
             }
 
             @Override
-            public void onDown() {
+            public final void onDown() {
                 if(isConfirm)return;
                 final int nextIndex = PanelTilePane.getChildren().indexOf(panelView) + 3;
                 if(nextIndex < PanelTilePane.getChildren().size()){
