@@ -145,69 +145,75 @@ task cpResources(type : Copy){
 
 shadowJar.dependsOn cpResources
 
-run {
-    doFirst {
-        final dependentBinaryDir = Paths.get(System.getProperty("user.dir") + "/dependentBinary/")
-        if(Files.notExists(dependentBinaryDir)){
-            Files.createDirectory(dependentBinaryDir)
-        }
-        if(Files.list(dependentBinaryDir).count() == 0){
-            println 'Native library isn\'t downloaded.\nDownloading ...'
-
-            final downloadedZipPath = Paths.get(System.getProperty("user.dir") + "/dependentBinary/jinput.zip")
-
-            try {
-                URL url = new URL('http://ci.newdawnsoftware.com/job/JInput/lastBuild/artifact/dist/jinput_nightly_20160318.zip')
-                InputStream inStream = url.openStream()
-                Files.copy(inStream, downloadedZipPath, StandardCopyOption.REPLACE_EXISTING)
-                println "Download succeeded."
-            } catch (Exception ex) {
-                println "Download failed."
-                throw ex
-            }
-
-            println 'uncompress zip ...'
-
-            byte[] buf = new byte[1024]
-            final ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(downloadedZipPath))
-            for (ZipEntry entry = zipInputStream.getNextEntry(); entry != null; entry = zipInputStream.getNextEntry()) {
-                if (entry.isDirectory()) continue
-
-                println 'uncompress : ' + entry.getName()
-                final originalFileName = Paths.get(entry.getName()).getFileName()
-                final uncompressed = Paths.get(dependentBinaryDir.toString() + '/' + originalFileName)
-                final OutputStream outputStream = Files.newOutputStream(uncompressed,
-                        StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)
-                while (true){
-                    final int len = zipInputStream.read(buf)
-                    if (len < 0) break
-                    outputStream.write(buf, 0, len)
-                }
-                outputStream.close()
-            }
-            zipInputStream.close()
-
-            println 'uncompress done'
-
-            Files.delete(downloadedZipPath)
-        }
+task downloadJInputBinaries {
+    final dependentBinaryDir = Paths.get(System.getProperty("user.dir") + "/dependentBinary/")
+    if(Files.notExists(dependentBinaryDir)){
+        Files.createDirectory(dependentBinaryDir)
     }
+    if(Files.list(dependentBinaryDir).count() == 0) {
+        println 'Native library isn\'t downloaded.\nDownloading ...'
+
+        final downloadedZipPath = Paths.get(System.getProperty("user.dir") + "/dependentBinary/jinput.zip")
+
+        try {
+            URL url = new URL('http://ci.newdawnsoftware.com/job/JInput/lastBuild/artifact/dist/jinput_nightly_20160318.zip')
+            InputStream inStream = url.openStream()
+            Files.copy(inStream, downloadedZipPath, StandardCopyOption.REPLACE_EXISTING)
+            println "Download succeeded."
+        } catch (Exception ex) {
+            println "Download failed."
+            throw ex
+        }
+
+        println 'uncompress zip ...'
+
+        byte[] buf = new byte[1024]
+        final ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(downloadedZipPath))
+        for (ZipEntry entry = zipInputStream.getNextEntry(); entry != null; entry = zipInputStream.getNextEntry()) {
+            if (entry.isDirectory()) continue
+            if (entry.getName().endsWith(".jar")) continue
+
+            println 'uncompress : ' + entry.getName()
+            final originalFileName = Paths.get(entry.getName()).getFileName()
+            final uncompressed = Paths.get(dependentBinaryDir.toString() + '/' + originalFileName)
+            final OutputStream outputStream = Files.newOutputStream(uncompressed,
+                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)
+            while (true) {
+                final int len = zipInputStream.read(buf)
+                if (len < 0) break
+                outputStream.write(buf, 0, len)
+            }
+            outputStream.close()
+        }
+        zipInputStream.close()
+
+        println 'uncompress done'
+
+        Files.delete(downloadedZipPath)
+    }
+}
+
+run {
     systemProperties.put("java.library.path", Paths.get(System.getProperty("user.dir") + "/dependentBinary/").toAbsolutePath())
-    dependsOn cpResources
+    dependsOn downloadJInputBinaries, cpResources
     println("Current directory is " + workingDir)
     workingDir = '../TestEnv'
     println("cd to the testing environment : " + workingDir)
 }
 
-compileJava.doFirst {
-    def libDir = Paths.get(System.getProperty("user.dir") + "/lib/")
-    if (Files.notExists(libDir)) {
-        Files.createDirectory(libDir)
-    }
+compileJava {
+    dependsOn downloadJInputBinaries
 
-    fileChecker.downloadIfNotExist()
-    trivialLogger.downloadIfNotExist()
-    gameInfo.downloadIfNotExist()
+    doFirst {
+        def libDir = Paths.get(System.getProperty("user.dir") + "/lib/")
+        if (Files.notExists(libDir)) {
+            Files.createDirectory(libDir)
+        }
+
+        fileChecker.downloadIfNotExist()
+        trivialLogger.downloadIfNotExist()
+        gameInfo.downloadIfNotExist()
+    }
 }
 
 task forceUpdateLib{
