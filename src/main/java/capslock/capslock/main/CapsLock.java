@@ -15,6 +15,7 @@
 
 package capslock.capslock.main;
 
+import capslock.capslock.os_absorbing.NativeBinaryExtractor;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -69,6 +70,12 @@ public final class CapsLock extends Application {
         }
 
         Logger.INST.info("CapsLock started.");
+
+        if(System.getProperty("java.library.path").contains("dependentBinary")){
+            Logger.INST.debug("It can be launched by Gradle");
+        }else{
+            NativeBinaryExtractor.extractBinaries();
+        }
 
         MainHandler.INST.loadJSONDB();
 
