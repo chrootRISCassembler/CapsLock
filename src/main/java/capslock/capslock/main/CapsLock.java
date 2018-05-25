@@ -115,7 +115,7 @@ public final class CapsLock extends Application {
         try {
             final ResourceObserver resourceObserver=new ResourceObserver();
             resourceObserver.Launch();
-            
+
             final MainFormController controller = loader.getController();
 
             MainHandler.INST.setController(controller);

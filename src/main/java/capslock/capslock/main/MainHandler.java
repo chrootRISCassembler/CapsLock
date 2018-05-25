@@ -177,6 +177,8 @@ enum MainHandler {
                 return new Task<>() {
                     @Override
                     protected Void call() throws Exception {
+                        var processresourceobserver=new ProcessResourceObserver(game.getExe().toString());
+                        processresourceobserver.Launch();
 
                         final String ExePathString = game.getExe().toString();
                         final ProcessBuilder pb = new ProcessBuilder(ExePathString);
@@ -211,6 +213,7 @@ enum MainHandler {
                             gameProcess.destroyForcibly();
                             gameProcess = null;
                             onGameQuit();
+                            processresourceobserver.Close();
                         }
                         return null;
                     }
