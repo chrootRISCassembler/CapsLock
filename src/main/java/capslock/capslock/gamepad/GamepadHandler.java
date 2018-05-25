@@ -70,12 +70,21 @@ public class GamepadHandler {
     }
 
     private Controller getGamepadController() {
+        Controller fallbackController = null;
+
         for (final var controller : new DirectAndRawInputEnvironmentPlugin().getControllers()) {
-            if (controller != null && controller.getType() == Controller.Type.GAMEPAD) {
+            if(controller == null)continue;
+
+            if (controller.getType() == Controller.Type.GAMEPAD) {
                 return controller;
             }
+
+            //for F310 gamepad
+            if(controller.getType() == Controller.Type.STICK && controller.getName().equals("Logicool Dual Action")){
+                fallbackController = controller;
+            }
         }
-        return null;
+        return fallbackController;
     }
 
     private void pool() {
