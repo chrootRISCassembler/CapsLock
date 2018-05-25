@@ -97,7 +97,7 @@ public final class AchievementWindow {
         rootPane.relocate(displayRect.getWidth() - width - displayRect.getWidth() * MARGIN_LEFT_RIGHT_RATIO,
                 displayRect.getHeight());
 
-        rootPane.setStyle("-fx-background-color: rgba(50,50,50,1); -fx-background-radius: 1em;");
+        rootPane.setStyle("-fx-background-color: rgba(50,50,50,1); -fx-background-radius: 1em; -fx-border-color: CORNFLOWERBLUE; -fx-border-radius: 1em;");
 
         iconView.setFitWidth(width * ICON_RATIO);
 
