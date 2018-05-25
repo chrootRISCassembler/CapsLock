@@ -40,6 +40,7 @@ public final class CapsLock extends Application {
 	private static final Path CONFIG_FILE = Paths.get("./config.properties");
     private static final ExecutorService executor = Executors.newWorkStealingPool();
 
+
     /**
      * デフォルトのエントリポイント.
      * 別アプリケーションからこのプログラムを起動するときは{@link CapsLock#InjectionPoint}から起動する.
@@ -71,6 +72,7 @@ public final class CapsLock extends Application {
 
         Logger.INST.info("CapsLock started.");
 
+
         if(System.getProperty("java.library.path").contains("dependentBinary")){
             Logger.INST.debug("It can be launched by Gradle");
         }else{
@@ -80,6 +82,7 @@ public final class CapsLock extends Application {
         MainHandler.INST.loadJSONDB();
 
         launch();
+
 
         Logger.INST.info("CapsLock terminated.");
         Logger.INST.flush();
@@ -110,6 +113,9 @@ public final class CapsLock extends Application {
 
 
         try {
+            final ResourceObserver resourceObserver=new ResourceObserver();
+            resourceObserver.Launch();
+            
             final MainFormController controller = loader.getController();
 
             MainHandler.INST.setController(controller);
