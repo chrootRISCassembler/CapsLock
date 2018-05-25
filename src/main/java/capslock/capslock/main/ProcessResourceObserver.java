@@ -52,11 +52,16 @@ public class ProcessResourceObserver {
 
     private String GetUsageCpuAndMemoryPercent() {
         Matcher m=null;
+        var cmdstring= "";
         try {
-            m = pattern.matcher(GetUsageString());
+            cmdstring = GetUsageString();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if(cmdstring=="")return "cmd error";
+
+        m = pattern.matcher(cmdstring);
+
         String cpu="-1";
         if (m.find()){
             cpu= m.group()+"%";
@@ -69,7 +74,7 @@ public class ProcessResourceObserver {
         }else{
             Logger.INST.warn("Dont get Process memory percent");
         }
-        if(cpu=="-1"&&memory=="-1"){
+        if(cpu.equals("-1") && memory.equals("-1")){
             return "-----Process Not Found-----";
         }
         final long memorysize=Integer.parseInt(memory);
@@ -81,6 +86,7 @@ public class ProcessResourceObserver {
 
     private String GetUsageString() throws IOException {
         InputStream inputStream = RunWmicOnCmd();
+        if(inputStream==null){return "";}
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
         StringBuilder sb = new StringBuilder();
@@ -106,6 +112,7 @@ public class ProcessResourceObserver {
             cmdprocess=runtime.exec(Command);
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
 
         return cmdprocess.getInputStream();
