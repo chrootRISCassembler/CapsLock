@@ -24,6 +24,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -52,6 +53,8 @@ public final class AchievementWindow {
         label.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
         label.setGraphic(iconView);
+        label.setTextFill(Color.WHITE);
+        label.setFont(new Font(16));
 
         AnchorPane.setBottomAnchor(label, 0.0);
         AnchorPane.setLeftAnchor(label, 0.0);
@@ -59,7 +62,6 @@ public final class AchievementWindow {
         AnchorPane.setTopAnchor(label, 0.0);
 
         rootPane = new AnchorPane(label);
-        rootPane.setStyle("-fx-background-color: rgba(0,0,0,0);");
 
         final Scene scene = new Scene(rootPane);
         scene.setFill(Color.TRANSPARENT);
@@ -95,7 +97,7 @@ public final class AchievementWindow {
         rootPane.relocate(displayRect.getWidth() - width - displayRect.getWidth() * MARGIN_LEFT_RIGHT_RATIO,
                 displayRect.getHeight());
 
-        rootPane.setStyle("-fx-background-color: rgba(100,0,0,1);");
+        rootPane.setStyle("-fx-background-color: rgba(50,50,50,1); -fx-background-radius: 1em;");
 
         iconView.setFitWidth(width * ICON_RATIO);
 
@@ -107,7 +109,7 @@ public final class AchievementWindow {
         moveUp.setByY(- height - displayRect.getHeight() * MARGIN_TOP_BOTTOM_RATIO);
 
         final ParallelTransition in = new ParallelTransition(fadeIn, moveUp);
-        final PauseTransition pause = new PauseTransition(Duration.seconds(1));
+        final PauseTransition pause = new PauseTransition(Duration.seconds(3));
         final FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), rootPane);
         fadeOut.setFromValue(1);
         fadeOut.setToValue(0);
