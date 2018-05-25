@@ -26,6 +26,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.util.Duration;
+import methg.commonlib.trivial_logger.Logger;
 
 import java.nio.file.Path;
 import java.util.Iterator;
@@ -166,9 +167,19 @@ final class ContentsAreaController {
     }
 
     private void displayImage(){
-        final Image image = new Image(imageIterator.next().toUri().toString());
+        final var image = new Image(imageIterator.next().toUri().toString());
+        if(image == null)Logger.INST.info(game.getUUID() + " Failed to load image.");
+        {
+            final var ex = image.getException();
+            if(ex != null)Logger.INST.logException(ex);
+        }
         imageView.setImage(image);
-        imageView.setFitWidth(parentRegion.getWidth());
+        if(image.getWidth() >= image.getHeight()){
+            imageView.setFitWidth(parentRegion.getWidth());
+        }else{
+            imageView.setFitHeight(parentRegion.getHeight());
+        }
+
         imageTimer.play();
     }
 
