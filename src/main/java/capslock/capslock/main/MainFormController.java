@@ -76,6 +76,7 @@ public final class MainFormController{
     @FXML private Label DescriptionLabel;
 
     @FXML private VBox confirmVBox;
+    @FXML private Label confirmLabel;
     @FXML private Button cancelButton;
     @FXML private Button OKButton;
 
@@ -168,6 +169,8 @@ public final class MainFormController{
                     isConfirm = false;
                     isLaunchSelected = false;
                 } else {
+                    final Game selectedGame = (Game)panelView.getUserData();
+                    confirmLabel.setText("ID " + selectedGame.getGameID() + " 「" + selectedGame.getName() + "」\nこのゲームを遊びますか?");
                     confirmVBox.setVisible(true);
                     isConfirm = true;
 
@@ -263,6 +266,8 @@ public final class MainFormController{
             }
 
         }, CapsLock.getExecutor());
+
+        confirmVBox.setStyle("-fx-background-color: rgba(50,50,50,1); -fx-background-radius: 1em; -fx-border-color: CORNFLOWERBLUE; -fx-border-radius: 1em;");
     }
 
     /**

@@ -63,16 +63,22 @@
             </VBox>
          </children>
       </HBox>
-      <VBox id="ConfirmVBox" fx:id="confirmVBox" alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" spacing="20.0" visible="false">
+      <VBox id="ConfirmVBox" fx:id="confirmVBox" alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="400.0" spacing="50.0" visible="false">
          <children>
-            <Label text="このゲームを遊びますか?">
+            <Label fx:id="confirmLabel" textAlignment="CENTER">
                <font>
-                  <Font size="20.0" />
+                  <Font size="22.0" />
                </font></Label>
-            <HBox alignment="CENTER" spacing="50.0">
+            <HBox alignment="CENTER" spacing="120.0">
                <children>
-                  <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#onCancelButtonClicked" text="キャンセル" />
-                  <Button fx:id="OKButton" mnemonicParsing="false" onAction="#onOKButtonClicked" text="OK" />
+                  <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#onCancelButtonClicked" text="いいえ">
+                     <font>
+                        <Font size="16.0" />
+                     </font></Button>
+                  <Button fx:id="OKButton" mnemonicParsing="false" onAction="#onOKButtonClicked" text="はい">
+                     <font>
+                        <Font size="16.0" />
+                     </font></Button>
                </children>
             </HBox>
          </children>

@@ -38,7 +38,7 @@
 
 #ConfirmVBox{
     -fx-background-color: gray;
-    -fx-opacity: 0.8;
+    -fx-opacity: 0.95;
 }
 
 #DescriptionLabel{
