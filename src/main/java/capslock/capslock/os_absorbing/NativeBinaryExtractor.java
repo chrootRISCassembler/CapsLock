@@ -19,6 +19,7 @@ import methg.commonlib.trivial_logger.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -59,7 +60,9 @@ public final class NativeBinaryExtractor {
             }
             try {
                 Files.copy(inputStream, Paths.get("./" + file));
-            }catch (IOException ex){
+            }catch (FileAlreadyExistsException ex){
+                Logger.INST.debug(file + " already exists ; canceling copy");
+            }catch (IOException ex) {
                 Logger.INST.critical("Failed to extract binaries of JInput").logException(ex);
             }
         }
