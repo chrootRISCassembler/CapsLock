@@ -58,7 +58,7 @@ enum MainHandler {
         timer = new Timeline(new KeyFrame(Duration.minutes(WARN_INTERVAL_MINUTE), event -> {
             pastMinutes += WARN_INTERVAL_MINUTE;
             final AchievementWindow warn = new AchievementWindow(null,
-                    "プレイ開始から" + pastMinutes + "分経過しました\n混雑している場合は次の方に\\nお譲りください");
+                    "プレイ開始から" + pastMinutes + "分経過しました\n混雑している場合は次の方に\nお譲りください");
             warn.display();
         }));
         timer.setCycleCount(Animation.INDEFINITE);
