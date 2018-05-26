@@ -31,6 +31,9 @@ public class GamepadHandler {
     //ゲームパッドの入力のポーリング間隔時間
     private static final int POLL_INTERVAL_MS = 20;
 
+    private static volatile Component.Identifier.Button okButton = Component.Identifier.Button._1;
+    private static volatile Component.Identifier.Button cancelButton = Component.Identifier.Button._2;
+
     private final CDST rightCDST = CDST.positive(0.4f, 0.7f);
     private final CDST leftCDST = CDST.negative(-0.4f, -0.7f);
     private final CDST upCDST = CDST.negative(-0.4f, -0.7f);
@@ -67,6 +70,43 @@ public class GamepadHandler {
         }
 
         pollService.start();
+    }
+
+
+    public static void setOkButton(byte button){
+        final var realButton = toButtonOfGamepad(button);
+        if(realButton != null)okButton = realButton;
+        Logger.INST.info("OK button is now " + (button + 1) + "; (index is " + button + ")");
+    }
+
+    public static void setCancelButton(byte button){
+        final var realButton = toButtonOfGamepad(button);
+        if(realButton != null)cancelButton = realButton;
+        Logger.INST.info("Cancel button is now " + (button + 1) + "; (index is " + button + ")");
+    }
+
+    //頭の悪い実装. リフレクションかなにかを使って書き直す
+    private static Component.Identifier.Button toButtonOfGamepad(byte num){
+        switch (num){
+            case 0:
+                return Component.Identifier.Button._0;
+            case 1:
+                return Component.Identifier.Button._1;
+            case 2:
+                return Component.Identifier.Button._2;
+            case 3:
+                return Component.Identifier.Button._3;
+            case 4:
+                return Component.Identifier.Button._4;
+            case 5:
+                return Component.Identifier.Button._5;
+            case 6:
+                return Component.Identifier.Button._6;
+            case 7:
+                return Component.Identifier.Button._7;
+            default:
+                return null;
+        }
     }
 
     private Controller getGamepadController() {
@@ -132,12 +172,12 @@ public class GamepadHandler {
                 }
             }
 
-            if (type.equals(Component.Identifier.Button._0)) {
+            if (type.equals(okButton)) {
                 if (event.getValue() != 0.0f) continue;
                 notionalGamepad.onOkButtonReleased();
             }
 
-            if (type.equals(Component.Identifier.Button._1)) {
+            if (type.equals(cancelButton)) {
                 if (event.getValue() != 0.0f) continue;
                 notionalGamepad.onCancelButtonReleased();
             }

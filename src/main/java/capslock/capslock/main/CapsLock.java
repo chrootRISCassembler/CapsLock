@@ -15,6 +15,7 @@
 
 package capslock.capslock.main;
 
+import capslock.capslock.gamepad.GamepadHandler;
 import capslock.capslock.os_absorbing.NativeBinaryExtractor;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -49,29 +50,15 @@ public final class CapsLock extends Application {
     public static void main(String[] args) {
         Logger.INST.setCurrentLogLevel(LogLevel.DEBUG);
 
-        try (final Reader reader = Files.newBufferedReader(CONFIG_FILE)){
-            final Properties properties = new Properties();
-            properties.load(reader);
-
-            final String rawValue = properties.getProperty("LogLevel");
-            if(rawValue == null)throw new IOException("LogLevel value is not found.");
-
-            Logger.INST.setCurrentLogLevel(LogLevel.valueOf(rawValue.toUpperCase()));
-
-        }catch (IOException | IllegalArgumentException ex) {
-            Logger.INST.warn(() -> "Failed to load config form " + CONFIG_FILE)
-                    .warn(() -> "Logger runs default log level : " + Logger.INST.getCurrentLogLevel())
-                    .logException(ex);
-        }
-
         try {
             Logger.INST.setLogFile(Paths.get("./Capslock.log"));
         }catch (IOException ex){
             Logger.INST.logException(ex);
         }
 
-        Logger.INST.info("CapsLock started.");
+        loadConfig();
 
+        Logger.INST.info("CapsLock started.");
 
         if(System.getProperty("java.library.path").contains("dependentBinary")){
             Logger.INST.debug("It can be launched by Gradle");
@@ -86,6 +73,35 @@ public final class CapsLock extends Application {
 
         Logger.INST.info("CapsLock terminated.");
         Logger.INST.flush();
+    }
+
+    private static void loadConfig(){
+        final var properties = new Properties();
+
+        try (final Reader reader = Files.newBufferedReader(CONFIG_FILE)){
+            properties.load(reader);
+        }catch (IOException ex) {
+            Logger.INST.warn("Failed to load config form " + CONFIG_FILE);
+        }
+
+        try {
+            Logger.INST.setCurrentLogLevel(LogLevel.valueOf(properties.getProperty("LogLevel").toUpperCase()));
+            Logger.INST.info("Log level is " + Logger.INST.getCurrentLogLevel());
+        }catch (Exception ex){
+            Logger.INST.warn("Logger runs default log level : " + Logger.INST.getCurrentLogLevel());
+        }
+
+        try {
+            GamepadHandler.setOkButton(Integer.valueOf(properties.getProperty("OKButton")).byteValue());
+        }catch (Exception ex){
+            Logger.INST.logException(ex);
+        }
+
+        try {
+            GamepadHandler.setCancelButton(Integer.valueOf(properties.getProperty("CancelButton")).byteValue());
+        }catch (Exception ex){
+            Logger.INST.logException(ex);
+        }
     }
 
     @Override
