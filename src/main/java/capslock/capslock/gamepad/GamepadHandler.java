@@ -169,7 +169,7 @@ public class GamepadHandler {
         while (true){
             final var axisEvent = inputQueue.pop();
             if(!axisEvent.isPresent())break;
-            switch (axisEvent.get().getDirection()){
+            switch (axisEvent.get()){
                 case UP:
                     notionalGamepad.onUp();
                     break;
