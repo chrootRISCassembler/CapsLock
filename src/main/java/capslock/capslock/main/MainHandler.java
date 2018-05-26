@@ -212,7 +212,7 @@ enum MainHandler {
             protected Task<Void> createTask() {
                 return new Task<>() {
                     @Override
-                    protected Void call() throws Exception {
+                    protected Void call() {
                         final String ExePathString = game.getExe().toString();
                         final ProcessBuilder pb = new ProcessBuilder(ExePathString);
                         pb.directory(game.getExe().getParent().toFile());

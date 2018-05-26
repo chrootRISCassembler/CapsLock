@@ -108,7 +108,7 @@ public final class ProcessResourceScraper {
         }catch (IOException ex) {
             Logger.INST.logException(ex);
         }catch (InterruptedException ex){
-            Logger.INST.logException(ex);
+            Logger.INST.critical("WMIC command process is interrupted").logException(ex);
         }
 
         usage.memPercent = ((double) usage.mem * 100) / getWholeMemorySize_Windows();
@@ -144,7 +144,7 @@ public final class ProcessResourceScraper {
         }catch (IOException ex) {
             Logger.INST.logException(ex);
         }catch (InterruptedException ex){
-            Logger.INST.logException(ex);
+            Logger.INST.critical("WMIC command process is interrupted").logException(ex);
         }
         return 1;
     }
