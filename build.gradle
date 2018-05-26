@@ -21,11 +21,10 @@ import java.nio.file.StandardCopyOption
 import java.nio.file.StandardOpenOption
 import java.time.LocalDateTime
 import java.util.zip.ZipEntry
-import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
 
 group 'CapsLock'
-version '3.5.0'
+version '3.5.0-RC'
 
 apply plugin: 'java'
 sourceCompatibility = 10
