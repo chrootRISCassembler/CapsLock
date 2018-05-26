@@ -21,6 +21,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import methg.commonlib.trivial_logger.LogLevel;
 import methg.commonlib.trivial_logger.Logger;
@@ -127,6 +128,7 @@ public final class CapsLock extends Application {
             return;
         }
 
+        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 
         try {
             final MainFormController controller = loader.getController();
