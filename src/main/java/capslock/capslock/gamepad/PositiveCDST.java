@@ -15,24 +15,23 @@
 
 package capslock.capslock.gamepad;
 
-class PositiveCDST extends CDST {
-    final private float highThreshold;
-    final private float lowThreshold;
-    PositiveCDST(float low, float high){
-        lowThreshold = low;
-        highThreshold = high;
-    }
-
+final class PositiveCDST extends CDST {
     @Override
-    boolean test(float val) {
-        if(state){//High state
-            if(val < lowThreshold){
+    boolean test(float value) {
+        if(state){
+            if(value < lowThreshold){
                 state = false;
+                countdown = INITIAL_COUNT_FIRST;
+            }else {
+                --countdown;
+                if(countdown == 0){
+                    countdown = REPEATED_COUNT_FIRST;
+                    return true;
+                }
             }
-        }else {//Low state
-            if(val > highThreshold){
+        }else {
+            if(value > highThreshold){
                 state = true;
-                countdown = COUNTDOWN_WAIT;
                 return true;
             }
         }

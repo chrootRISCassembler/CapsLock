@@ -16,32 +16,26 @@
 package capslock.capslock.gamepad;
 
 abstract class CDST {
-    static final byte COUNTDOWN_WAIT = 40;
+    static final float highThreshold = 0.6f;
+    static final float lowThreshold = 0.4f;
+    static final byte INITIAL_COUNT_FIRST = -30;
+    static final byte REPEATED_COUNT_FIRST = 50;
+
     boolean state = false;
-    byte countdown;
+    byte countdown = INITIAL_COUNT_FIRST;
 
-    boolean get(){
-        if(!state)return false;
-
-        if(countdown == 0){
-            countdown = COUNTDOWN_WAIT;
-            return true;
-        }
-        countdown--;
-        return false;
-    }
-
-    void reset(){
+    final void reset(){
         state = false;
+        countdown = INITIAL_COUNT_FIRST;
     }
 
     abstract boolean test(float val);
 
-    static CDST positive(float low, float high){
-        return new PositiveCDST(low, high);
+    static CDST positive(){
+        return new PositiveCDST();
     }
 
-    static CDST negative(float low, float high){
-        return new NegativeCDST(low, high);
+    static CDST negative(){
+        return new NegativeCDST();
     }
 }

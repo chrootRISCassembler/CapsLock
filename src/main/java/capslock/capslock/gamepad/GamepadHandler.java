@@ -37,7 +37,7 @@ public class GamepadHandler {
     private final ScheduledService<Void> pollService;
     private final Gamepad notionalGamepad;
 
-    private AxisInputQueue inputQueue = new AxisInputQueue.Builder().build();
+    private final AxisInputQueue inputQueue = new AxisInputQueue();
 
     private Controller gamepadController;
 
@@ -137,6 +137,7 @@ public class GamepadHandler {
             Logger.INST.warn("Gamepad is invalid. It should be disconnected");
             gamepadController = null;
             pollService.setPeriod(Duration.millis(GAMEPAD_DETECTION_INTERVAL_MS));
+            inputQueue.clear();
             return;
         }
 
