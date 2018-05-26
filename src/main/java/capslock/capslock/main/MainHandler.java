@@ -267,7 +267,7 @@ enum MainHandler {
         warnTimeline.play();
         controller.onGameLaunched();
         this.game = game;
-        resouceScraperTimeline.play();
+        resouceScraperTimeline.playFrom(Duration.seconds(SCRAPE_INTERVAL_SEC - 1));
     }
 
     /**
