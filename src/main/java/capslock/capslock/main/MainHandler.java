@@ -16,6 +16,7 @@
 package capslock.capslock.main;
 
 import capslock.capslock.os_absorbing.NullDevice;
+import capslock.capslock.os_absorbing.ProcessResourceScraper;
 import capslock.game_info.Game;
 import capslock.game_info.GameDocument;
 import capslock.game_info.JSONDBReader;
@@ -45,23 +46,58 @@ enum MainHandler {
     INST;
 
     private final Path JSON_DB_PATH = Paths.get("./GamesInfo.json");
+
+    /**
+     * プレイ時間の警告を出す間隔
+     */
     private final int WARN_INTERVAL_MINUTE = 5;
+
+    /**
+     * 起動したゲームプロセスのリソース使用をチェックする間隔
+     */
+    private final int SCRAPE_INTERVAL_SEC = 10;
 
     private MainFormController controller;
     private List<Game> gameList;
+    private Game game;
     private int pastMinutes = 0;
-    private final Timeline timer;
+    private final Timeline warnTimeline;
+    private final Timeline resouceScraperTimeline;
 
     private Process gameProcess = null;
 
     MainHandler(){
-        timer = new Timeline(new KeyFrame(Duration.minutes(WARN_INTERVAL_MINUTE), event -> {
+        warnTimeline = new Timeline(new KeyFrame(Duration.minutes(WARN_INTERVAL_MINUTE), event -> {
             pastMinutes += WARN_INTERVAL_MINUTE;
             final AchievementWindow warn = new AchievementWindow(null,
                     "プレイ開始から" + pastMinutes + "分経過しました\n混雑している場合は次の方に\nお譲りください");
             warn.display();
         }));
-        timer.setCycleCount(Animation.INDEFINITE);
+        warnTimeline.setCycleCount(Animation.INDEFINITE);
+
+        resouceScraperTimeline = new Timeline(new KeyFrame(Duration.seconds(SCRAPE_INTERVAL_SEC), event -> {
+            final var resourceUsage = ProcessResourceScraper.query(game);
+            Logger.INST.info(() -> {
+                final var builder = new StringBuilder(game.getUUID().toString());
+                builder.append(" : user ");
+                builder.append(resourceUsage.getUserCPUTime() < 0 ? "N/A" : resourceUsage.getUserCPUTime());
+                builder.append('(');
+                builder.append(String.format("%.2f", resourceUsage.getUserCPUTimePercent()));
+                builder.append("%), sys ");
+                builder.append(resourceUsage.getKernelCPUTime() < 0 ? "N/A" : resourceUsage.getKernelCPUTime());
+                builder.append('(');
+                builder.append(String.format("%.2f", resourceUsage.getKernelCPUTimePercent()));
+                builder.append("%), mem ");
+                builder.append(resourceUsage.getMem() / 1024);
+                builder.append("KB");
+                builder.append('(');
+                builder.append(String.format("%.2f", resourceUsage.getMemPercentage()));
+                builder.append("%)");
+
+                return builder.toString();
+            });
+        }));
+        resouceScraperTimeline.setCycleCount(Animation.INDEFINITE);
     }
 
     /**
@@ -177,9 +213,6 @@ enum MainHandler {
                 return new Task<>() {
                     @Override
                     protected Void call() throws Exception {
-                        var processresourceobserver=new ProcessResourceObserver(game.getExe().toString());
-                        processresourceobserver.Launch();
-
                         final String ExePathString = game.getExe().toString();
                         final ProcessBuilder pb = new ProcessBuilder(ExePathString);
                         pb.directory(game.getExe().getParent().toFile());
@@ -213,7 +246,6 @@ enum MainHandler {
                             gameProcess.destroyForcibly();
                             gameProcess = null;
                             onGameQuit();
-                            processresourceobserver.Close();
                         }
                         return null;
                     }
@@ -231,16 +263,19 @@ enum MainHandler {
      */
     final void onGameLaunched(Game game){
         Logger.INST.info(() -> game.getExe() + " is launched successfully.");
-        timer.play();
+        warnTimeline.play();
         controller.onGameLaunched();
+        this.game = game;
+        resouceScraperTimeline.play();
     }
 
     /**
      * {@link #launch(Game)}が呼び出された結果, ゲーム起動に失敗したとき呼び出される.
      */
     final void onLaunchFailed(){
+        resouceScraperTimeline.stop();
         gameProcess = null;
-        timer.stop();
+        warnTimeline.stop();
         pastMinutes = 0;
         controller.onLaunchFailed();
     }
@@ -249,8 +284,9 @@ enum MainHandler {
      * {@link #launch(Game)}によって起動されたゲームが終了したとき呼び出される.
      */
     final void onGameQuit(){
+        resouceScraperTimeline.stop();
         Logger.INST.info("game quit.");
-        timer.stop();
+        warnTimeline.stop();
         pastMinutes = 0;
         controller.onGameQuit();
     }
@@ -259,6 +295,7 @@ enum MainHandler {
      * ランチャー終了時に呼び出される.
      */
     final void onTerminate(){
+        resouceScraperTimeline.stop();
         controller.onTerminate();
     }
 }
