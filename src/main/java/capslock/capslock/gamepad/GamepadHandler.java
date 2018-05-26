@@ -34,13 +34,10 @@ public class GamepadHandler {
     private static volatile Component.Identifier.Button okButton = Component.Identifier.Button._1;
     private static volatile Component.Identifier.Button cancelButton = Component.Identifier.Button._2;
 
-    private final CDST rightCDST = CDST.positive(0.4f, 0.7f);
-    private final CDST leftCDST = CDST.negative(-0.4f, -0.7f);
-    private final CDST upCDST = CDST.negative(-0.4f, -0.7f);
-    private final CDST downCDST = CDST.positive(0.4f, 0.7f);
-
     private final ScheduledService<Void> pollService;
     private final Gamepad notionalGamepad;
+
+    private AxisInputQueue inputQueue = new AxisInputQueue.Builder().build();
 
     private Controller gamepadController;
 
@@ -149,27 +146,11 @@ public class GamepadHandler {
             final var type = event.getComponent().getIdentifier();
 
             if (type.equals(Component.Identifier.Axis.X)) {
-                final float val = event.getValue();
-                if (rightCDST.test(val)){
-                    leftCDST.reset();
-                    notionalGamepad.onRight();
-                }
-                if (leftCDST.test(val)){
-                    rightCDST.reset();
-                    notionalGamepad.onLeft();
-                }
+                inputQueue.event(AxisInputQueue.Axis.X, event.getValue());
             }
 
             if (type.equals(Component.Identifier.Axis.Y)) {
-                final float val = event.getValue();
-                if (downCDST.test(val)){
-                    upCDST.reset();
-                    notionalGamepad.onDown();
-                }
-                if (upCDST.test(val)){
-                    downCDST.reset();
-                    notionalGamepad.onUp();
-                }
+                inputQueue.event(AxisInputQueue.Axis.Y, event.getValue());
             }
 
             if (type.equals(okButton)) {
@@ -183,10 +164,26 @@ public class GamepadHandler {
             }
         }
 
-        if(rightCDST.get())notionalGamepad.onRight();
-        if(leftCDST.get())notionalGamepad.onLeft();
-        if(upCDST.get())notionalGamepad.onUp();
-        if(downCDST.get())notionalGamepad.onDown();
+        inputQueue.emulateEvent();
+
+        while (true){
+            final var axisEvent = inputQueue.pop();
+            if(!axisEvent.isPresent())break;
+            switch (axisEvent.get().getDirection()){
+                case UP:
+                    notionalGamepad.onUp();
+                    break;
+                case DOWN:
+                    notionalGamepad.onDown();
+                    break;
+                case RIGHT:
+                    notionalGamepad.onRight();
+                    break;
+                case LEFT:
+                    notionalGamepad.onLeft();
+                    break;
+            }
+        }
     }
 
     /**
