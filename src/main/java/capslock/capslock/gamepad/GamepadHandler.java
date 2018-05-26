@@ -59,10 +59,10 @@ public class GamepadHandler {
         pollService.setDelay(Duration.seconds(1));
 
         if (gamepadController == null){
-            Logger.INST.info("Gamepad is not found.");
+            Logger.INST.info("Gamepad is not found");
             pollService.setPeriod(Duration.millis(GAMEPAD_DETECTION_INTERVAL_MS));
         }else {
-            Logger.INST.info("Gamepad is detected.");
+            Logger.INST.info("Gamepad is detected");
             pollService.setPeriod(Duration.millis(POLL_INTERVAL_MS));
         }
 
@@ -129,12 +129,12 @@ public class GamepadHandler {
             gamepadController = getGamepadController();
             if(gamepadController == null)return;
 
-            Logger.INST.info("Gamepad is detected.");
+            Logger.INST.info("Gamepad is detected");
             pollService.setPeriod(Duration.millis(POLL_INTERVAL_MS));
         }
 
         if (!gamepadController.poll()) {
-            Logger.INST.warn("Gamepad is invalid. It should be disconnected.");
+            Logger.INST.warn("Gamepad is invalid. It should be disconnected");
             gamepadController = null;
             pollService.setPeriod(Duration.millis(GAMEPAD_DETECTION_INTERVAL_MS));
             return;

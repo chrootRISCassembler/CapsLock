@@ -58,7 +58,7 @@ public final class CapsLock extends Application {
 
         loadConfig();
 
-        Logger.INST.info("CapsLock started.");
+        Logger.INST.info("CapsLock started");
 
         if(System.getProperty("java.library.path").contains("dependentBinary")){
             Logger.INST.debug("It can be launched by Gradle");
@@ -71,7 +71,7 @@ public final class CapsLock extends Application {
         launch();
 
 
-        Logger.INST.info("CapsLock terminated.");
+        Logger.INST.info("CapsLock terminated");
         Logger.INST.flush();
     }
 
@@ -106,13 +106,13 @@ public final class CapsLock extends Application {
 
     @Override
     public final void start(Stage stage){
-        Logger.INST.debug("Application#start called.");
+        Logger.INST.debug("Application#start called");
 
         final FXMLLoader loader;
         try{
             loader = new FXMLLoader(getClass().getResource("MainForm.fxml"));
         }catch(Exception ex){
-            Logger.INST.critical("Failed to get resource.");
+            Logger.INST.critical("Failed to get resource");
             Logger.INST.logException(ex);
             return;
         }
@@ -141,7 +141,7 @@ public final class CapsLock extends Application {
             stage.setFullScreen(true);
             stage.setAlwaysOnTop(true);
 
-            Logger.INST.debug("Try to display MainForm window.");
+            Logger.INST.debug("Try to display MainForm window");
             stage.show();
             controller.initFirst();
         }catch (Exception ex){

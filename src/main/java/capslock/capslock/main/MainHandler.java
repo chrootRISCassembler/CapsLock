@@ -117,14 +117,14 @@ enum MainHandler {
         try {
             reader = new JSONDBReader(JSON_DB_PATH);
         }catch (IllegalArgumentException | IOException ex) {
-            Logger.INST.warn("Failed to load game's information.");
+            Logger.INST.warn("Failed to load game's information");
             Logger.INST.logException(ex);
             gameList = Collections.emptyList();
             return;
         }
 
         gameList = Collections.unmodifiableList(reader.getDocumentList());
-        Logger.INST.info(gameList.size() + " games detected.");
+        Logger.INST.info(gameList.size() + " games detected");
     }
 
 
@@ -225,11 +225,11 @@ enum MainHandler {
                             gameProcess = pb.start();
                         } catch (SecurityException ex) {
                             Logger.INST.critical("Blocked by security software.").logException(ex);
-                            onLaunchFailed();
+                            onLaunchFailed(game);
                             return null;
                         } catch (IOException ex) {
                             Logger.INST.warn("Failed to launch game : " + ExePathString).logException(ex);
-                            onLaunchFailed();
+                            onLaunchFailed(game);
                             return null;
                         }
 
@@ -245,7 +245,7 @@ enum MainHandler {
                             Logger.INST.debug("Game's process is done");
                             gameProcess.destroyForcibly();
                             gameProcess = null;
-                            onGameQuit();
+                            onGameQuit(game);
                         }
                         return null;
                     }
@@ -262,7 +262,8 @@ enum MainHandler {
      * @param game 正常に起動されたゲーム
      */
     final void onGameLaunched(Game game){
-        Logger.INST.info(() -> game.getExe() + " is launched successfully.");
+        Logger.INST.debug(game.getExe() + " is launched successfully.");
+        Logger.INST.info(game.getUUID() + " : launched");
         warnTimeline.play();
         controller.onGameLaunched();
         this.game = game;
@@ -272,20 +273,21 @@ enum MainHandler {
     /**
      * {@link #launch(Game)}が呼び出された結果, ゲーム起動に失敗したとき呼び出される.
      */
-    final void onLaunchFailed(){
+    final void onLaunchFailed(Game game){
         resouceScraperTimeline.stop();
         gameProcess = null;
         warnTimeline.stop();
         pastMinutes = 0;
+        Logger.INST.warn(game.getUUID() + " : launch failed");
         controller.onLaunchFailed();
     }
 
     /**
      * {@link #launch(Game)}によって起動されたゲームが終了したとき呼び出される.
      */
-    final void onGameQuit(){
+    final void onGameQuit(Game game){
         resouceScraperTimeline.stop();
-        Logger.INST.info("game quit.");
+        Logger.INST.info(game.getUUID() + " : terminated");
         warnTimeline.stop();
         pastMinutes = 0;
         controller.onGameQuit();
