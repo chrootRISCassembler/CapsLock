@@ -44,9 +44,6 @@ import javafx.stage.Screen;
 import methg.commonlib.trivial_logger.Logger;
 
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * メインフォームのFXMLコントローラークラス.
@@ -277,15 +274,15 @@ public final class MainFormController{
         emulateClick(PanelTilePane.getChildren().get(0));
     }
 
-    void onGameLaunched(){
+    final void onGameLaunched(){
         contentsAreaController.suspend();
     }
 
-    void onLaunchFailed(){
+    final void onLaunchFailed(){
         gamepadHandler.enable();
     }
 
-    void onGameQuit(){
+    final void onGameQuit(){
         gamepadHandler.enable();
         contentsAreaController.resume();
     }
@@ -303,7 +300,7 @@ public final class MainFormController{
         confirmVBox.setVisible(false);
     }
 
-    void onPanelClicked(MouseEvent event){
+    final void onPanelClicked(MouseEvent event){
         if(!event.isSynthesized()){
             confirmVBox.setVisible(false);
             isConfirm = false;
@@ -352,23 +349,6 @@ public final class MainFormController{
 
         gamepadHandler.disable();
         MainHandler.INST.launch((Game)eventSourcePanel.getUserData());
-    }
-    
-    final void ShufflePanels(){
-        System.out.println("Shuffle called");
-        
-        final int last = PanelTilePane.getChildren().size();   
-        final Node FirstView = PanelTilePane.getChildren().get(0);
-        final List<Node> views = PanelTilePane.getChildren().subList(1, last).stream()
-                .map(node -> (ImageView)node)
-                .collect(Collectors.toList());
-        
-        PanelTilePane.getChildren().clear();
-        Collections.shuffle(views);
-        PanelTilePane.getChildren().add(FirstView);   
-        PanelTilePane.getChildren().addAll(views);
-        
-        System.out.println("shuffle end");
     }
 
     /**
