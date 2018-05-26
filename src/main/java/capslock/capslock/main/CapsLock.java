@@ -93,14 +93,14 @@ public final class CapsLock extends Application {
 
         try {
             GamepadHandler.setOkButton(Integer.valueOf(properties.getProperty("OKButton")).byteValue());
-        }catch (Exception ex){
-            Logger.INST.logException(ex);
+        }catch (NumberFormatException ex){
+            Logger.INST.debug("Invalid/No setting of OK Button");
         }
 
         try {
             GamepadHandler.setCancelButton(Integer.valueOf(properties.getProperty("CancelButton")).byteValue());
-        }catch (Exception ex){
-            Logger.INST.logException(ex);
+        }catch (NumberFormatException ex){
+            Logger.INST.debug("Invalid/No setting of cancel Button");
         }
     }
 
