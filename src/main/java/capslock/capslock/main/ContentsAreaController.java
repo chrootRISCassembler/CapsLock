@@ -167,19 +167,20 @@ final class ContentsAreaController {
     }
 
     private void displayImage(){
-        final var image = new Image(imageIterator.next().toUri().toString());
-        if(image == null)Logger.INST.info(game.getUUID() + " Failed to load image.");
-        {
-            final var ex = image.getException();
-            if(ex != null)Logger.INST.logException(ex);
-        }
-        imageView.setImage(image);
-        if(image.getWidth() >= image.getHeight()){
-            imageView.setFitWidth(parentRegion.getWidth());
-        }else{
-            imageView.setFitHeight(parentRegion.getHeight());
-        }
+        final Path imagePath = imageIterator.next();
+        final var image = new Image(imagePath.toUri().toString());
 
+        if(image.isError()){
+            Logger.INST.warn(game.getUUID() + " : Can't display image " + imagePath);
+            Logger.INST.logException(image.getException());
+        }else{
+            imageView.setImage(image);
+            if(image.getWidth() >= image.getHeight()){
+                imageView.setFitWidth(parentRegion.getWidth());
+            }else{
+                imageView.setFitHeight(parentRegion.getHeight());
+            }
+        }
         imageTimer.play();
     }
 
